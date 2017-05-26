@@ -14,33 +14,21 @@ public class LobbyEndpoint {
 
     private Session session;
     private MessageFunction<TableListMessage> function;
-    private boolean init = true;
-    private TokenMessage initMessage;
+    private TokenChecker tokenChecker;
 
     public LobbyEndpoint(TokenMessage message) {
-        initMessage = message;
-    }
-
-    public void sendInitMessage() {
-        String json = JSON.toJSONString(initMessage);
-        session.getAsyncRemote().sendText(json);
+        tokenChecker = new TokenChecker(message);
     }
 
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
-        sendInitMessage();
+        tokenChecker.send(session);
     }
 
     @OnMessage
     public void onMessage(String message) {
-        if (init) {
-            StringMessage stringMessage = JSON.parseObject(message, StringMessage.class);
-            if (stringMessage.getMessage().equals("ok")) {
-                init = false;
-            }
-            return;
-        }
+        if (tokenChecker.receive(message)) return;
         TableListMessage tableListMessage = JSON.parseObject(message, TableListMessage.class);
         if (function != null) {
             function.apply(tableListMessage);

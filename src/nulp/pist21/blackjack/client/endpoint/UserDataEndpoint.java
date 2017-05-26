@@ -17,33 +17,21 @@ public class UserDataEndpoint {
 
     private Session session;
     private MessageFunction<UserMessage> function;
-    private boolean init = true;
-    private TokenMessage initMessage;
+    private TokenChecker tokenChecker;
 
     public UserDataEndpoint(TokenMessage message) {
-        initMessage = message;
-    }
-
-    public void sendInitMessage() {
-        String json = JSON.toJSONString(initMessage);
-        session.getAsyncRemote().sendText(json);
+        tokenChecker = new TokenChecker(message);
     }
 
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
-        sendInitMessage();
+        tokenChecker.send(session);
     }
 
     @OnMessage
     public void onMessage(String message) {
-        if (init) {
-            StringMessage stringMessage = JSON.parseObject(message, StringMessage.class);
-            if (stringMessage.getMessage().equals("ok")) {
-                init = false;
-            }
-            return;
-        }
+        if (tokenChecker.receive(message)) return;
         UserMessage userMessage = JSON.parseObject(message, UserMessage.class);
         if (function != null) {
             function.apply(userMessage);
