@@ -20,13 +20,13 @@ public class UserDataEndpoint {
     private Session session;
     private MessageFunction<UserMessage> function;
     private final ProgramData programData = ProgramData.get();
-    private boolean init = true;
-    private long token = -1;
+    private TokenChecker tokenChecker;
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("userdata open");
         this.session = session;
+        tokenChecker = new TokenChecker(session);
     }
 
     @OnClose
@@ -37,24 +37,7 @@ public class UserDataEndpoint {
     @OnMessage
     public void onMessage(String message) {
         System.out.println("userdata message " + message);
-        if (init) {
-            TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
-            if (this.session != null && this.session.isOpen()) {
-                token = tokenMessage.getToken();
-                User user = programData.tokenList.getUser(tokenMessage.getToken());
-                StringMessage stringMessage;
-                if (user != null) {
-                    stringMessage = new StringMessage("ok");
-                    init = false;
-                } else {
-                    stringMessage = new StringMessage("token error");
-                }
-                String json = JSON.toJSONString(stringMessage);
-                session.getAsyncRemote().sendText(json);
-            }
-            return;
-        }
-
+        if (tokenChecker.receive(message)) return;
         UserMessage userMessage = JSON.parseObject(message, UserMessage.class);
         if (function != null) {
             function.apply(userMessage);
@@ -63,7 +46,7 @@ public class UserDataEndpoint {
         if (this.session != null && this.session.isOpen()) {
             User user;
             if (userMessage.getUser().getName().equals("")) {
-                user = programData.tokenList.getUser(token);
+                user = programData.tokenList.getUser(tokenChecker.getToken());
             } else {
                 user = programData.userList.existUserName(userMessage.getUser().getName());
                 if (user != null) {

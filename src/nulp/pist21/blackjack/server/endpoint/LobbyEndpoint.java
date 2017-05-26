@@ -10,7 +10,6 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
 
 @ServerEndpoint("/lobby")
 public class LobbyEndpoint {
@@ -18,12 +17,13 @@ public class LobbyEndpoint {
     private Session session;
     private MessageFunction<StringMessage> function;
     private final ProgramData programData = ProgramData.get();
-    private boolean init = true;
+    private TokenChecker tokenChecker;
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("lobby open");
         this.session = session;
+        tokenChecker = new TokenChecker(session);
     }
 
     @OnClose
@@ -34,22 +34,7 @@ public class LobbyEndpoint {
     @OnMessage
     public void onMessage(String message) {
         System.out.println("lobby message " + message);
-        if (init) {
-            TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
-            if (this.session != null && this.session.isOpen()) {
-                User user = programData.tokenList.getUser(tokenMessage.getToken());
-                StringMessage stringMessage;
-                if (user != null) {
-                    stringMessage = new StringMessage("ok");
-                    init = false;
-                } else {
-                    stringMessage = new StringMessage("token error");
-                }
-                String json = JSON.toJSONString(stringMessage);
-                session.getAsyncRemote().sendText(json);
-            }
-            return;
-        }
+        if (tokenChecker.receive(message)) return;
         StringMessage userMessage = JSON.parseObject(message, StringMessage.class);
         if (function != null) {
             function.apply(userMessage);
