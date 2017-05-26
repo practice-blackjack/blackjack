@@ -21,6 +21,7 @@ public class TokenChecker {
 
     public boolean receive(String message) {
         if (init) {
+            System.out.println("tokenchecker message " + message);
             TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
             if (this.session != null && this.session.isOpen()) {
                 token = tokenMessage.getToken();
@@ -33,10 +34,12 @@ public class TokenChecker {
                     stringMessage = new StringMessage("token error");
                 }
                 String json = JSON.toJSONString(stringMessage);
+                System.out.println("tokenchecker send " + json);
                 session.getAsyncRemote().sendText(json);
             }
+            return true;
         }
-        return init;
+        return false;
     }
 
     public long getToken() {
