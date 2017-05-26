@@ -10,13 +10,13 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 @ClientEndpoint
-public class TableEndpoint {
+public class GameActionEndpoint {
 
     private Session session;
     private MessageFunction<TableMessage> function;
     private TokenChecker tokenChecker;
 
-    public TableEndpoint(TokenMessage message) {
+    public GameActionEndpoint(TokenMessage message) {
         tokenChecker = new TokenChecker(message);
     }
 
@@ -43,7 +43,7 @@ public class TableEndpoint {
         tokenChecker.onMessageListener(function);
     }
 
-    public void sendMessage(SelectTableMessage message) {
+    public void sendMessage(GameActionMessage message) {
         if (session != null && session.isOpen()) {
             String json = JSON.toJSONString(message);
             session.getAsyncRemote().sendText(json);
@@ -57,4 +57,5 @@ public class TableEndpoint {
             e.printStackTrace();
         }
     }
+
 }

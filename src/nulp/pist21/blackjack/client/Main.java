@@ -23,6 +23,7 @@ public class Main {
     private UserDataEndpoint userDataEndpoint;
     private LobbyEndpoint lobbyEndpoint;
     private TableEndpoint tableEndpoint;
+    private GameActionEndpoint gameActionEndpoint;
 
     private long token;
 
@@ -133,6 +134,21 @@ public class Main {
         tableEndpoint.sendMessage(selectTableMessage);
     }
 
+    private void action(String action, String bet) {
+        gameActionEndpoint = new GameActionEndpoint(new TokenMessage("", token));
+        try {
+            container.connectToServer(gameActionEndpoint, new URI("ws://localhost:8080/app/game"));
+        } catch (DeploymentException | IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        gameActionEndpoint.onMessageListener((TableMessage tableMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(tableMessage));
+            gameActionEndpoint.close();
+        });
+        GameActionMessage gameActionMessage = new GameActionMessage("user game action", action, Integer.parseInt(bet));
+        gameActionEndpoint.sendMessage(gameActionMessage);
+    }
+
     public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
         Main client = new Main();
@@ -159,6 +175,9 @@ public class Main {
                     break;
                 case "table":
                     client.getTable(/*todo: filter*/);
+                    break;
+                case "game":
+                    client.action(command[1], command[2]);
                     break;
             }
         }

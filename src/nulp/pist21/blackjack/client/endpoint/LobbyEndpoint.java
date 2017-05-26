@@ -39,6 +39,10 @@ public class LobbyEndpoint {
         this.function = function;
     }
 
+    public void onTokenCheckerMessageListener(MessageFunction<StringMessage> function) {
+        tokenChecker.onMessageListener(function);
+    }
+
     public void sendMessage(StringMessage message) {
         if (session != null && session.isOpen()) {
             String json = JSON.toJSONString(message);
