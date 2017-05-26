@@ -61,6 +61,10 @@ public class UserDataEndpoint {
         this.function = function;
     }
 
+    public void onTokenCheckerMessageListener(MessageFunction<TokenMessage> function) {
+        tokenChecker.onMessageListener(function);
+    }
+
     public void sendMessage(UserMessage message) {
         String json = JSON.toJSONString(message);
         System.out.println("userdata send " + json);

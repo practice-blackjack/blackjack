@@ -52,6 +52,10 @@ public class LobbyEndpoint {
         this.function = function;
     }
 
+    public void onTokenCheckerMessageListener(MessageFunction<TokenMessage> function) {
+        tokenChecker.onMessageListener(function);
+    }
+
     public void sendMessage(TableListMessage message) {
         String json = JSON.toJSONString(message);
         System.out.println("lobby send " + json);
