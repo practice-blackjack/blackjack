@@ -1,5 +1,11 @@
 package nulp.pist21.blackjack.client.endpoint;
 
+import com.alibaba.fastjson.JSON;
+import nulp.pist21.blackjack.message.MessageFunction;
+import nulp.pist21.blackjack.message.StringMessage;
+import nulp.pist21.blackjack.message.TokenMessage;
+import nulp.pist21.blackjack.message.UserMessage;
+
 import javax.websocket.*;
 import java.io.IOException;
 
@@ -7,6 +13,7 @@ import java.io.IOException;
 public class RegisterEndpoint {
 
     private Session session;
+    private MessageFunction<StringMessage> function;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -15,11 +22,19 @@ public class RegisterEndpoint {
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("server > " + message);
+        StringMessage stringMessage = JSON.parseObject(message, StringMessage.class);
+        if (function != null) {
+            function.apply(stringMessage);
+        }
     }
 
-    public void sendMessage(String message) {
-        session.getAsyncRemote().sendText(message);
+    public void onMessageListener(MessageFunction<StringMessage> function) {
+        this.function = function;
+    }
+
+    public void sendMessage(UserMessage message) {
+        String json = JSON.toJSONString(message);
+        session.getAsyncRemote().sendText(json);
     }
 
     public void close() {

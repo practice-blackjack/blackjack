@@ -18,6 +18,10 @@ public class User {
         update(name, password, cash);
     }
 
+    public User(String name) {
+        update(name, "", 0);
+    }
+
     public String getName() {
         return name;
     }
