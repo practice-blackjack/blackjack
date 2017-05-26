@@ -1,15 +1,10 @@
 package nulp.pist21.blackjack.client;
 
 import com.alibaba.fastjson.JSON;
-import nulp.pist21.blackjack.client.endpoint.LobbyEndpoint;
-import nulp.pist21.blackjack.client.endpoint.UserDataEndpoint;
-import nulp.pist21.blackjack.message.StringMessage;
-import nulp.pist21.blackjack.message.TableListMessage;
-import nulp.pist21.blackjack.message.TokenMessage;
-import nulp.pist21.blackjack.message.UserMessage;
+import nulp.pist21.blackjack.client.endpoint.*;
+import nulp.pist21.blackjack.message.*;
+import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
-import nulp.pist21.blackjack.client.endpoint.RegisterEndpoint;
-import nulp.pist21.blackjack.client.endpoint.LoginEndpoint;
 
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
@@ -27,6 +22,7 @@ public class Main {
     private LoginEndpoint loginEndpoint;
     private UserDataEndpoint userDataEndpoint;
     private LobbyEndpoint lobbyEndpoint;
+    private TableEndpoint tableEndpoint;
 
     private long token;
 
@@ -77,21 +73,6 @@ public class Main {
         }
     }
 
-    private void getTableList() {
-        lobbyEndpoint = new LobbyEndpoint(new TokenMessage("", token));
-        try {
-            container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/app/lobby"));
-        } catch (DeploymentException | IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-        lobbyEndpoint.onMessageListener((TableListMessage tableListMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tableListMessage));
-            lobbyEndpoint.close();
-        });
-        StringMessage stringMessage = new StringMessage("get table list");
-        lobbyEndpoint.sendMessage(stringMessage);
-    }
-
     public void getMyData() {
         userDataEndpoint = new UserDataEndpoint(new TokenMessage("", token));
         try {
@@ -100,7 +81,6 @@ public class Main {
             e.printStackTrace();
         }
         userDataEndpoint.onMessageListener((UserMessage userMessage) -> {
-            User user = userMessage.getUser();
             System.out.println("server > " + JSON.toJSONString(userMessage));
             userDataEndpoint.close();
         });
@@ -116,12 +96,41 @@ public class Main {
             e.printStackTrace();
         }
         userDataEndpoint.onMessageListener((UserMessage userMessage) -> {
-            User user = userMessage.getUser();
             System.out.println("server > " + JSON.toJSONString(userMessage));
             userDataEndpoint.close();
         });
         UserMessage userMessage = new UserMessage("get user data", new User(name));
         userDataEndpoint.sendMessage(userMessage);
+    }
+
+    private void getTableList() {
+        lobbyEndpoint = new LobbyEndpoint(new TokenMessage("", token));
+        try {
+            container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/app/lobby"));
+        } catch (DeploymentException | IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        lobbyEndpoint.onMessageListener((TableListMessage tableListMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(tableListMessage));
+            lobbyEndpoint.close();
+        });
+        StringMessage stringMessage = new StringMessage("get table list");
+        lobbyEndpoint.sendMessage(stringMessage);
+    }
+
+    private void getTable() {
+        tableEndpoint = new TableEndpoint(new TokenMessage("", token));
+        try {
+            container.connectToServer(tableEndpoint, new URI("ws://localhost:8080/app/table"));
+        } catch (DeploymentException | IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        tableEndpoint.onMessageListener((TableMessage tableMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(tableMessage));
+            tableEndpoint.close();
+        });
+        SelectTableMessage selectTableMessage = new SelectTableMessage("get table", new TableInfo("name", 10, 4, 20, 50));
+        tableEndpoint.sendMessage(selectTableMessage);
     }
 
     public static void main(String[] args) {
@@ -142,11 +151,14 @@ public class Main {
                 case "me":
                     client.getMyData();
                     break;
+                case "user":
+                    client.getUserData(command[1]);
+                    break;
                 case "lobby":
                     client.getTableList(/*todo: filter*/);
                     break;
-                case "user":
-                    client.getUserData(command[1]);
+                case "table":
+                    client.getTable(/*todo: filter*/);
                     break;
             }
         }

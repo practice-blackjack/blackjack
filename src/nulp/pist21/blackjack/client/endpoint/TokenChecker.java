@@ -23,11 +23,12 @@ public class TokenChecker {
     public boolean receive(String message) {
         if (init) {
             StringMessage stringMessage = JSON.parseObject(message, StringMessage.class);
-            if (stringMessage.getMessage().equals("ok")) {
+            if (stringMessage.getMessage().equals("token ok")) {
                 init = false;
             }
+            return true;
         }
-        return init;
+        return false;
     }
 
 }

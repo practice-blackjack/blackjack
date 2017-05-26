@@ -1,15 +1,30 @@
 package nulp.pist21.blackjack.message;
 
+import nulp.pist21.blackjack.model.TableInfo;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class TableListMessage extends StringMessage {
+
+    private List<TableInfo> tableList;
 
     public TableListMessage() {
         super("");
-        //todo
+        tableList = new ArrayList<>();
     }
 
-    public TableListMessage(String message/*todo*/) {
+    public TableListMessage(String message, List<TableInfo> tableList) {
         super(message);
-        //todo
+        this.tableList = tableList;
+    }
+
+    public List<TableInfo> getTableList() {
+        return tableList;
+    }
+
+    public void setTableList(List<TableInfo> tableList) {
+        this.tableList = tableList;
     }
 
 }
