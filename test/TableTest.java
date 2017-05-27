@@ -1,6 +1,5 @@
 import nulp.pist21.blackjack.model.*;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TableTest {
