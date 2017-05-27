@@ -1,4 +1,5 @@
-import nulp.pist21.blackjack.model.*;
+package nulp.pist21.blackjack.model;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,5 +43,19 @@ public class DeckTest {
                     card1.getValue() == card2.getValue()) Assert.fail();
             }
         }
+    }
+
+    @Test
+    public void should_shuffle_when_is_done(){
+        IDeck deck = new Deck(1);
+        int deckSize = deck.cardsLeft();
+        for (int i = deck.cardsLeft() - 1; i >= 0; i--){
+            deck.next();
+        }
+
+        if (deck.cardsLeft() != 0) Assert.fail("Test works incorrect. Deck is not empty");
+        deck.next();
+
+        if (deck.cardsLeft() != deckSize - 1) Assert.fail();
     }
 }

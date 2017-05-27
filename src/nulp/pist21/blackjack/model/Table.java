@@ -8,6 +8,7 @@ public class Table implements ITable {
     private String name;
     private int rate;
     private TableBox[] boxes;
+    private TableBox dealerBox;
     private IDeck deck;
 
     private List<IPlayer> listeners;
@@ -19,9 +20,10 @@ public class Table implements ITable {
         for (int i = 0; i < boxes; i++) {
             this.boxes[i] = new TableBox();
         }
+        this.dealerBox = new TableBox();
         this.deck = deck;
 
-        listeners = new ArrayList<IPlayer>();
+        listeners = new ArrayList<>();
     }
 
     @Override
@@ -59,6 +61,26 @@ public class Table implements ITable {
 
     public IDeck getDeck() {
         return deck;
+    }
+
+    public void giveFirstCards(){
+        for (TableBox box: boxes){
+            if (box.isFree()) continue;
+
+            for (int i = 0; i < 2; i++) {
+                box.getHand().add(deck.next());
+            }
+        }
+
+        for (int i = 0; i < 2; i++) {
+            dealerBox.getHand().add(deck.next());
+        }
+    }
+
+    public void takeCards(){
+        for (TableBox box: boxes){
+            box.getHand().clear();
+        }
     }
 
     @Override

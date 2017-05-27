@@ -30,6 +30,7 @@ public class Deck implements IDeck {
 
     @Override
     public Card next() {
+        if (!hasNext()) shuffle();
         int num;
         do {
             num = random.nextInt(countDeck);
