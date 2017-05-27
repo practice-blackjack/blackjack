@@ -16,4 +16,10 @@ public class TableBoxSingle implements ITableBox {
     public boolean hasPlaces(){
         return player != null;
     }
+
+    @Override
+    public void sit(Player player) {
+        if (!hasPlaces()) return;
+        this.player = player;
+    }
 }
