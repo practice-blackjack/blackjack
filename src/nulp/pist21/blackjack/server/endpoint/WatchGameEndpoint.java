@@ -2,8 +2,8 @@ package nulp.pist21.blackjack.server.endpoint;
 
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
+import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
-import nulp.pist21.blackjack.model.User;
 import nulp.pist21.blackjack.server.data.ProgramData;
 
 import javax.websocket.OnClose;
@@ -11,15 +11,13 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
-import java.util.List;
 
-@ServerEndpoint("/lobby")
-public class LobbyEndpoint {
+@ServerEndpoint("/game/watch")
+public class WatchGameEndpoint {
 
-    private MessageFunction<Message> myDataFunction;
-    private MessageFunction<UserMessage> userDataFunction;
-    private MessageFunction<Message> tableListFunction;
     private MessageFunction<TokenMessage> tokenCheckerFunction;
+    private MessageFunction<TableSmallInfoMessage> entryFunction;
+    private MessageFunction<TableSmallInfoMessage> exitFunction;
 
     private Session session;
     private final ProgramData programData = ProgramData.get();
@@ -44,32 +42,29 @@ public class LobbyEndpoint {
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("lobby open");
+        System.out.println("game_watch open");
         this.session = session;
-        programData.lobbyManager.add(this);
+        programData.watchGameManager.add(this);
     }
 
     @OnClose
     public void onClose() {
-        System.out.println("lobby close");
-        programData.lobbyManager.remove(this);
+        System.out.println("game_watch close");
+        programData.watchGameManager.remove(this);
     }
 
     @OnMessage
     public void onMessage(String message) {
-        System.out.println("lobby message " + message);
+        System.out.println("game_watch message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
             case "token":
                 if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, TokenMessage.class));
                 break;
-            case "my_data":
-                if (myDataFunction != null) myDataFunction.apply(JSON.parseObject(message, Message.class));
+            case "entry":
+                if (entryFunction != null) entryFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
                 break;
-            case "user_data":
-                if (userDataFunction != null) userDataFunction.apply(JSON.parseObject(message, UserMessage.class));
-                break;
-            case "table_list":
-                if (tableListFunction != null) tableListFunction.apply(JSON.parseObject(message, Message.class));
+            case "exit":
+                if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
                 break;
         }
     }
@@ -78,41 +73,37 @@ public class LobbyEndpoint {
         this.tokenCheckerFunction = function;
     }
 
-    public void onMyDataListener(MessageFunction<Message> function) {
-        this.myDataFunction = function;
+    public void onEntryListener(MessageFunction<TableSmallInfoMessage> function) {
+        this.entryFunction = function;
     }
 
-    public void onUserDataListener(MessageFunction<UserMessage> function) {
-        this.userDataFunction = function;
-    }
-
-    public void onTableListListener(MessageFunction<Message> function) {
-        this.tableListFunction = function;
+    public void onExitListener(MessageFunction<TableSmallInfoMessage> function) {
+        this.exitFunction = function;
     }
 
     public void sendTokenMessage(String message) {
         sendMessage(new StringMessage("token", message));
     }
 
-    public void sendUpdateMessage(List<TableInfo> tableList) {
-        sendMessage(new TableListMessage("table_list", tableList));
+    public void sendUpdateMessage(Table table) {
+        sendMessage(new TableFullInfoMessage("update", table));
     }
 
-    public void sendMyDataMessage(User user) {
-        sendMessage(new UserMessage("my_data", user));
+    public void sendUserActionMessage(TableInfo tableInfo, int place, String action) {
+        sendMessage(new UserActionMessage("user_action", tableInfo, place, action));
     }
 
-    public void sendUserDataMessage(User user) {
-        sendMessage(new UserMessage("user_data", user));
+    public void sendEntryMessage(String message) {
+        sendMessage(new StringMessage("entry", message));
     }
 
-    public void sendTableListMessage(List<TableInfo> tableList) {
-        sendMessage(new TableListMessage("table_list", tableList));
+    public void sendExitMessage(String message) {
+        sendMessage(new StringMessage("exit", message));
     }
 
     private void sendMessage(Message message) {
         String json = JSON.toJSONString(message);
-        System.out.println("lobby send " + json);
+        System.out.println("game_watch send " + json);
         session.getAsyncRemote().sendText(json);
     }
 

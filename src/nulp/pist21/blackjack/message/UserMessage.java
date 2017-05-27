@@ -1,18 +1,18 @@
 package nulp.pist21.blackjack.message;
 
+import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.model.User;
 
-public class UserMessage extends StringMessage {
+public class UserMessage extends Message {
 
     private User user;
 
     public UserMessage() {
-        super("");
-        user = new User("", "");
+        this("", null);
     }
 
-    public UserMessage(String message, User user) {
-        super(message);
+    public UserMessage(String type, User user) {
+        super(type);
         this.user = user;
     }
 

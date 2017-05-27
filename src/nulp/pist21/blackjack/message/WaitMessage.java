@@ -1,27 +1,37 @@
 package nulp.pist21.blackjack.message;
 
-import nulp.pist21.blackjack.model.Table;
+import nulp.pist21.blackjack.model.TableInfo;
 
-public class WaitMessage extends StringMessage {
+public class WaitMessage extends Message {
 
-    private Table table;
+    private TableInfo tableInfo;
+    private int place;
 
     public WaitMessage() {
-        super("");
-        table = null;
+        this("", null, 0);
     }
 
-    public WaitMessage(String message, Table table) {
-        super(message);
-        this.table = table;
+    public WaitMessage(String type, TableInfo tableInfo, int place) {
+        super(type);
+        this.tableInfo = tableInfo;
+        this.place = place;
     }
 
-    public Table getTable() {
-        return table;
+    public TableInfo getTableInfo() {
+        return tableInfo;
     }
 
-    public void setTable(Table table) {
-        this.table = table;
+    public void setTableInfo(TableInfo tableInfo) {
+        this.tableInfo = tableInfo;
+    }
+
+    public int getPlace() {
+        return place;
+    }
+
+    public void setPlace(int place) {
+        this.place = place;
     }
 
 }
+

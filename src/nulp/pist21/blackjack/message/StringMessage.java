@@ -1,12 +1,15 @@
 package nulp.pist21.blackjack.message;
 
-public class StringMessage {
+public class StringMessage extends Message {
 
     private String message;
 
-    public StringMessage() {}
+    public StringMessage() {
+        this("", "");
+    }
 
-    public StringMessage(String message) {
+    public StringMessage(String type, String message) {
+        super(type);
         this.message = message;
     }
 
