@@ -9,20 +9,22 @@ public class UserActionMessage extends Message {
     public final static String BET = "bet";
 
     private TableInfo tableInfo;
+    private int place;
     private String action;
     private int bet;
 
     public UserActionMessage() {
-        this("", null, "", 0);
+        this("", null, 0, "", 0);
     }
 
-    public UserActionMessage(String type, TableInfo tableInfo, String action) {
-        this(type, tableInfo, action, 0);
+    public UserActionMessage(String type, TableInfo tableInfo, int place, String action) {
+        this(type, tableInfo, 0, action, 0);
     }
 
-    public UserActionMessage(String type, TableInfo tableInfo, String action, int bet) {
+    public UserActionMessage(String type, TableInfo tableInfo, int place, String action, int bet) {
         super(type);
         this.tableInfo = tableInfo;
+        this.place = place;
         this.action = action;
         this.bet = bet;
     }
@@ -51,4 +53,11 @@ public class UserActionMessage extends Message {
         this.bet = bet;
     }
 
+    public int getPlace() {
+        return place;
+    }
+
+    public void setPlace(int place) {
+        this.place = place;
+    }
 }

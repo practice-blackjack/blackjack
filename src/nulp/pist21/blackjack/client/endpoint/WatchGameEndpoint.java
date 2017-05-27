@@ -29,6 +29,7 @@ public class WatchGameEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
+        sendTokenMessage();
     }
 
     @OnMessage

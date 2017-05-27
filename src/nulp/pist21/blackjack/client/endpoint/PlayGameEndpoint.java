@@ -28,6 +28,7 @@ public class PlayGameEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
+        sendTokenMessage();
     }
 
     @OnMessage
@@ -68,12 +69,12 @@ public class PlayGameEndpoint {
         sendMessage(new TokenMessage("token", token));
     }
 
-    public void sendActionMessage(TableInfo tableInfo, int bet) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, UserActionMessage.BET, bet));
+    public void sendActionMessage(TableInfo tableInfo, int place, int bet) {
+        sendMessage(new UserActionMessage("user_action", tableInfo, place, UserActionMessage.BET, bet));
     }
 
-    public void sendActionMessage(TableInfo tableInfo, String hitOrStand) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, hitOrStand));
+    public void sendActionMessage(TableInfo tableInfo, int place, String hitOrStand) {
+        sendMessage(new UserActionMessage("user_action", tableInfo, place, hitOrStand));
     }
 
     public void sendSitMessage(TableInfo tableInfo, int place) {

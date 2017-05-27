@@ -51,7 +51,6 @@ public class Main {
         try {
             lobbyEndpoint = new LobbyEndpoint(token);
             lobbyEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            lobbyEndpoint.sendTokenMessage();
             container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/app/lobby"));
             lobbyEndpoint.onUpdateMessageListener((TableListMessage tableListMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableListMessage));
@@ -65,7 +64,6 @@ public class Main {
         try {
             watchGameEndpoint = new WatchGameEndpoint(token);
             watchGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            watchGameEndpoint.sendTokenMessage();
             container.connectToServer(watchGameEndpoint, new URI("ws://localhost:8080/app/game/watch"));
             watchGameEndpoint.onUpdateMessageListener((TableFullInfoMessage tableFullInfoMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableFullInfoMessage));
@@ -82,20 +80,20 @@ public class Main {
         try {
             playGameEndpoint = new PlayGameEndpoint(token);
             playGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            playGameEndpoint.sendTokenMessage();
             container.connectToServer(playGameEndpoint, new URI("ws://localhost:8080/app/game/play"));
             playGameEndpoint.onWaitActionMessageListener((WaitMessage waitMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(waitMessage));
                 TableInfo tableInfo = waitMessage.getTableInfo();
+                int place = waitMessage.getPlace();
                 Scanner scn = new Scanner(System.in);
                 switch (waitMessage.getType()) {
                     case "bet":
                         int bet = scn.nextInt();
-                        playGameEndpoint.sendActionMessage(tableInfo, bet);
+                        playGameEndpoint.sendActionMessage(tableInfo, place, bet);
                         break;
                     case "hit_or_stand":
                         String hitOrStand = scn.nextLine();
-                        playGameEndpoint.sendActionMessage(tableInfo, hitOrStand);
+                        playGameEndpoint.sendActionMessage(tableInfo, place, hitOrStand);
                         break;
                 }
             });
@@ -129,6 +127,7 @@ public class Main {
             watchGameEndpoint.close();
             lobbyEndpoint.close();
             initEndpoint.close();
+            initInit();
         });
         initEndpoint.sendUnloginMessage();
     }
