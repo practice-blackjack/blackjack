@@ -18,9 +18,16 @@ public class TableBoxSingle implements ITableBox {
     }
 
     @Override
-    public void sit(IPlayer player) {
+    public void sitDown(IPlayer player) {
         if (!hasPlaces()) return;
         this.player = player;
+    }
+
+    @Override
+    public void standUp(IPlayer player) {
+        if (player == this.player){
+            this.player = null;
+        }
     }
 
     @Override

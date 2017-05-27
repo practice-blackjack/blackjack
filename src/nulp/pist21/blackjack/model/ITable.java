@@ -9,5 +9,6 @@ public interface ITable {
 
     List<IPlayer> getListeners();
 
-    void addUser(User user);
+    Player addUser(User user);
+    void removePlayer(IPlayer player);
 }

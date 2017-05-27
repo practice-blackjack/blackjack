@@ -13,25 +13,21 @@ public class TableBoxSingleTest {
     }
 
     @Test
-    public void player_should_sit(){
+    public void player_should_sit_down(){
         ITableBox box = new TableTest().createTable().getBoxes()[0];
         if (!box.hasPlaces()) Assert.fail();
         IPlayer player = new Player(new User());
-        box.sit(player);
-        if (box.getPlayers().length <= 0) Assert.fail();
+        box.sitDown(player);
+        if (box.getPlayers().length != 1) Assert.fail();
+        if (box.getPlayers()[0] != player) Assert.fail();
     }
 
     @Test
-    public void should_return_right_players_list(){
-        ITableBox box = new TableBoxSingle();
-        if (box.getPlayers().length != 0) Assert.fail();
-
+    public void player_should_stand_up(){
+        ITableBox box = new TableTest().createTable().getBoxes()[0];
         IPlayer player = new Player(new User());
-        box.sit(player);
-
-        if (box.getPlayers().length != 1) Assert.fail();
-        if (box.getPlayers()[0] != player) Assert.fail();
-
+        box.sitDown(player);
+        box.standUp(player);
+        if (box.getPlayers().length != 0) Assert.fail();
     }
-
 }

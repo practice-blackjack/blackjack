@@ -17,24 +17,46 @@ public class TableTest {
     }
 
     @Test
-    public void instance_should_create(){
+    public void should_create_instance(){
         ITable table = createTable();
     }
 
     @Test
-    public void have_to_have_clear_listener_list_after_creating(){
+    public void should_have_clear_listener_list_after_creating(){
         ITable table = createTable();
         if (table.getListeners() == null) Assert.fail();
         if (table.getListeners().size() > 0) Assert.fail();
     }
 
     @Test
-    public void user_should_be_added_to_listeners(){
+    public void should_add_user_to_listeners(){
         ITable table = createTable();
+
         User user = new User();
-        table.addUser(user);
+        Player player = table.addUser(user);
+
         if (table.getListeners().size() != 1) Assert.fail();
-        Player player = (Player)table.getListeners().get(0);
         if (player.getUser() != user) Assert.fail();
+    }
+
+    @Test
+    public void should_return_right_player_after_adding_to_listeners(){
+        ITable table = createTable();
+
+        User user = new User();
+        Player player = table.addUser(user);
+        if (player != table.getListeners().get(0)) Assert.fail();
+    }
+
+    @Test
+    public void should_remove_player_from_listeners_after_stand_up(){
+        ITable table = createTable();
+
+        User user = new User();
+        Player player = table.addUser(user);
+
+        table.removePlayer(player);
+        if (table.getListeners().size() != 0) Assert.fail();
+
     }
 }

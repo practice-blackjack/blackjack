@@ -39,9 +39,18 @@ public class Table implements ITable {
     }
 
     @Override
-    public void addUser(User user) {
-        IPlayer player = new Player(user);
+    public Player addUser(User user) {
+        Player player = new Player(user);
         listeners.add(player);
+        return player;
+    }
+
+    @Override
+    public void removePlayer(IPlayer player) {
+        listeners.remove(player);
+        for (ITableBox box : boxes) {
+            box.standUp(player);
+        }
     }
 
     public IDeck getDeck() {
