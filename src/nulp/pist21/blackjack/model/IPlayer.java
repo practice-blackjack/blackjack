@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model;
 
-public interface AbstractPlayer {
+public interface IPlayer {
 
     Action getAction();
 

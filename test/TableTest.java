@@ -12,7 +12,7 @@ public class TableTest {
                 new TableBoxSingle(),
                 new TableBoxSingle(),
                 new TableBoxSingle()};
-        AbstractDeck deck = new EndlessDeck();
+        IDeck deck = new EndlessDeck();
         Table table = new Table("Kyiv", 100, boxes, deck);
     }
 

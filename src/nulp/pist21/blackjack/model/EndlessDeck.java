@@ -2,7 +2,7 @@ package nulp.pist21.blackjack.model;
 
 import java.util.Random;
 
-public class EndlessDeck implements AbstractDeck {
+public class EndlessDeck implements IDeck {
 
     private final Random random;
 

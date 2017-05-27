@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model;
 
-public interface AbstractDeck {
+public interface IDeck {
 
     void shuffle();
 

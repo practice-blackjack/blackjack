@@ -2,7 +2,7 @@ package nulp.pist21.blackjack.model;
 
 import java.util.*;
 
-public class Deck implements AbstractDeck {
+public class Deck implements IDeck {
 
     private ByteDeck[] deck;
     private Random random;
@@ -42,7 +42,7 @@ public class Deck implements AbstractDeck {
         return Arrays.stream(deck).map(ByteDeck::cardsLeft).reduce(0, (a, b) -> a + b);
     }
 
-    private class ByteDeck implements AbstractDeck {
+    private class ByteDeck implements IDeck {
 
         private long deck;
         private int cardLeft;
