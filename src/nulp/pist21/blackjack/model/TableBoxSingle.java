@@ -4,7 +4,7 @@ import java.util.List;
 
 public class TableBoxSingle implements ITableBox {
 
-    private Player player;
+    private IPlayer player;
     private List<Card> hand;
 
     @Override
@@ -14,12 +14,18 @@ public class TableBoxSingle implements ITableBox {
 
     @Override
     public boolean hasPlaces(){
-        return player != null;
+        return player == null;
     }
 
     @Override
-    public void sit(Player player) {
+    public void sit(IPlayer player) {
         if (!hasPlaces()) return;
         this.player = player;
+    }
+
+    @Override
+    public IPlayer[] getPlayers() {
+        if (hasPlaces()) return new IPlayer[]{};
+        return new IPlayer[]{ player };
     }
 }

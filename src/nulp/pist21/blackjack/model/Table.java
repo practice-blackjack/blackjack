@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model;
 
-public class Table {
+public class Table implements ITable {
     private String name;
     private int rate;
     private ITableBox[] boxes;
@@ -13,13 +13,18 @@ public class Table {
         this.deck = deck;
     }
 
+    @Override
     public String getName() {
         return name;
     }
+
+    @Override
     public int getRate() {
         return rate;
     }
+
     public ITableBox[] getBoxes() { return boxes; }
+
     public IDeck getDeck() {
         return deck;
     }

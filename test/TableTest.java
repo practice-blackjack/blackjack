@@ -5,7 +5,7 @@ import org.junit.Test;
 public class TableTest {
 
     @Test
-    public void instance_should_create(){
+    public Table instance_should_create(){
         ITableBox[] boxes = {
                 new TableBoxSingle(),
                 new TableBoxSingle(),
@@ -14,10 +14,6 @@ public class TableTest {
                 new TableBoxSingle()};
         IDeck deck = new EndlessDeck();
         Table table = new Table("Kyiv", 100, boxes, deck);
-    }
-
-    @Test
-    public void ololo(){
-
+        return table;
     }
 }
