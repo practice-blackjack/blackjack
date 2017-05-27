@@ -15,7 +15,7 @@ import javax.websocket.server.ServerEndpoint;
 public class TableEndpoint {
 
     private Session session;
-    private MessageFunction<SelectTableMessage> function;
+    private MessageFunction<TableSmallInfoMessage> function;
     private final ProgramData programData = ProgramData.get();
     private TokenChecker tokenChecker;
 
@@ -35,22 +35,22 @@ public class TableEndpoint {
     public void onMessage(String message) {
         System.out.println("table message " + message);
         if (tokenChecker.receive(message)) return;
-        SelectTableMessage selectTableMessage = JSON.parseObject(message, SelectTableMessage.class);
+        TableSmallInfoMessage tableSmallInfoMessage = JSON.parseObject(message, TableSmallInfoMessage.class);
         if (function != null) {
-            function.apply(selectTableMessage);
+            function.apply(tableSmallInfoMessage);
         }
 
         //todo:
         Table table = new Table();
 
         if (this.session != null && this.session.isOpen()) {
-            TableMessage tableMessage;
-            tableMessage = new TableMessage("table data", table);
-            sendMessage(tableMessage);
+            TableFullInfoMessage tableFullInfoMessage;
+            tableFullInfoMessage = new TableFullInfoMessage("table data", table);
+            sendMessage(tableFullInfoMessage);
         }
     }
 
-    public void onMessageListener(MessageFunction<SelectTableMessage> function) {
+    public void onMessageListener(MessageFunction<TableSmallInfoMessage> function) {
         this.function = function;
     }
 
@@ -58,7 +58,7 @@ public class TableEndpoint {
         tokenChecker.onMessageListener(function);
     }
 
-    public void sendMessage(TableMessage message) {
+    public void sendMessage(TableFullInfoMessage message) {
         String json = JSON.toJSONString(message);
         System.out.println("table send " + json);
         session.getAsyncRemote().sendText(json);

@@ -17,5 +17,7 @@ public class ProgramData {
     public UserList userList = new UserList();
     public TokenList tokenList = new TokenList();
     public TableManager tableManager = new TableManager();
+    public GameActionManager gameActionManager = new GameActionManager(tokenList);
+    public CardManager cardManager = new CardManager(tokenList);
 
 }

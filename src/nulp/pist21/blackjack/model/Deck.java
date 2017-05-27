@@ -46,11 +46,9 @@ public class Deck implements AbstractDeck {
 
         private long deck;
         private int cardLeft;
-        private Random random;
 
         public ByteDeck() {
             shuffle();
-            random = new Random();
         }
 
         @Override
