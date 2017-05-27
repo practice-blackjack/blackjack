@@ -2,7 +2,7 @@ package nulp.pist21.blackjack.client.endpoint;
 
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
-import nulp.pist21.blackjack.model.User;
+import nulp.pist21.blackjack.model.TableInfo;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.OnMessage;
@@ -11,18 +11,18 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 @ClientEndpoint
-public class LobbyEndpoint {
+public class WatchGameEndpoint {
 
-    private MessageFunction<TableListMessage> updateFunction;
-    private MessageFunction<UserMessage> myDataFunction;
-    private MessageFunction<UserMessage> userDataFunction;
-    private MessageFunction<TableListMessage> tableListFunction;
     private MessageFunction<StringMessage> tokenCheckerFunction;
+    private MessageFunction<TableFullInfoMessage> updateFunction;
+    private MessageFunction<UserActionMessage> userActionFunction;
+    private MessageFunction<StringMessage> entryFunction;
+    private MessageFunction<StringMessage> exitFunction;
 
     private Session session;
     private final long token;
 
-    public LobbyEndpoint(long token) {
+    public WatchGameEndpoint(long token) {
         this.token = token;
     }
 
@@ -38,16 +38,16 @@ public class LobbyEndpoint {
                 if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
             case "update":
-                if (updateFunction != null) updateFunction.apply(JSON.parseObject(message, TableListMessage.class));
+                if (updateFunction != null) updateFunction.apply(JSON.parseObject(message, TableFullInfoMessage.class));
                 break;
-            case "my_data":
-                if (myDataFunction != null) myDataFunction.apply(JSON.parseObject(message, UserMessage.class));
+            case "user_action":
+                if (userActionFunction != null) userActionFunction.apply(JSON.parseObject(message, UserActionMessage.class));
                 break;
-            case "user_data":
-                if (userDataFunction != null) userDataFunction.apply(JSON.parseObject(message, UserMessage.class));
+            case "entry":
+                if (entryFunction != null) entryFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
-            case "table_list":
-                if (tableListFunction != null) tableListFunction.apply(JSON.parseObject(message, TableListMessage.class));
+            case "exit":
+                if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
         }
     }
@@ -56,36 +56,32 @@ public class LobbyEndpoint {
         this.tokenCheckerFunction = function;
     }
 
-    public void onUpdateMessageListener(MessageFunction<TableListMessage> function) {
+    public void onUpdateMessageListener(MessageFunction<TableFullInfoMessage> function) {
         this.updateFunction = function;
     }
 
-    public void onMyDataListener(MessageFunction<UserMessage> function) {
-        this.myDataFunction = function;
+    public void onUserActionMessageListener(MessageFunction<UserActionMessage> function) {
+        this.userActionFunction = function;
     }
 
-    public void onUserDataListener(MessageFunction<UserMessage> function) {
-        this.userDataFunction = function;
+    public void onEntryListener(MessageFunction<StringMessage> function) {
+        this.entryFunction = function;
     }
 
-    public void onTableListListener(MessageFunction<TableListMessage> function) {
-        this.tableListFunction = function;
+    public void onExitListener(MessageFunction<StringMessage> function) {
+        this.exitFunction = function;
     }
 
     public void sendTokenMessage() {
         sendMessage(new TokenMessage("token", token));
     }
 
-    public void sendMyDataMessage() {
-        sendMessage(new Message("my_data"));
+    public void sendEntryMessage(TableInfo tableInfo) {
+        sendMessage(new TableSmallInfoMessage("entry", tableInfo));
     }
 
-    public void sendUserDataMessage(User user) {
-        sendMessage(new UserMessage("user_data", user));
-    }
-
-    public void sendTableListMessage() {
-        sendMessage(new Message("table_list"));
+    public void sendExitMessage(TableInfo tableInfo) {
+        sendMessage(new TableSmallInfoMessage("exit", tableInfo));
     }
 
     private void sendMessage(Message message) {

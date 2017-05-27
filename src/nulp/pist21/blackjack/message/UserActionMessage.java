@@ -1,38 +1,38 @@
 package nulp.pist21.blackjack.message;
 
-import nulp.pist21.blackjack.model.Table;
+import nulp.pist21.blackjack.model.TableInfo;
 
-public class GameActionMessage extends StringMessage {
+public class UserActionMessage extends Message {
 
     public final static String HIT = "hit";
     public final static String STAND = "stand";
     public final static String BET = "bet";
 
-    private Table table;
+    private TableInfo tableInfo;
     private String action;
     private int bet;
 
-    public GameActionMessage() {
+    public UserActionMessage() {
         this("", null, "", 0);
     }
 
-    public GameActionMessage(String message, Table table, String action) {
-        this(message, table, action, 0);
+    public UserActionMessage(String type, TableInfo tableInfo, String action) {
+        this(type, tableInfo, action, 0);
     }
 
-    public GameActionMessage(String message, Table table, String action, int bet) {
-        super(message);
-        this.table = table;
+    public UserActionMessage(String type, TableInfo tableInfo, String action, int bet) {
+        super(type);
+        this.tableInfo = tableInfo;
         this.action = action;
         this.bet = bet;
     }
 
-    public Table getTable() {
-        return table;
+    public TableInfo getTableInfo() {
+        return tableInfo;
     }
 
-    public void setTable(Table table) {
-        this.table = table;
+    public void setTable(TableInfo tableInfo) {
+        this.tableInfo = tableInfo;
     }
 
     public String getAction() {

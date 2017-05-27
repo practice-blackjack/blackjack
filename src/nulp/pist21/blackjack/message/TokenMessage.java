@@ -1,16 +1,15 @@
 package nulp.pist21.blackjack.message;
 
-public class TokenMessage extends StringMessage {
+public class TokenMessage extends Message {
 
     private long token;
 
     public TokenMessage() {
-        super("");
-        token = -1;
+        this("", -1);
     }
 
-    public TokenMessage(String message, long token) {
-        super(message);
+    public TokenMessage(String type, long token) {
+        super(type);
         this.token = token;
     }
 

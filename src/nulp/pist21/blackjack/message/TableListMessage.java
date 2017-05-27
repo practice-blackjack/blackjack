@@ -5,17 +5,16 @@ import nulp.pist21.blackjack.model.TableInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableListMessage extends StringMessage {
+public class TableListMessage extends Message {
 
     private List<TableInfo> tableList;
 
     public TableListMessage() {
-        super("");
-        tableList = new ArrayList<>();
+        this("", null);
     }
 
-    public TableListMessage(String message, List<TableInfo> tableList) {
-        super(message);
+    public TableListMessage(String type, List<TableInfo> tableList) {
+        super(type);
         this.tableList = tableList;
     }
 
