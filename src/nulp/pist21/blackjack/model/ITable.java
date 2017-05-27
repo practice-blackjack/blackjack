@@ -1,10 +1,13 @@
 package nulp.pist21.blackjack.model;
 
+import java.util.List;
+
 public interface ITable {
     String getName();
     int getRate();
-    //int getMaxPlayers();
-    //int getPlayersCount();
+    ITableBox[] getBoxes();
 
-    //void startRound();
+    List<IPlayer> getListeners();
+
+    void addUser(User user);
 }

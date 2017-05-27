@@ -5,12 +5,6 @@ import org.junit.Test;
 
 
 public class TableBoxSingleTest {
-    private Table table;
-
-    @Before
-    public void before(){
-        table = new TableTest().instance_should_create();
-    }
 
     @Test
     public void should_be_empty_after_creating() {
@@ -20,9 +14,9 @@ public class TableBoxSingleTest {
 
     @Test
     public void player_should_sit(){
-        ITableBox box = table.getBoxes()[0];
+        ITableBox box = new TableTest().createTable().getBoxes()[0];
         if (!box.hasPlaces()) Assert.fail();
-        IPlayer player = new Player();
+        IPlayer player = new Player(new User());
         box.sit(player);
         if (box.getPlayers().length <= 0) Assert.fail();
     }
@@ -32,7 +26,7 @@ public class TableBoxSingleTest {
         ITableBox box = new TableBoxSingle();
         if (box.getPlayers().length != 0) Assert.fail();
 
-        IPlayer player = new Player();
+        IPlayer player = new Player(new User());
         box.sit(player);
 
         if (box.getPlayers().length != 1) Assert.fail();
