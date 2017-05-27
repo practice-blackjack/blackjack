@@ -18,6 +18,7 @@ public class WatchGameEndpoint {
     private MessageFunction<UserActionMessage> userActionFunction;
     private MessageFunction<StringMessage> entryFunction;
     private MessageFunction<StringMessage> exitFunction;
+    private MessageFunction<ResultMessage> resultFunction;
 
     private Session session;
     private final long token;
@@ -50,6 +51,9 @@ public class WatchGameEndpoint {
             case "exit":
                 if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
+            case "result":
+                if (resultFunction != null) resultFunction.apply(JSON.parseObject(message, ResultMessage.class));
+                break;
         }
     }
 
@@ -71,6 +75,10 @@ public class WatchGameEndpoint {
 
     public void onExitListener(MessageFunction<StringMessage> function) {
         this.exitFunction = function;
+    }
+
+    public void onResultListener(MessageFunction<ResultMessage> function) {
+        this.resultFunction = function;
     }
 
     public void sendTokenMessage() {

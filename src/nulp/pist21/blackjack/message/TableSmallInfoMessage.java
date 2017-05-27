@@ -5,7 +5,6 @@ import nulp.pist21.blackjack.model.TableInfo;
 public class TableSmallInfoMessage extends Message {
 
     private TableInfo tableInfo;
-
     private int place;
 
     public TableSmallInfoMessage() {

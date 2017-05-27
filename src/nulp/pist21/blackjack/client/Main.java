@@ -71,6 +71,9 @@ public class Main {
             watchGameEndpoint.onUserActionMessageListener((UserActionMessage userActionMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(userActionMessage));
             });
+            watchGameEndpoint.onResultListener((ResultMessage resultMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(resultMessage));
+            });
         } catch (DeploymentException | IOException | URISyntaxException e) {
             e.printStackTrace();
         }
@@ -86,7 +89,7 @@ public class Main {
                 TableInfo tableInfo = waitMessage.getTableInfo();
                 int place = waitMessage.getPlace();
                 Scanner scn = new Scanner(System.in);
-                switch (waitMessage.getType()) {
+                switch (waitMessage.getWaitType()) {
                     case "bet":
                         int bet = scn.nextInt();
                         playGameEndpoint.sendActionMessage(tableInfo, place, bet);
