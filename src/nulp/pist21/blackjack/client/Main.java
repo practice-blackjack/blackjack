@@ -3,6 +3,7 @@ package nulp.pist21.blackjack.client;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.client.endpoint.*;
 import nulp.pist21.blackjack.message.*;
+import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
 
@@ -126,27 +127,34 @@ public class Main {
         } catch (DeploymentException | IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        tableEndpoint.onMessageListener((TableMessage tableMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tableMessage));
+        tableEndpoint.onMessageListener((TableFullInfoMessage tableFullInfoMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(tableFullInfoMessage));
             tableEndpoint.close();
         });
-        SelectTableMessage selectTableMessage = new SelectTableMessage("get table", new TableInfo("name", 10, 4, 20, 50));
-        tableEndpoint.sendMessage(selectTableMessage);
+        TableSmallInfoMessage tableSmallInfoMessage = new TableSmallInfoMessage("get table", new TableInfo("name", 10, 4, 20, 50));
+        tableEndpoint.sendMessage(tableSmallInfoMessage);
+        action();
     }
 
-    private void action(String action, String bet) {
+    private void action() {
         gameActionEndpoint = new GameActionEndpoint(new TokenMessage("", token));
         try {
             container.connectToServer(gameActionEndpoint, new URI("ws://localhost:8080/app/game"));
         } catch (DeploymentException | IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        gameActionEndpoint.onMessageListener((TableMessage tableMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tableMessage));
-            gameActionEndpoint.close();
+        Scanner scn = new Scanner(System.in);
+        gameActionEndpoint.onMessageListener((WaitMessage waitMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(waitMessage));
+            Table table = waitMessage.getTable();
+            String[] command = scn.nextLine().split(" ");
+            if (command[0].equals("game")) {
+                String action = command[1];
+                int bet = Integer.parseInt(command[2]);
+                GameActionMessage gameActionMessage = new GameActionMessage("user game action", table, action, bet);
+                gameActionEndpoint.sendMessage(gameActionMessage);
+            }
         });
-        GameActionMessage gameActionMessage = new GameActionMessage("user game action", action, Integer.parseInt(bet));
-        gameActionEndpoint.sendMessage(gameActionMessage);
     }
 
     public static void main(String[] args) {
@@ -175,9 +183,6 @@ public class Main {
                     break;
                 case "table":
                     client.getTable(/*todo: filter*/);
-                    break;
-                case "game":
-                    client.action(command[1], command[2]);
                     break;
             }
         }

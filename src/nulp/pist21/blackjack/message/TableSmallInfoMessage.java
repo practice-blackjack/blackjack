@@ -2,16 +2,16 @@ package nulp.pist21.blackjack.message;
 
 import nulp.pist21.blackjack.model.TableInfo;
 
-public class SelectTableMessage extends StringMessage {
+public class TableSmallInfoMessage extends StringMessage {
 
     private TableInfo tableInfo;
 
-    public SelectTableMessage() {
+    public TableSmallInfoMessage() {
         super("");
         tableInfo = new TableInfo("", 0, 0, 0, 0);
     }
 
-    public SelectTableMessage(String message, TableInfo tableInfo) {
+    public TableSmallInfoMessage(String message, TableInfo tableInfo) {
         super(message);
         this.tableInfo = tableInfo;
     }

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class GameActionEndpoint {
 
     private Session session;
-    private MessageFunction<TableMessage> function;
+    private MessageFunction<WaitMessage> function;
     private TokenChecker tokenChecker;
 
     public GameActionEndpoint(TokenMessage message) {
@@ -29,13 +29,13 @@ public class GameActionEndpoint {
     @OnMessage
     public void onMessage(String message) {
         if (tokenChecker.receive(message)) return;
-        TableMessage tableMessage = JSON.parseObject(message, TableMessage.class);
+        WaitMessage waitMessage = JSON.parseObject(message, WaitMessage.class);
         if (function != null) {
-            function.apply(tableMessage);
+            function.apply(waitMessage);
         }
     }
 
-    public void onMessageListener(MessageFunction<TableMessage> function) {
+    public void onMessageListener(MessageFunction<WaitMessage> function) {
         this.function = function;
     }
 

@@ -3,7 +3,6 @@ package nulp.pist21.blackjack.client.endpoint;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.MessageFunction;
 import nulp.pist21.blackjack.message.StringMessage;
-import nulp.pist21.blackjack.message.TableMessage;
 import nulp.pist21.blackjack.message.TokenMessage;
 
 import javax.websocket.Session;
