@@ -2,6 +2,9 @@ import nulp.pist21.blackjack.model.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DeckTest {
     @Test
@@ -21,5 +24,23 @@ public class DeckTest {
             if (i != deck.cardsLeft()) Assert.fail();
         }
         if (deck.hasNext()) Assert.fail();
+    }
+
+    @Test
+    public void should_not_have_duplicates(){
+        IDeck deck = new Deck(1);
+        List<Card> cards = new ArrayList<Card>();
+        for (int i = deck.cardsLeft() - 1; i >= 0; i--){
+            Card card = deck.next();
+            cards.add(card);
+        }
+        for (int i = 0; i < cards.size() - 1; i++){
+            Card card1 = cards.get(i);
+            for (int j = i + 1; j < cards.size(); j++){
+                Card card2 = cards.get(j);
+                if (card1.getSuit() == card2.getSuit() &&
+                    card1.getValue() == card2.getValue()) Assert.fail();
+            }
+        }
     }
 }
