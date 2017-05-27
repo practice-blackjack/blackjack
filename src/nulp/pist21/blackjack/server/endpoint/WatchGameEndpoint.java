@@ -101,6 +101,10 @@ public class WatchGameEndpoint {
         sendMessage(new StringMessage("exit", message));
     }
 
+    public void sendResultMessage(String message) {
+        sendMessage(new ResultMessage("result"));
+    }
+
     private void sendMessage(Message message) {
         String json = JSON.toJSONString(message);
         System.out.println("game_watch send " + json);

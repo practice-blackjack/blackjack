@@ -3,6 +3,7 @@ package nulp.pist21.blackjack.server.data;
 import nulp.pist21.blackjack.message.TableSmallInfoMessage;
 import nulp.pist21.blackjack.message.TokenMessage;
 import nulp.pist21.blackjack.message.UserActionMessage;
+import nulp.pist21.blackjack.message.WaitMessage;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
 import nulp.pist21.blackjack.server.endpoint.PlayGameEndpoint;
@@ -47,7 +48,7 @@ public class PlayGameManager {
             String action = userActionMessage.getAction();
             int bet = userActionMessage.getBet();
             //todo: user_action
-            endpoint.sendWaitMessage(tableInfo, place);
+            endpoint.sendWaitMessage(tableInfo, place, WaitMessage.WAIT_BET);
         });
         endpoint.onSitListener((TableSmallInfoMessage tableSmallInfoMessage) -> {
             if (!endpoint.isLogin()) {

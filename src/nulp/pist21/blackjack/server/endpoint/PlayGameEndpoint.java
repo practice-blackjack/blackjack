@@ -92,8 +92,8 @@ public class PlayGameEndpoint {
         sendMessage(new StringMessage("token", message));
     }
 
-    public void sendWaitMessage(TableInfo tableInfo, int place) {
-        sendMessage(new WaitMessage("wait", tableInfo, place));
+    public void sendWaitMessage(TableInfo tableInfo, int place, String type) {
+        sendMessage(new WaitMessage("wait", tableInfo, place, type));
     }
 
     public void sendSitMessage(String message) {
