@@ -2,7 +2,7 @@ package nulp.pist21.blackjack.model;
 
 import java.util.List;
 
-public class TableBox {
+public class TableBoxSingle implements ITableBox {
 
     private Player player;
     private List<Card> hand;
@@ -15,4 +15,8 @@ public class TableBox {
         return false;
     }
 
+    @Override
+    public int getPoints() {
+        return 0;
+    }
 }
