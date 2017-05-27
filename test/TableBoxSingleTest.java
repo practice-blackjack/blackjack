@@ -8,13 +8,13 @@ public class TableBoxSingleTest {
 
     @Test
     public void should_be_empty_after_creating() {
-        ITableBox box = new TableBoxSingle();
+        TableBox box = new TableBox();
         if (!box.hasPlaces()) Assert.fail();
     }
 
     @Test
     public void player_should_sit_down(){
-        ITableBox box = new TableTest().createTable().getBoxes()[0];
+        TableBox box = new TableTest().createTable().getBoxes()[0];
         if (!box.hasPlaces()) Assert.fail();
         IPlayer player = new Player(new User());
         box.sitDown(player);
@@ -24,7 +24,7 @@ public class TableBoxSingleTest {
 
     @Test
     public void player_should_stand_up(){
-        ITableBox box = new TableTest().createTable().getBoxes()[0];
+        TableBox box = new TableTest().createTable().getBoxes()[0];
         IPlayer player = new Player(new User());
         box.sitDown(player);
         box.standUp(player);

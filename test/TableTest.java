@@ -5,14 +5,8 @@ import org.junit.Test;
 public class TableTest {
 
     public ITable createTable(){
-        ITableBox[] boxes = {
-                new TableBoxSingle(),
-                new TableBoxSingle(),
-                new TableBoxSingle(),
-                new TableBoxSingle(),
-                new TableBoxSingle()};
         IDeck deck = new EndlessDeck();
-        return new Table("Kyiv", 100, boxes, deck);
+        return new Table(0, "Kyiv", 100, 6, deck);
     }
 
     @Test

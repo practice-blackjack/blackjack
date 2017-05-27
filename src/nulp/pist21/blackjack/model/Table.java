@@ -4,17 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Table implements ITable {
+    private int id;
     private String name;
     private int rate;
-    private ITableBox[] boxes;
+    private TableBox[] boxes;
     private IDeck deck;
 
     private List<IPlayer> listeners;
 
-    public Table(String name, int rate, ITableBox[] boxes, IDeck deck) {
+    public Table(int id, String name, int rate, int boxes, IDeck deck) {
         this.name = name;
         this.rate = rate;
-        this.boxes = boxes;
+        this.boxes = new TableBox[boxes];
+        for (int i = 0; i < boxes; i++) {
+            this.boxes[i] = new TableBox();
+        }
         this.deck = deck;
 
         listeners = new ArrayList<IPlayer>();
@@ -31,7 +35,7 @@ public class Table implements ITable {
     }
 
     @Override
-    public ITableBox[] getBoxes() { return boxes; }
+    public TableBox[] getBoxes() { return boxes; }
 
     @Override
     public List<IPlayer> getListeners() {
@@ -48,7 +52,7 @@ public class Table implements ITable {
     @Override
     public void removePlayer(IPlayer player) {
         listeners.remove(player);
-        for (ITableBox box : boxes) {
+        for (TableBox box : boxes) {
             box.standUp(player);
         }
     }
@@ -57,4 +61,8 @@ public class Table implements ITable {
         return deck;
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
 }
