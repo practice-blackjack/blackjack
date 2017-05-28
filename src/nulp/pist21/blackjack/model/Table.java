@@ -40,8 +40,8 @@ public class Table {
         return spectators;
     }
 
-    public void addSpectator(User player) {
-        spectators.add(player);
+    public void addSpectator(ISpectator spectator) {
+        spectators.add(spectator);
     }
 
     public void removePlayer(IPlayer player) {
@@ -54,6 +54,13 @@ public class Table {
 
     public IDeck getDeck() {
         return deck;
+    }
+
+    public void takeBets(){
+        for (TableBox box: boxes){
+            if (box.isFree()) continue;
+            box.takeBet(rate);
+        }
     }
 
     public void giveFirstCards(){

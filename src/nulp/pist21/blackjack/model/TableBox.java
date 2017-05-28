@@ -44,6 +44,12 @@ public class TableBox{
         return !isFree()/* && bet != 0*/;
     }
 
+    public void takeBet(int bet){
+        if (isFree()) return;
+        if (!player.takeMoney(bet)) makeFree();
+        else this.bet = bet;
+    }
+
     public List<Card> getHand() {
         return hand;
     }

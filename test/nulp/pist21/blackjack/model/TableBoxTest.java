@@ -1,5 +1,6 @@
 package nulp.pist21.blackjack.model;
 
+import nulp.pist21.blackjack.model.Mock.UserMock;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ public class TableBoxTest {
     public void player_should_sit_down(){
         TableBox box = new TableTest().createTable().getBoxes()[0];
         if (!box.isFree()) Assert.fail();
-        User user = new User();
+        UserMock user = new UserMock();
         box.sitDown(user);
         if (box.getPlayer() != user) Assert.fail();
     }
@@ -32,7 +33,7 @@ public class TableBoxTest {
     @Test
     public void player_should_stand_up(){
         TableBox box = new TableTest().createTable().getBoxes()[0];
-        User user = new User();
+        UserMock user = new UserMock();
         box.sitDown(user);
         box.makeFree();
         if (box.getPlayer() != null) Assert.fail();
@@ -102,7 +103,24 @@ public class TableBoxTest {
     }
 
     @Test
-    public void should_remove_player_if_cant_pay(){
+    public void should_take_bet(){
+        UserMock user = new UserMock(100);
+        TableBox box = new TableBox();
+        box.sitDown(user);
+        box.takeBet(5);
 
+        if (user.getMoney() != 95) Assert.fail();
+
+    }
+
+    @Test
+    public void should_remove_player_if_cant_pay(){
+        UserMock user = new UserMock(100);
+        TableBox box = new TableBox();
+        box.sitDown(user);
+        box.takeBet(200);
+
+        if (!box.isFree()) Assert.fail();
+        if (user.getMoney() != 100) Assert.fail();
     }
 }

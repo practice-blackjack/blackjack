@@ -1,14 +1,19 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Mock;
 
-public class User implements IPlayer, ISpectator {
+import nulp.pist21.blackjack.model.Action;
+import nulp.pist21.blackjack.model.IPlayer;
+import nulp.pist21.blackjack.model.ISpectator;
+import nulp.pist21.blackjack.model.Table;
+
+public class UserMock implements IPlayer, ISpectator {
 
     private int money;
 
-    public User() {
+    public UserMock() {
         this.money = 500;
     }
 
-    public User(int money) {
+    public UserMock(int money) {
         this.money = money;
     }
 
