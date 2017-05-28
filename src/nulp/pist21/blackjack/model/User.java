@@ -18,6 +18,23 @@ public class User implements IPlayer, ISpectator {
     }
 
     @Override
+    public boolean takeMoney(int money) {
+        if (this.money < money) return false;
+        this.money -= money;
+        return true;
+    }
+
+    @Override
+    public boolean giveMoney(int money) {
+        int prevMoney = this.money;
+        this.money += money;
+        if (money > prevMoney) return true;
+        this.money = prevMoney;
+        return false;
+
+    }
+
+    @Override
     public Action getAction() {
         return null;
     }

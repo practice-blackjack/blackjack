@@ -58,8 +58,7 @@ public class Table {
 
     public void giveFirstCards(){
         for (TableBox box: boxes){
-
-
+            if (!box.isInGame()) continue;
             for (int i = 0; i < 2; i++) {
                 box.getHand().add(deck.next());
             }
