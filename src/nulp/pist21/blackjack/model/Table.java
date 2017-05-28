@@ -1,5 +1,7 @@
 package nulp.pist21.blackjack.model;
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ public class Table {
     private String name;
     private int rate;
     private TableBox[] boxes;
-    private TableBox dealerBox;
+    private GameWithDealer game;
     private IDeck deck;
 
     private List<ISpectator> spectators;
@@ -20,7 +22,6 @@ public class Table {
         for (int i = 0; i < boxes; i++) {
             this.boxes[i] = new TableBox();
         }
-        this.dealerBox = new TableBox();
         this.deck = deck;
 
         spectators = new ArrayList<>();
@@ -44,7 +45,7 @@ public class Table {
         spectators.add(spectator);
     }
 
-    public void removePlayer(IPlayer player) {
+    public void removePlayer(IPlayer player) { // on exit
         spectators.remove(player);
         for (TableBox box : boxes) {
             if (box.getPlayer() == player)
@@ -57,22 +58,31 @@ public class Table {
     }
 
     public void takeBets(){
+        ArrayList<TableBox> playingBoxes = new ArrayList<>();
         for (TableBox box: boxes){
             if (box.isFree()) continue;
-            box.takeBet(rate);
+
+            box.setBet(rate);
+            playingBoxes.add(box);
         }
+        //temporary
+        TableBox[] playingBoxesArr = new TableBox[playingBoxes.size()];
+        for (int i = 0; i < playingBoxes.size(); i++){
+            playingBoxesArr[i] = playingBoxes.get(i);
+        }
+        game = new GameWithDealer(playingBoxesArr);
     }
 
-    public void giveFirstCards(){
-        for (TableBox box: boxes){
-            if (!box.isInGame()) continue;
-            for (int i = 0; i < 2; i++) {
-                box.giveCard(deck.next());
-            }
-        }
+    public void startRound(){
+        game.giveFirstCards(deck);
+    }
 
-        for (int i = 0; i < 2; i++) {
-            dealerBox.giveCard(deck.next());
+    public void endRound(){
+        for (Pair<TableBox, Float> winner: game.getWinners()){
+            TableBox winnerBox = winner.getKey();
+            Float koef = winner.getValue();
+            winnerBox.getPlayer().giveMoney(Math.round(winnerBox.getBet() * koef));
+            winnerBox.setBet(0);
         }
     }
 
@@ -85,4 +95,5 @@ public class Table {
     public int getId() {
         return id;
     }
+
 }

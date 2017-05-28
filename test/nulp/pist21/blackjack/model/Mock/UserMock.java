@@ -33,7 +33,7 @@ public class UserMock implements IPlayer, ISpectator {
     public boolean giveMoney(int money) {
         int prevMoney = this.money;
         this.money += money;
-        if (money > prevMoney) return true;
+        if (this.money > prevMoney) return true;
         this.money = prevMoney;
         return false;
 

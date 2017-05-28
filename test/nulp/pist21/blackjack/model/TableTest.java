@@ -63,33 +63,6 @@ public class TableTest {
     }
 
     @Test
-    public void should_give_first_cards(){
-        Table table = (Table)createTable();
-        fillSomeBoxes(table);
-
-        table.giveFirstCards();
-
-        if (table.getBoxes()[0].getHand().size() != 2) Assert.fail();
-        if (table.getBoxes()[1].getHand().size() != 0) Assert.fail();
-        if (table.getBoxes()[2].getHand().size() != 2) Assert.fail();
-        if (table.getBoxes()[3].getHand().size() != 0) Assert.fail();
-        if (table.getBoxes()[4].getHand().size() != 0) Assert.fail();
-        if (table.getBoxes()[5].getHand().size() != 2) Assert.fail();
-    }
-
-    @Test
-    public void should_take_cards(){
-        Table table = (Table)createTable();
-        fillSomeBoxes(table);
-
-        table.giveFirstCards();
-        table.takeCards();
-        for(TableBox box: table.getBoxes()){
-            if (box.getHand().size() != 0) Assert.fail();
-        }
-    }
-
-    @Test
     public void should_take_bets(){
         IDeck deck = new EndlessDeck();
         Table table = new Table(0, "Kyiv", 700, 6, deck);
@@ -102,5 +75,42 @@ public class TableTest {
 
         if (users[1].getMoney() != 0) Assert.fail();
         if (users[2].getMoney() != 300) Assert.fail();
+    }
+
+    /*@Test
+    public void should_pay_winners(){
+        IDeck deck = new EndlessDeck();
+        Table table = new Table(0, "Kyiv", 300, 6, deck);
+        UserMock[] users = fillSomeBoxes(table);    //500 700 1000
+        table.takeBets();
+
+        table.getDealerBox().giveCard(new Card(Card.CLUBS, Card.ACE));
+        table.getDealerBox().giveCard(new Card(Card.CLUBS, Card._5));       //16
+
+        table.getBoxes()[0].giveCard(new Card(Card.CLUBS, Card._5));        //5
+
+        table.getBoxes()[2].giveCard(new Card(Card.CLUBS, Card.ACE));
+        table.getBoxes()[2].giveCard(new Card(Card.CLUBS, Card._5));        //16
+
+        table.getBoxes()[5].giveCard(new Card(Card.CLUBS, Card.ACE));
+        table.getBoxes()[5].giveCard(new Card(Card.CLUBS, Card._7));        //18
+
+        table.endRound();
+
+        if (users[0].getMoney() != 200) Assert.fail(users[0].getMoney() + ""); //lose
+        if (users[1].getMoney() != 700) Assert.fail(users[1].getMoney() + ""); //draw
+        if (users[2].getMoney() != 1300) Assert.fail(users[2].getMoney() + ""); //win
+    }*/
+
+    @Test
+    public void should_clear_bets_on_end_of_round() {
+        IDeck deck = new EndlessDeck();
+        Table table = new Table(0, "Kyiv", 300, 6, deck);
+        UserMock[] users = fillSomeBoxes(table);    //500 700 1000
+        table.takeBets();
+        table.endRound();
+        for (TableBox box: table.getBoxes()){
+            if (box.getBet() != 0) Assert.fail();
+        }
     }
 }
