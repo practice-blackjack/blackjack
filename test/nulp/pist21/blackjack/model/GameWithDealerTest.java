@@ -44,18 +44,29 @@ public class GameWithDealerTest {
         if (GameWithDealer.getValue(box) != 17) Assert.fail();
 
         box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card._10));
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        if (GameWithDealer.getValue(box) != GameWithDealer.BLACK_JACK) Assert.fail();
+
+        box.takeCards();
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.CLUBS, Card.JACK));
-        if (GameWithDealer.getValue(box) != 21) Assert.fail();
+        if (GameWithDealer.getValue(box) != GameWithDealer.BLACK_JACK) Assert.fail();
 
         box.takeCards();
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.CLUBS, Card.QUEEN));
-        if (GameWithDealer.getValue(box) != 21) Assert.fail();
+        if (GameWithDealer.getValue(box) != GameWithDealer.BLACK_JACK) Assert.fail();
 
         box.takeCards();
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.CLUBS, Card.KING));
+        if (GameWithDealer.getValue(box) != GameWithDealer.BLACK_JACK) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._5));
+        box.giveCard(new Card(Card.CLUBS, Card._5));
         if (GameWithDealer.getValue(box) != 21) Assert.fail();
 
         box.takeCards();

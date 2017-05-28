@@ -10,6 +10,8 @@ public class GameWithDealer {
     private Dealer dealer;
     private TableBox[] playingBoxes;
 
+    public static final int BLACK_JACK = Integer.MAX_VALUE;
+
     public GameWithDealer(TableBox[] playingBoxes) {
         this.playingBoxes = playingBoxes;
         this.dealerBox = new TableBox();
@@ -48,6 +50,11 @@ public class GameWithDealer {
                 sum += 11;
             }
             else sum += 1;
+        }
+
+        if (sum == 21 &&
+            box.getHand().size() == 2){
+            return BLACK_JACK;
         }
         return sum;
     }
