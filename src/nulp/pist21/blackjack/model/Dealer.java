@@ -1,25 +1,36 @@
 package nulp.pist21.blackjack.model;
 
-public class Dealer implements IPlayer {
+import nulp.pist21.blackjack.model.Actions.GameAction;
+import nulp.pist21.blackjack.model.Deck.Card;
 
-    @Override
-    public int getMoney() {
-        return Integer.MAX_VALUE;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Dealer implements IStrategy, IHand {
+
+    private ArrayList<Card> hand;
+
+    public Dealer() {
+        this.hand = new ArrayList<>();
     }
 
     @Override
-    public boolean takeMoney(int money) {
-        return true;
-    }
-
-    @Override
-    public boolean giveMoney(int money) {
-        return true;
-    }
-
-    @Override
-    public Action getAction() {
+    public GameAction getGameAction(GameWithDealer game){
         return null;
     }
 
+    @Override
+    public List<Card> getHand() {
+        return hand;
+    }
+
+    @Override
+    public void giveCard(Card card) {
+        hand.add(card);
+    }
+
+    @Override
+    public void takeCards() {
+        hand.clear();
+    }
 }

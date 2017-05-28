@@ -1,10 +1,13 @@
 package nulp.pist21.blackjack.model;
 
-public interface IPlayer {
+import nulp.pist21.blackjack.model.Actions.BetAction;
+import nulp.pist21.blackjack.model.Table.TableBox;
+
+public interface IPlayer extends IStrategy {
 
     int getMoney();
     boolean takeMoney(int money);
     boolean giveMoney(int money);
-    Action getAction();
+    BetAction getBetAction(GameWithDealer game, TableBox box);
 
 }

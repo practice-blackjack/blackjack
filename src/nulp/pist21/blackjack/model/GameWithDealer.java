@@ -1,20 +1,25 @@
 package nulp.pist21.blackjack.model;
 
 import javafx.util.Pair;
+import nulp.pist21.blackjack.model.Deck.Card;
+import nulp.pist21.blackjack.model.Deck.IDeck;
+import nulp.pist21.blackjack.model.Table.TableBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameWithDealer {
-    private TableBox dealerBox;
+    private Dealer dealer;
     private TableBox[] playingBoxes;
+
+    private int currentHand;
 
     public static final int BLACK_JACK = Integer.MAX_VALUE;
 
     public GameWithDealer() {
+        currentHand = 0;
         this.playingBoxes = new TableBox[]{};
-        this.dealerBox = new TableBox();
-        this.dealerBox.sitDown(new Dealer());
+        this.dealer = new Dealer();
     }
 
     public void start(TableBox[] playingBoxes){
@@ -29,15 +34,15 @@ public class GameWithDealer {
         }
 
         for (int i = 0; i < 2; i++) {
-            dealerBox.giveCard(deck.next());
+            dealer.giveCard(deck.next());
         }
     }
 
-    public static int getValue(TableBox box){
+    public static int getValue(IHand hand){
         int sum = 0;
 
         ArrayList<Card> aces = new ArrayList<>();
-        for(Card card: box.getHand()){
+        for(Card card: hand.getHand()){
             if (card.getValue() == Card.ACE){
                 aces.add(card);
             }
@@ -56,7 +61,7 @@ public class GameWithDealer {
         }
 
         if (sum == 21 &&
-            box.getHand().size() == 2){
+            hand.getHand().size() == 2){
             return BLACK_JACK;
         }
         return sum;
@@ -65,13 +70,17 @@ public class GameWithDealer {
     public List<Pair<TableBox, Float>> getWinners(){
         List<Pair<TableBox, Float>> winners = new ArrayList<>();
         for (TableBox box: playingBoxes){
-            if (getValue(box) > getValue(dealerBox)){
+            if (getValue(box) > getValue(dealer)){
                 winners.add(new Pair<>(box, 2f));
             }
-            else if (getValue(box) == getValue(dealerBox)){
+            else if (getValue(box) == getValue(dealer)){
                 winners.add(new Pair<>(box, 1f));
             }
         }
         return winners;
+    }
+
+    public int getCurrentHand() {
+        return currentHand;
     }
 }

@@ -1,5 +1,8 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Deck;
 
+import nulp.pist21.blackjack.model.Deck.Card;
+import nulp.pist21.blackjack.model.Deck.Deck;
+import nulp.pist21.blackjack.model.Deck.IDeck;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,4 +61,5 @@ public class DeckTest {
 
         if (deck.cardsLeft() != deckSize - 1) Assert.fail();
     }
+
 }

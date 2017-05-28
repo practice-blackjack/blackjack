@@ -1,9 +1,13 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Table;
+
+import nulp.pist21.blackjack.model.Deck.Card;
+import nulp.pist21.blackjack.model.IHand;
+import nulp.pist21.blackjack.model.IPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableBox{
+public class TableBox implements IHand {
 
     private IPlayer player;
     private List<Card> hand;
@@ -32,23 +36,24 @@ public class TableBox{
         return player;
     }
 
+    @Override
     public void giveCard(Card card){
         hand.add(card);
     }
 
+    @Override
     public void takeCards(){
         hand.clear();
     }
 
-
-    public boolean isInGame(){
-        return !isFree() && bet != 0;
-    }
-
+    @Override
     public List<Card> getHand() {
         return hand;
     }
 
+    public boolean isInGame(){
+        return !isFree() && bet != 0;
+    }
 
     public int getBet() {
         return bet;

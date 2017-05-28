@@ -1,4 +1,6 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Deck;
+
+import nulp.pist21.blackjack.model.Deck.Card;
 
 public interface IDeck {
 

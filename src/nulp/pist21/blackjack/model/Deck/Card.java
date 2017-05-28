@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Deck;
 
 public class Card {
 
@@ -19,12 +19,12 @@ public class Card {
     public final static int QUEEN = 11;
     public final static int KING = 12;
 
-    final static int SPADES = 0;
-    final static int HEARTS = 1;
-    final static int CLUBS = 2;
-    final static int DIAMONDS = 3;
+    public final static int SPADES = 0;
+    public final static int HEARTS = 1;
+    public final static int CLUBS = 2;
+    public final static int DIAMONDS = 3;
 
-    final static Card HIDEN_CARD = new Card(13, 4);
+    public final static Card HIDEN_CARD = new Card(13, 4);
 
 
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds"};

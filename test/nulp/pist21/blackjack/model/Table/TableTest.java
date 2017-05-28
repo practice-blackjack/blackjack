@@ -1,6 +1,8 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.Table;
 
-import nulp.pist21.blackjack.model.Mock.UserMock;
+import nulp.pist21.blackjack.model.Deck.EndlessDeck;
+import nulp.pist21.blackjack.model.Deck.IDeck;
+import Mock.UserMock;
 import org.junit.Assert;
 import org.junit.Test;
 

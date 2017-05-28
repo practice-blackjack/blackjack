@@ -1,9 +1,10 @@
-package nulp.pist21.blackjack.model.Mock;
+package Mock;
 
-import nulp.pist21.blackjack.model.Action;
-import nulp.pist21.blackjack.model.IPlayer;
-import nulp.pist21.blackjack.model.ISpectator;
-import nulp.pist21.blackjack.model.Table;
+import nulp.pist21.blackjack.model.*;
+import nulp.pist21.blackjack.model.Actions.BetAction;
+import nulp.pist21.blackjack.model.Actions.GameAction;
+import nulp.pist21.blackjack.model.Table.Table;
+import nulp.pist21.blackjack.model.Table.TableBox;
 
 public class UserMock implements IPlayer, ISpectator {
 
@@ -40,7 +41,12 @@ public class UserMock implements IPlayer, ISpectator {
     }
 
     @Override
-    public Action getAction() {
+    public GameAction getGameAction(GameWithDealer game){
+        return null;
+    }
+
+    @Override
+    public BetAction getBetAction(GameWithDealer game, TableBox box){
         return null;
     }
 
