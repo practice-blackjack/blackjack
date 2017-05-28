@@ -22,17 +22,27 @@ public class TableBoxTest {
     public void player_should_sit_down(){
         TableBox box = new TableTest().createTable().getBoxes()[0];
         if (!box.isFree()) Assert.fail();
-        IPlayer player = new Player(new User());
-        box.sitDown(player);
-        if (box.getPlayer() != player) Assert.fail();
+        User user = new User();
+        box.sitDown(user);
+        if (box.getPlayer() != user) Assert.fail();
     }
 
     @Test
     public void player_should_stand_up(){
         TableBox box = new TableTest().createTable().getBoxes()[0];
-        IPlayer player = new Player(new User());
-        box.sitDown(player);
-        box.standUp(player);
+        User user = new User();
+        box.sitDown(user);
+        box.makeFree();
         if (box.getPlayer() != null) Assert.fail();
+    }
+
+    @Test
+    public void should_return_cards_value(){
+
+    }
+
+    @Test
+    public void should_remove_player_if_cant_pay(){
+
     }
 }

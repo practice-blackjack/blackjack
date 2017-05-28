@@ -12,10 +12,6 @@ public class TableBox{
         hand = new ArrayList<>();
     }
 
-    public void doStep() {
-
-    }
-
     public boolean isFree(){
         return player == null;
     }
@@ -25,17 +21,21 @@ public class TableBox{
         this.player = player;
     }
 
-    public void standUp(IPlayer player) {
-        if (player == this.player){
-            this.player = null;
-        }
+    public void makeFree() {
+        this.player = null;
     }
 
     public IPlayer getPlayer() {
-        return player ;
+        return player;
+    }
+
+    public void takeCard(IDeck deck){
+        if (isFree()) return;
+        hand.add(deck.next());
     }
 
     public List<Card> getHand() {
         return hand;
     }
+
 }
