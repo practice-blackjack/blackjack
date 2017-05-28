@@ -31,10 +31,14 @@ public class TableBox{
         return player;
     }
 
-    public void takeCard(IDeck deck){
-        if (isFree()) return;
-        hand.add(deck.next());
+    public void giveCard(Card card){
+        hand.add(card);
     }
+
+    public void takeCards(){
+        hand.clear();
+    }
+
 
     public boolean isInGame(){
         return !isFree()/* && bet != 0*/;
@@ -42,6 +46,30 @@ public class TableBox{
 
     public List<Card> getHand() {
         return hand;
+    }
+
+    public int getValue(){
+        int sum = 0;
+
+        ArrayList<Card> aces = new ArrayList<>();
+        for(Card card: hand){
+            if (card.getValue() == Card.ACE){
+                aces.add(card);
+            }
+            else if (card.getValue() >= Card._10 && card.getValue() <= Card.KING){
+                sum += 10;
+            }
+            else {
+                sum += card.getValue() + 1;
+            }
+        }
+        for (Card ace: aces) {
+            if (sum + 11 <= 21){
+                sum += 11;
+            }
+            else sum += 1;
+        }
+        return sum;
     }
 
 }

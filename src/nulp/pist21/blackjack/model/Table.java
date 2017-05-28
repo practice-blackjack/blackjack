@@ -60,18 +60,18 @@ public class Table {
         for (TableBox box: boxes){
             if (!box.isInGame()) continue;
             for (int i = 0; i < 2; i++) {
-                box.getHand().add(deck.next());
+                box.giveCard(deck.next());
             }
         }
 
         for (int i = 0; i < 2; i++) {
-            dealerBox.getHand().add(deck.next());
+            dealerBox.giveCard(deck.next());
         }
     }
 
     public void takeCards(){
         for (TableBox box: boxes){
-            box.getHand().clear();
+            box.takeCards();
         }
     }
 

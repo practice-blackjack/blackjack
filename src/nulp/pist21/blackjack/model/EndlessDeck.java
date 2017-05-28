@@ -26,7 +26,7 @@ public class EndlessDeck implements IDeck {
 
     @Override
     public int cardsLeft() {
-        return 52;
+        return Integer.MAX_VALUE;
     }
 
 }

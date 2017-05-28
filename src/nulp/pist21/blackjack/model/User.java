@@ -14,7 +14,7 @@ public class User implements IPlayer, ISpectator {
 
     @Override
     public int getMoney() {
-        return 0;
+        return money;
     }
 
     @Override

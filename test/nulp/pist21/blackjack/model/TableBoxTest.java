@@ -16,6 +16,8 @@ public class TableBoxTest {
     public void should_create_empty_hand() {
         TableBox box = new TableBox();
         if (box.getHand() == null) Assert.fail();
+        if (box.getHand().size() != 0) Assert.fail();
+        if (box.getValue() != 0) Assert.fail();
     }
 
     @Test
@@ -37,8 +39,66 @@ public class TableBoxTest {
     }
 
     @Test
-    public void should_return_cards_value(){
+    public void should_give_cards(){
+        TableBox box = new TableBox();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        if (box.getHand().size() != 2) Assert.fail();
+    }
 
+    @Test
+    public void should_take_cards(){
+        TableBox box = new TableBox();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        box.takeCards();
+        if (box.getHand().size() != 0) Assert.fail();
+    }
+
+    @Test
+    public void should_return_cards_value(){
+        TableBox box = new TableBox();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        if (box.getValue() != 18) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card._8));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        if (box.getValue() != 15) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        if (box.getValue() != 19) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._7));
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card._8));
+        if (box.getValue() != 17) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card.JACK));
+        if (box.getValue() != 21) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card.QUEEN));
+        if (box.getValue() != 21) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card.KING));
+        if (box.getValue() != 21) Assert.fail();
+
+        box.takeCards();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        if (box.getValue() != 12) Assert.fail();
     }
 
     @Test
