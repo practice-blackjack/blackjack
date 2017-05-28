@@ -113,4 +113,16 @@ public class TableTest {
             if (box.getBet() != 0) Assert.fail();
         }
     }
+
+    @Test
+    public void should_take_cards_on_end_of_round() {
+        IDeck deck = new EndlessDeck();
+        Table table = new Table(0, "Kyiv", 300, 6, deck);
+        UserMock[] users = fillSomeBoxes(table);    //500 700 1000
+        table.takeBets();
+        table.endRound();
+        for (TableBox box: table.getBoxes()){
+            if (box.getHand().size() != 0) Assert.fail();
+        }
+    }
 }

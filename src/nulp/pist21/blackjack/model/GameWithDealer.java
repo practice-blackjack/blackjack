@@ -7,15 +7,18 @@ import java.util.List;
 
 public class GameWithDealer {
     private TableBox dealerBox;
-    private Dealer dealer;
     private TableBox[] playingBoxes;
 
     public static final int BLACK_JACK = Integer.MAX_VALUE;
 
-    public GameWithDealer(TableBox[] playingBoxes) {
-        this.playingBoxes = playingBoxes;
+    public GameWithDealer() {
+        this.playingBoxes = new TableBox[]{};
         this.dealerBox = new TableBox();
-        this.dealerBox.sitDown(dealer);
+        this.dealerBox.sitDown(new Dealer());
+    }
+
+    public void start(TableBox[] playingBoxes){
+        this.playingBoxes = playingBoxes;
     }
 
     public void giveFirstCards(IDeck deck){

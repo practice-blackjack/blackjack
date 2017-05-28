@@ -23,7 +23,7 @@ public class Table {
             this.boxes[i] = new TableBox();
         }
         this.deck = deck;
-
+        game = new GameWithDealer();
         spectators = new ArrayList<>();
     }
 
@@ -70,7 +70,7 @@ public class Table {
         for (int i = 0; i < playingBoxes.size(); i++){
             playingBoxesArr[i] = playingBoxes.get(i);
         }
-        game = new GameWithDealer(playingBoxesArr);
+        game.start(playingBoxesArr);
     }
 
     public void startRound(){
@@ -82,12 +82,9 @@ public class Table {
             TableBox winnerBox = winner.getKey();
             Float koef = winner.getValue();
             winnerBox.getPlayer().giveMoney(Math.round(winnerBox.getBet() * koef));
-            winnerBox.setBet(0);
         }
-    }
-
-    public void takeCards(){
         for (TableBox box: boxes){
+            box.setBet(0);
             box.takeCards();
         }
     }
