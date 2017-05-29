@@ -1,6 +1,6 @@
-package nulp.pist21.blackjack.model.Table;
+package nulp.pist21.blackjack.model.table;
 
-import nulp.pist21.blackjack.model.Deck.Card;
+import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.IHand;
 import nulp.pist21.blackjack.model.IPlayer;
 
@@ -23,13 +23,20 @@ public class TableBox implements IHand {
         return player == null;
     }
 
-    public void sitDown(IPlayer player) {
-        if (!isFree()) return;
+    public boolean sitDown(IPlayer player) {
+        if (!isFree()) return false;
         this.player = player;
+        return true;
     }
 
     public void makeFree() {
         this.player = null;
+    }
+
+    public boolean standUp(IPlayer player){
+        if (player != this.player) return false;
+        makeFree();
+        return true;
     }
 
     public IPlayer getPlayer() {

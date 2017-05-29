@@ -1,7 +1,7 @@
 package nulp.pist21.blackjack.model;
 
-import nulp.pist21.blackjack.model.Actions.BetAction;
-import nulp.pist21.blackjack.model.Table.TableBox;
+import nulp.pist21.blackjack.model.actions.BetAction;
+import nulp.pist21.blackjack.model.table.TableBox;
 
 public interface IPlayer extends IStrategy {
 

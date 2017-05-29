@@ -1,10 +1,10 @@
-package Mock;
+package mock;
 
 import nulp.pist21.blackjack.model.*;
-import nulp.pist21.blackjack.model.Actions.BetAction;
-import nulp.pist21.blackjack.model.Actions.GameAction;
-import nulp.pist21.blackjack.model.Table.Table;
-import nulp.pist21.blackjack.model.Table.TableBox;
+import nulp.pist21.blackjack.model.actions.BetAction;
+import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.table.Table;
+import nulp.pist21.blackjack.model.table.TableBox;
 
 public class UserMock implements IPlayer, ISpectator {
 
@@ -37,7 +37,6 @@ public class UserMock implements IPlayer, ISpectator {
         if (this.money > prevMoney) return true;
         this.money = prevMoney;
         return false;
-
     }
 
     @Override

@@ -1,8 +1,5 @@
-package nulp.pist21.blackjack.model.Deck;
+package nulp.pist21.blackjack.model.deck;
 
-import nulp.pist21.blackjack.model.Deck.Card;
-import nulp.pist21.blackjack.model.Deck.Deck;
-import nulp.pist21.blackjack.model.Deck.IDeck;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +12,7 @@ public class DeckTest {
     public void should_return_right_cards_count_after_creating(){
         for (int i = 1; i <= 10; i++){
             IDeck deck = new Deck(i);
-            if (deck.cardsLeft() != 52 * i) Assert.fail();
+            Assert.assertEquals(52 * i, deck.cardsLeft());
         }
     }
 
@@ -25,9 +22,9 @@ public class DeckTest {
 
         for (int i = deck.cardsLeft() - 1; i >= 0; i--){
             Card card = deck.next();
-            if (i != deck.cardsLeft()) Assert.fail();
+            Assert.assertEquals(i, deck.cardsLeft());
         }
-        if (deck.hasNext()) Assert.fail();
+        Assert.assertFalse(deck.hasNext());
     }
 
     @Test
@@ -42,8 +39,8 @@ public class DeckTest {
             Card card1 = cards.get(i);
             for (int j = i + 1; j < cards.size(); j++){
                 Card card2 = cards.get(j);
-                if (card1.getSuit() == card2.getSuit() &&
-                    card1.getValue() == card2.getValue()) Assert.fail();
+                Assert.assertFalse(card1.getSuit() == card2.getSuit() &&
+                    card1.getValue() == card2.getValue());
             }
         }
     }
@@ -55,8 +52,7 @@ public class DeckTest {
         for (int i = deck.cardsLeft() - 1; i >= 0; i--){
             deck.next();
         }
-
-        if (deck.cardsLeft() != 0) Assert.fail("Test works incorrect. Deck is not empty");
+        Assert.assertEquals("Test works incorrect. deck is not empty", 0, deck.cardsLeft());
         deck.next();
 
         if (deck.cardsLeft() != deckSize - 1) Assert.fail();

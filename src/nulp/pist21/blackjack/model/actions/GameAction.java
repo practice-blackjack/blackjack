@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.model.Actions;
+package nulp.pist21.blackjack.model.actions;
 
 public class GameAction {
     public enum Actions{

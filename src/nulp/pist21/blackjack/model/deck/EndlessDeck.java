@@ -1,7 +1,4 @@
-package nulp.pist21.blackjack.model.Deck;
-
-import nulp.pist21.blackjack.model.Deck.Card;
-import nulp.pist21.blackjack.model.Deck.IDeck;
+package nulp.pist21.blackjack.model.deck;
 
 import java.util.Random;
 

@@ -1,24 +1,23 @@
-package nulp.pist21.blackjack.model.Table;
+package nulp.pist21.blackjack.model.table;
 
 import javafx.util.Pair;
 import nulp.pist21.blackjack.model.*;
-import nulp.pist21.blackjack.model.Deck.IDeck;
+import nulp.pist21.blackjack.model.deck.IDeck;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Table {
-    private int id;
-    private String name;
     private int rate;
     private TableBox[] boxes;
+
     private GameWithDealer game;
     private IDeck deck;
 
     private List<ISpectator> spectators;
 
-    public Table(int id, String name, int rate, int boxes, IDeck deck) {
-        this.name = name;
+    public Table(int rate, int boxes, IDeck deck) {
         this.rate = rate;
         this.boxes = new TableBox[boxes];
         for (int i = 0; i < boxes; i++) {
@@ -29,15 +28,23 @@ public class Table {
         spectators = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
     public int getRate() {
         return rate;
     }
 
     public TableBox[] getBoxes() { return boxes; }
+
+    public boolean sitDown(IPlayer player, int i) {
+        if (i >= 0 && i < boxes.length)
+            return boxes[i].sitDown(player);
+        return false;
+    }
+
+    public boolean standUp(IPlayer player, int i) {
+        if (i >= 0 && i < boxes.length)
+            return boxes[i].standUp(player);
+        return false;
+    }
 
     public List<ISpectator> getSpectators() {
         return spectators;
@@ -59,20 +66,17 @@ public class Table {
         return deck;
     }
 
-    public void takeBets(){
-        ArrayList<TableBox> playingBoxes = new ArrayList<>();
-        for (TableBox box: boxes){
-            if (box.isFree()) continue;
+    public GameWithDealer getGame() {
+        return game;
+    }
 
+    public void takeBets(){
+        TableBox[] playingBoxes = Arrays.stream(boxes).filter(b -> !b.isFree()).toArray(TableBox[]::new);
+        for (TableBox box: playingBoxes) {
             box.setBet(rate);
-            playingBoxes.add(box);
         }
-        //temporary
-        TableBox[] playingBoxesArr = new TableBox[playingBoxes.size()];
-        for (int i = 0; i < playingBoxes.size(); i++){
-            playingBoxesArr[i] = playingBoxes.get(i);
-        }
-        game.start(playingBoxesArr);
+
+        game.start(playingBoxes);
     }
 
     public void startRound(){
@@ -89,10 +93,6 @@ public class Table {
             box.setBet(0);
             box.takeCards();
         }
-    }
-
-    public int getId() {
-        return id;
     }
 
 }

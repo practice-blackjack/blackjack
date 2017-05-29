@@ -1,7 +1,7 @@
 package nulp.pist21.blackjack.model;
 
-import nulp.pist21.blackjack.model.Actions.GameAction;
-import nulp.pist21.blackjack.model.Deck.Card;
+import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.deck.Card;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.List;
 public class Dealer implements IStrategy, IHand {
 
     private ArrayList<Card> hand;
+    private Card hidenCard;
 
     public Dealer() {
         this.hand = new ArrayList<>();
@@ -26,6 +27,8 @@ public class Dealer implements IStrategy, IHand {
 
     @Override
     public void giveCard(Card card) {
+        if (hand.isEmpty()) hand.add(Card.HIDEN_CARD);
+        else hand.remove(Card.HIDEN_CARD);
         hand.add(card);
     }
 

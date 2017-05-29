@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.model.Deck;
+package nulp.pist21.blackjack.model.deck;
 
 import java.util.*;
 

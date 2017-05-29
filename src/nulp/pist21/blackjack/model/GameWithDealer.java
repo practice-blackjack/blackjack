@@ -1,9 +1,9 @@
 package nulp.pist21.blackjack.model;
 
 import javafx.util.Pair;
-import nulp.pist21.blackjack.model.Deck.Card;
-import nulp.pist21.blackjack.model.Deck.IDeck;
-import nulp.pist21.blackjack.model.Table.TableBox;
+import nulp.pist21.blackjack.model.deck.Card;
+import nulp.pist21.blackjack.model.deck.IDeck;
+import nulp.pist21.blackjack.model.table.TableBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +32,7 @@ public class GameWithDealer {
                 box.giveCard(deck.next());
             }
         }
-
-        for (int i = 0; i < 2; i++) {
-            dealer.giveCard(deck.next());
-        }
+        dealer.giveCard(deck.next());
     }
 
     public static int getValue(IHand hand){
