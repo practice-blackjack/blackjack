@@ -13,10 +13,13 @@ public class Dealer implements IStrategy, IHand {
 
     public Dealer() {
         this.hand = new ArrayList<>();
+        this.hidenCard = null;
     }
 
     @Override
     public GameAction getGameAction(GameWithDealer game){
+        hand.set(0, hidenCard);
+        hidenCard = null;
         return null;
     }
 
@@ -27,9 +30,13 @@ public class Dealer implements IStrategy, IHand {
 
     @Override
     public void giveCard(Card card) {
-        if (hand.isEmpty()) hand.add(Card.HIDEN_CARD);
-        else hand.remove(Card.HIDEN_CARD);
-        hand.add(card);
+        if (hand.isEmpty()) {
+            hidenCard = card;
+            hand.add(Card.HIDEN_CARD);
+        }
+        else {
+            hand.add(card);
+        }
     }
 
     @Override

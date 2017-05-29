@@ -24,7 +24,7 @@ public class Table {
             this.boxes[i] = new TableBox();
         }
         this.deck = deck;
-        game = new GameWithDealer();
+        game = new GameWithDealer(new Dealer());
         spectators = new ArrayList<>();
     }
 

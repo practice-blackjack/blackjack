@@ -16,7 +16,7 @@ public class GameWithDealer {
 
     public static final int BLACK_JACK = Integer.MAX_VALUE;
 
-    public GameWithDealer() {
+    public GameWithDealer(Dealer dealer) {
         currentHand = 0;
         this.playingBoxes = new TableBox[]{};
         this.dealer = new Dealer();
@@ -27,12 +27,12 @@ public class GameWithDealer {
     }
 
     public void giveFirstCards(IDeck deck){
-        for (TableBox box: playingBoxes){
-            for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
+            for (TableBox box: playingBoxes) {
                 box.giveCard(deck.next());
             }
+            dealer.giveCard(deck.next());
         }
-        dealer.giveCard(deck.next());
     }
 
     public static int getValue(IHand hand){
@@ -46,7 +46,7 @@ public class GameWithDealer {
             else if (card.getValue() >= Card._10 && card.getValue() <= Card.KING){
                 sum += 10;
             }
-            else {
+            else if (card != Card.HIDEN_CARD){
                 sum += card.getValue() + 1;
             }
         }

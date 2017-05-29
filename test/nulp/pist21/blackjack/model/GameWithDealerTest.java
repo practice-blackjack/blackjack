@@ -75,4 +75,12 @@ public class GameWithDealerTest {
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         Assert.assertEquals(12, GameWithDealer.getValue(box));
     }
+
+    @Test
+    public void should_ignore_hiden_card_in_sum(){
+        TableBox box = new TableBox();
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.giveCard(Card.HIDEN_CARD);
+        Assert.assertEquals(11, GameWithDealer.getValue(box));
+    }
 }
