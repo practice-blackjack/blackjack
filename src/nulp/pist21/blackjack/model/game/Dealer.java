@@ -1,5 +1,7 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.game;
 
+import nulp.pist21.blackjack.model.IHand;
+import nulp.pist21.blackjack.model.IStrategy;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 

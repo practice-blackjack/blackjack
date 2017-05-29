@@ -3,6 +3,8 @@ package nulp.pist21.blackjack.model.table;
 import javafx.util.Pair;
 import nulp.pist21.blackjack.model.*;
 import nulp.pist21.blackjack.model.deck.IDeck;
+import nulp.pist21.blackjack.model.game.Dealer;
+import nulp.pist21.blackjack.model.game.GameWithDealer;
 
 import java.util.ArrayList;
 import java.util.Arrays;

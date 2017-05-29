@@ -3,6 +3,7 @@ package mock;
 import nulp.pist21.blackjack.model.*;
 import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.game.GameWithDealer;
 import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.model.table.TableBox;
 

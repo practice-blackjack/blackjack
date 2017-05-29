@@ -1,6 +1,7 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.game;
 
 import javafx.util.Pair;
+import nulp.pist21.blackjack.model.IHand;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;

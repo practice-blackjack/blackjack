@@ -1,6 +1,8 @@
-package nulp.pist21.blackjack.model;
+package nulp.pist21.blackjack.model.game;
 
 import nulp.pist21.blackjack.model.deck.Card;
+import nulp.pist21.blackjack.model.game.Dealer;
+import nulp.pist21.blackjack.model.game.GameWithDealer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,7 +25,7 @@ public class DealerTest {
         dealer.giveCard(new Card(Card.CLUBS, Card.ACE));
 
         dealer.getGameAction(new GameWithDealer(dealer));
-        
+
         Assert.assertFalse(dealer.getHand().contains(Card.HIDEN_CARD));
     }
 }
