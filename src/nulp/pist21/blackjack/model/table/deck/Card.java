@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.model.deck;
+package nulp.pist21.blackjack.model.table.deck;
 
 public class Card {
 
@@ -18,32 +18,40 @@ public class Card {
     public final static int JACK = 10;
     public final static int QUEEN = 11;
     public final static int KING = 12;
+    public final static int UNDEFINED_VALUE = 13;
+    public final static int MAX_VALUE = 14;
+
 
     public final static int SPADES = 0;
     public final static int HEARTS = 1;
     public final static int CLUBS = 2;
     public final static int DIAMONDS = 3;
+    public final static int UNDEFINED_SUIT = 4;
+    public final static int MAX_SUIT = 5;
 
-    public final static Card HIDEN_CARD = new Card(13, 4);
+
+
+
+    public final static Card HIDDEN_CARD = new Card(UNDEFINED_SUIT, UNDEFINED_VALUE);
 
 
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds", "*"};
     public final static String[] VALUES = new String[] {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "*"};
 
     public Card(int suit, int value) {
-        this.suit = suit % 4;
-        this.value = value % 13;
+        this.suit = suit % MAX_SUIT;
+        this.value = value % MAX_VALUE;
     }
 
     public Card(int card) {
-        this.suit = Math.abs(card / 13 % 4);
-        this.value = Math.abs(card % 13);
+        this.suit = Math.abs(card / MAX_VALUE % MAX_SUIT);
+        this.value = Math.abs(card % MAX_VALUE);
     }
 
     public Card(long card) {
         int pow = (int) (Math.log(card)/Math.log(2));
-        this.suit = Math.abs(pow / 13 % 4);
-        this.value = Math.abs(pow % 13);
+        this.suit = Math.abs(pow / MAX_VALUE % MAX_SUIT);
+        this.value = Math.abs(pow % MAX_VALUE);
     }
 
     public int getSuit() {
