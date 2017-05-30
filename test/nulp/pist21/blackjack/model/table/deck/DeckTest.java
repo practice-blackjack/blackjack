@@ -30,7 +30,7 @@ public class DeckTest {
     @Test
     public void should_not_have_duplicates(){
         IDeck deck = new Deck(1);
-        List<Card> cards = new ArrayList<Card>();
+        List<Card> cards = new ArrayList<>();
         for (int i = deck.cardsLeft() - 1; i >= 0; i--){
             Card card = deck.next();
             cards.add(card);

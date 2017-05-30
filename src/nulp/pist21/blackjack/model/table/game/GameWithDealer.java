@@ -11,7 +11,7 @@ import nulp.pist21.blackjack.model.table.TableBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameWithDealer {
+public class GameWithDealer implements IGame {
     private IBox[] playingBoxes;
     private DealerBox dealerBox;
     private int dealerIndex;
@@ -20,6 +20,7 @@ public class GameWithDealer {
     private int currentIndex;
 
     public static final int BLACK_JACK = Integer.MAX_VALUE;
+    public static final int A_LOT = BLACK_JACK - 1;
 
     public GameWithDealer(IDeck deck) {
         this.deck = deck;
@@ -27,6 +28,7 @@ public class GameWithDealer {
         this.dealerBox = new DealerBox();
     }
 
+    @Override
     public void start(IBox[] playingBoxes){
         this.dealerIndex = playingBoxes.length;
         this.playingBoxes = new IBox[dealerIndex + 1];
@@ -43,6 +45,7 @@ public class GameWithDealer {
         currentIndex = 0;
     }
 
+    @Override
     public boolean next(GameAction action){ //false if round over
         if (action.getAction() == GameAction.Actions.HIT){
             playingBoxes[currentIndex].giveCard(deck.next());
@@ -53,8 +56,8 @@ public class GameWithDealer {
 
         //dealer step
         if (currentIndex == dealerIndex){
-            while (getValue(dealerIndex) >= 16){
-                playingBoxes[dealerIndex].takeCards();
+            while (getValue(dealerIndex) <= 16){
+                playingBoxes[dealerIndex].giveCard(deck.next());
             }
             currentIndex++;
             return false;
@@ -62,14 +65,18 @@ public class GameWithDealer {
         return true;
     }
 
-    public void end(){
+    @Override
+    public List<Pair<IBox, Float>> end(){
+        List<Pair<IBox, Float>> winners = getWinners();
         for (IBox box: playingBoxes){
             box.takeCards();
         }
+        return winners;
     }
 
+    @Override
     public int getValue(int index){
-        int sum = 0;
+        int points = 0;
 
         int aces = 0;
         for(Card card: playingBoxes[index].getHand()){
@@ -77,24 +84,28 @@ public class GameWithDealer {
                 aces++;
             }
             else if (card.getValue() >= Card._10 && card.getValue() <= Card.KING){
-                sum += 10;
+                points += 10;
             }
             else if (card != Card.HIDDEN_CARD){
-                sum += card.getValue() + 1;
+                points += card.getValue() + 1;
             }
         }
         for (int i = 0; i < aces; i++) {
-            if (sum + 11 <= 21){
-                sum += 11;
+            if (points + 11 <= 21){
+                points += 11;
             }
-            else sum += 1;
+            else points += 1;
         }
 
-        if (sum == 21 &&
+        if (points > 21){
+            return A_LOT;
+        }
+        if (points == 21 &&
                 playingBoxes[index].getHand().length == 2){
             return BLACK_JACK;
         }
-        return sum;
+
+        return points;
     }
 
     public List<Pair<IBox, Float>> getWinners(){
@@ -110,10 +121,12 @@ public class GameWithDealer {
         return winners;
     }
 
+    @Override
     public int getCurrentIndex() {
         return currentIndex;
     }
 
+    @Override
     public IBox[] getPlayingBoxes() {
         return playingBoxes;
     }
