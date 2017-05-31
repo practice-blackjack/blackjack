@@ -2,7 +2,6 @@ package nulp.pist21.blackjack.model;
 
 import javafx.util.Pair;
 import mock.UserMock;
-import nulp.pist21.blackjack.model.table.DealerBox;
 import nulp.pist21.blackjack.model.table.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.table.game.GameWithDealer;
 import nulp.pist21.blackjack.model.table.Table;
@@ -35,7 +34,7 @@ class TestClient {
     }
 
     public static void main(String[] args) {
-        table = new Table(3, new GameWithDealer(new EndlessDeck(), new DealerBox()));
+        table = new Table(3, new GameWithDealer(new EndlessDeck()));
         users = new ArrayList<>();
         users.add(new Pair<>("p1", new UserMock(500)));
         users.add(new Pair<>("p2", new UserMock(700)));

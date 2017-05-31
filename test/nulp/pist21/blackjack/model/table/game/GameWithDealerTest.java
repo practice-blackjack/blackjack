@@ -2,9 +2,6 @@ package nulp.pist21.blackjack.model.table.game;
 
 import mock.UserMock;
 import nulp.pist21.blackjack.model.actions.GameAction;
-import nulp.pist21.blackjack.model.table.DealerBox;
-import nulp.pist21.blackjack.model.table.IBox;
-import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.model.table.TableBox;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.EndlessDeck;
@@ -14,8 +11,22 @@ import org.junit.Test;
 public class GameWithDealerTest {
 
     @Test
+    public void should_create_dealer_box(){
+        IGame game = new GameWithDealer(new EndlessDeck());
+
+        TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        game.start(boxes);
+        Assert.assertEquals(boxes.length + 1, game.getPlayingBoxes().length);
+    }
+
+    @Test
     public void should_give_first_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
 
         TableBox boxes[] = new TableBox[]{
                 new TableBox(),
@@ -25,14 +36,14 @@ public class GameWithDealerTest {
 
         game.start(boxes);
 
-        for(IBox box: game.getPlayingBoxes()){
+        for(TableBox box: game.getPlayingBoxes()){
             Assert.assertEquals(2, box.getHand().length);
         }
     }
 
     @Test
     public void should_take_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
         TableBox[] boxes = new TableBox[]{
                 new TableBox(),
                 new TableBox(),
@@ -48,12 +59,12 @@ public class GameWithDealerTest {
 
     @Test
     public void should_return_cards_value(){
-        IBox boxes[] = new TableBox[6];
+        TableBox boxes[] = new TableBox[6];
         for (int i = 0; i < boxes.length; i++){
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
         game.start(boxes);
         game.end();
 
@@ -91,17 +102,17 @@ public class GameWithDealerTest {
 
     @Test
     public void should_return_black_jack(){
-        IBox boxes[] = new TableBox[8];
+        TableBox boxes[] = new TableBox[8];
         for (int i = 0; i < boxes.length; i++){
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
         game.start(boxes);
         game.end();
 
-        boxes[0].giveCard(new Card(Card.CLUBS, Card._10));
         boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card._10));
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[1].giveCard(new Card(Card.CLUBS, Card.JACK));
@@ -112,8 +123,8 @@ public class GameWithDealerTest {
         boxes[3].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[3].giveCard(new Card(Card.CLUBS, Card.KING));
 
-        boxes[4].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[4].giveCard(new Card(Card.CLUBS, Card._10));
+        boxes[4].giveCard(new Card(Card.CLUBS, Card.ACE));
 
         boxes[5].giveCard(new Card(Card.CLUBS, Card.JACK));
         boxes[5].giveCard(new Card(Card.CLUBS, Card.ACE));
@@ -137,12 +148,12 @@ public class GameWithDealerTest {
 
     @Test
     public void should_return_a_lot(){
-        IBox boxes[] = new TableBox[2];
+        TableBox boxes[] = new TableBox[4];
         for (int i = 0; i < boxes.length; i++){
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
         game.start(boxes);
         game.end();
 
@@ -154,35 +165,65 @@ public class GameWithDealerTest {
         boxes[1].giveCard(new Card(Card.CLUBS, Card._8));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._5));       // a lot(22)
 
-        boxes[1].giveCard(new Card(Card.CLUBS, Card.KING));
-        boxes[1].giveCard(new Card(Card.CLUBS, Card._8));
-        boxes[1].giveCard(new Card(Card.CLUBS, Card.QUEEN));       // a lot(28)
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.KING));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._8));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));       // a lot(28)
+
+        boxes[3].giveCard(new Card(Card.CLUBS, Card.KING));
+        boxes[3].giveCard(new Card(Card.CLUBS, Card._8));
+        boxes[3].giveCard(new Card(Card.CLUBS, Card._2));
+        boxes[3].giveCard(new Card(Card.CLUBS, Card.QUEEN));       // a lot(30)
 
         Assert.assertEquals(GameWithDealer.A_LOT, game.getValue(0));
         Assert.assertEquals(GameWithDealer.A_LOT, game.getValue(1));
+        Assert.assertEquals(GameWithDealer.A_LOT, game.getValue(2));
+        Assert.assertEquals(GameWithDealer.A_LOT, game.getValue(3));
+    }
+
+    @Test
+    public void should_give_hidden_card_for_dealer(){
+        GameWithDealer game = new GameWithDealer(new EndlessDeck());
+        game.start(new TableBox[]{});
+        Card[] dealerHand = game.getPlayingBoxes()[game.getDealerIndex()].getHand();
+        Assert.assertEquals(Card.HIDDEN_CARD, dealerHand[0]);
     }
 
     @Test
     public void should_ignore_hidden_card_in_sum(){
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
-        game.start(new TableBox[]{});
-        game.end();
+        GameWithDealer game = new GameWithDealer(new EndlessDeck());
+        TableBox[] boxes = new TableBox[]{
+                new TableBox()
+        };
+        game.start(boxes);
 
-        game.getPlayingBoxes()[0].giveCard(new Card(Card.CLUBS, Card.ACE));
-        game.getPlayingBoxes()[0].giveCard(new Card(Card.HEARTS, Card._7));
-        Assert.assertEquals(7, game.getValue(0));
+        boxes[0].takeCards();
+        boxes[0].giveCard(game.getPlayingBoxes()[game.getDealerIndex()].getHand()[1]);
+
+
+        TableBox dealerBox = game.getPlayingBoxes()[0];
+
+        Assert.assertEquals(game.getValue(0), game.getValue(game.getDealerIndex()));
+    }
+
+    @Test
+    public void should_open_hidden_card_on_dealers_step(){
+        GameWithDealer game = new GameWithDealer(new EndlessDeck());
+        game.start(new TableBox[]{});
+        TableBox dealerBox = game.getPlayingBoxes()[game.getDealerIndex()];
+        game.next(new GameAction(GameAction.Actions.STAND));
+        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getHand()[0]);
     }
 
     @Test
     public void should_work_game_circle(){
-        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        IGame game = new GameWithDealer(new EndlessDeck());
         UserMock users[] = new UserMock[]{
                 new UserMock(14),
                 new UserMock(16),
                 new UserMock(18),
         };
 
-        IBox boxes[] = new TableBox[]{
+        TableBox boxes[] = new TableBox[]{
                 new TableBox(),
                 new TableBox(),
                 new TableBox()

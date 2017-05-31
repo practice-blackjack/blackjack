@@ -2,15 +2,15 @@ package nulp.pist21.blackjack.model.table.game;
 
 import javafx.util.Pair;
 import nulp.pist21.blackjack.model.actions.GameAction;
-import nulp.pist21.blackjack.model.table.IBox;
+import nulp.pist21.blackjack.model.table.TableBox;
 
 import java.util.List;
 
 public interface IGame {
-    void start(IBox[] playingBoxes);
+    void start(TableBox[] playingBoxes);
     boolean next(GameAction action);
-    List<Pair<IBox, Float>> end();
+    List<Pair<TableBox, Float>> end();
     int getValue(int index);
     int getCurrentIndex();
-    IBox[] getPlayingBoxes();
+    TableBox[] getPlayingBoxes();
 }

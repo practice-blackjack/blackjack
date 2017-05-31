@@ -1,9 +1,7 @@
 package nulp.pist21.blackjack.model.table.game;
 
 import javafx.util.Pair;
-import nulp.pist21.blackjack.model.table.IBox;
 import nulp.pist21.blackjack.model.actions.GameAction;
-import nulp.pist21.blackjack.model.table.DealerBox;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;
@@ -12,59 +10,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameWithDealer implements IGame {
-    private IBox[] playingBoxes;
-    private DealerBox dealerBox;
+    private TableBox[] playingBoxes;
     private int dealerIndex;
     private IDeck deck;
+    private Card hiddenCard;
 
     private int currentIndex;
 
     public static final int BLACK_JACK = Integer.MAX_VALUE;
     public static final int A_LOT = BLACK_JACK - 1;
 
-    public GameWithDealer(IDeck deck, DealerBox dealerBox) {
+    public GameWithDealer(IDeck deck) {
         this.deck = deck;
         this.playingBoxes = new TableBox[]{};
-        this.dealerBox = dealerBox;
     }
 
     @Override
-    public void start(IBox[] playingBoxes){
+    public void start(TableBox[] playingBoxes){
         this.dealerIndex = playingBoxes.length;
-        this.playingBoxes = new IBox[dealerIndex + 1];
+        this.playingBoxes = new TableBox[dealerIndex + 1];
         for (int i = 0; i < dealerIndex; i++){
             this.playingBoxes[i] = playingBoxes[i];
         }
-        this.playingBoxes[dealerIndex] = dealerBox;
+        this.playingBoxes[dealerIndex] = new TableBox();
 
-        for (int i = 0; i < 2; i++) {
-            for (IBox box: this.playingBoxes) {
-                box.giveCard(deck.next());
-            }
+        //gives first card
+        for (int boxIndex = 0; boxIndex < dealerIndex; boxIndex++) {
+            this.playingBoxes[boxIndex].giveCard(deck.next());
         }
+        //hide dealers first card
+        hiddenCard = deck.next();
+        this.playingBoxes[dealerIndex].giveCard(Card.HIDDEN_CARD);
+
+        //gives second card
+        for (int boxIndex = 0; boxIndex < dealerIndex; boxIndex++) {
+            this.playingBoxes[boxIndex].giveCard(deck.next());
+        }
+        this.playingBoxes[dealerIndex].giveCard(deck.next());
+
         currentIndex = 0;
     }
 
     @Override
     public boolean next(GameAction action){ //false if round over
-        if (action.getAction() == GameAction.Actions.HIT){
-            playingBoxes[currentIndex].giveCard(deck.next());
-        }
-        else {
-            currentIndex++;
-        }
-
-        //dealer step
-        if (currentIndex == dealerIndex){
-            GameAction dealerAction = deallerStep();
-            if (dealerAction.getAction() == GameAction.Actions.HIT){
-                next(dealerAction);
+        if (currentIndex < dealerIndex){
+            if (action.getAction() == GameAction.Actions.HIT){
+                playingBoxes[currentIndex].giveCard(deck.next());
             }
             else {
                 currentIndex++;
             }
         }
-        if (currentIndex > playingBoxes.length - 1) {
+
+        //dealer step
+        if (currentIndex == dealerIndex){
+            openCard();
+            GameAction dealerAction;
+            do{
+                dealerAction = deallerStep();
+            }
+            while (dealerAction.getAction() != GameAction.Actions.STAND);
+            currentIndex++;
+        }
+        if (currentIndex > dealerIndex){
             return false;
         }
         return true;
@@ -72,15 +80,24 @@ public class GameWithDealer implements IGame {
 
     private GameAction deallerStep(){
         if (getValue(dealerIndex) <= 16){
+            playingBoxes[dealerIndex].giveCard(deck.next());
             return new GameAction(GameAction.Actions.HIT);
         }
         return new GameAction(GameAction.Actions.STAND);
     }
 
+    private void openCard(){
+        Card opennedCard = playingBoxes[dealerIndex].getHand()[1];
+        playingBoxes[dealerIndex].takeCards();
+        playingBoxes[dealerIndex].giveCard(hiddenCard);
+        hiddenCard = null;
+        playingBoxes[dealerIndex].giveCard(opennedCard);
+    }
+
     @Override
-    public List<Pair<IBox, Float>> end(){
-        List<Pair<IBox, Float>> winners = getWinners();
-        for (IBox box: playingBoxes){
+    public List<Pair<TableBox, Float>> end(){
+        List<Pair<TableBox, Float>> winners = getWinners();
+        for (TableBox box: playingBoxes){
             box.takeCards();
         }
         return winners;
@@ -120,8 +137,8 @@ public class GameWithDealer implements IGame {
         return points;
     }
 
-    public List<Pair<IBox, Float>> getWinners(){
-        List<Pair<IBox, Float>> winners = new ArrayList<>();
+    public List<Pair<TableBox, Float>> getWinners(){
+        List<Pair<TableBox, Float>> winners = new ArrayList<>();
         for (int i = 0; i < dealerIndex; i++){
             if (getValue(i) > getValue(dealerIndex)){
                 winners.add(new Pair<>(playingBoxes[i], 2f));
@@ -139,7 +156,7 @@ public class GameWithDealer implements IGame {
     }
 
     @Override
-    public IBox[] getPlayingBoxes() {
+    public TableBox[] getPlayingBoxes() {
         return playingBoxes;
     }
 

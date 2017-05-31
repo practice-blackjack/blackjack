@@ -5,7 +5,7 @@ import nulp.pist21.blackjack.model.table.deck.Card;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TableBox implements IBox {
+public class TableBox{
 
     private List<Card> hand;
 
@@ -13,17 +13,14 @@ public class TableBox implements IBox {
         hand = new ArrayList<>();
     }
 
-    @Override
     public void giveCard(Card card){
         hand.add(card);
     }
 
-    @Override
     public void takeCards(){
         hand.clear();
     }
 
-    @Override
     public Card[] getHand() {
         return hand.toArray(new Card[hand.size()]);
     }
