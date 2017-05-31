@@ -1,6 +1,10 @@
 package nulp.pist21.blackjack.model.table.game;
 
+import mock.UserMock;
+import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.table.DealerBox;
 import nulp.pist21.blackjack.model.table.IBox;
+import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.model.table.TableBox;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.EndlessDeck;
@@ -11,7 +15,7 @@ public class GameWithDealerTest {
 
     @Test
     public void should_give_first_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
 
         TableBox boxes[] = new TableBox[]{
                 new TableBox(),
@@ -28,7 +32,7 @@ public class GameWithDealerTest {
 
     @Test
     public void should_take_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
         TableBox[] boxes = new TableBox[]{
                 new TableBox(),
                 new TableBox(),
@@ -49,7 +53,7 @@ public class GameWithDealerTest {
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
         game.start(boxes);
         game.end();
 
@@ -92,7 +96,7 @@ public class GameWithDealerTest {
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
         game.start(boxes);
         game.end();
 
@@ -138,7 +142,7 @@ public class GameWithDealerTest {
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
         game.start(boxes);
         game.end();
 
@@ -160,13 +164,37 @@ public class GameWithDealerTest {
 
     @Test
     public void should_ignore_hidden_card_in_sum(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
         game.start(new TableBox[]{});
         game.end();
 
         game.getPlayingBoxes()[0].giveCard(new Card(Card.CLUBS, Card.ACE));
         game.getPlayingBoxes()[0].giveCard(new Card(Card.HEARTS, Card._7));
         Assert.assertEquals(7, game.getValue(0));
+    }
+
+    @Test
+    public void should_work_game_circle(){
+        IGame game = new GameWithDealer(new EndlessDeck(), new DealerBox());
+        UserMock users[] = new UserMock[]{
+                new UserMock(14),
+                new UserMock(16),
+                new UserMock(18),
+        };
+
+        IBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        game.start(boxes);
+
+        GameAction action;
+        do{
+            int userId = game.getCurrentIndex();
+            action = users[userId].doStep(game, userId);
+        } while (game.next(action));
     }
 
     @Test

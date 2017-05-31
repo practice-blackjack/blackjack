@@ -1,6 +1,5 @@
 package nulp.pist21.blackjack.model.table;
 
-import nulp.pist21.blackjack.model.table.DealerBox;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import java.util.Arrays;
 import org.junit.Assert;

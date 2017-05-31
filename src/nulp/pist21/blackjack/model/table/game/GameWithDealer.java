@@ -22,10 +22,10 @@ public class GameWithDealer implements IGame {
     public static final int BLACK_JACK = Integer.MAX_VALUE;
     public static final int A_LOT = BLACK_JACK - 1;
 
-    public GameWithDealer(IDeck deck) {
+    public GameWithDealer(IDeck deck, DealerBox dealerBox) {
         this.deck = deck;
         this.playingBoxes = new TableBox[]{};
-        this.dealerBox = new DealerBox();
+        this.dealerBox = dealerBox;
     }
 
     @Override
@@ -56,13 +56,25 @@ public class GameWithDealer implements IGame {
 
         //dealer step
         if (currentIndex == dealerIndex){
-            while (getValue(dealerIndex) <= 16){
-                playingBoxes[dealerIndex].giveCard(deck.next());
+            GameAction dealerAction = deallerStep();
+            if (dealerAction.getAction() == GameAction.Actions.HIT){
+                next(dealerAction);
             }
-            currentIndex++;
+            else {
+                currentIndex++;
+            }
+        }
+        if (currentIndex > playingBoxes.length - 1) {
             return false;
         }
         return true;
+    }
+
+    private GameAction deallerStep(){
+        if (getValue(dealerIndex) <= 16){
+            return new GameAction(GameAction.Actions.HIT);
+        }
+        return new GameAction(GameAction.Actions.STAND);
     }
 
     @Override
