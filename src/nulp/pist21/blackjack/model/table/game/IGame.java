@@ -12,5 +12,6 @@ public interface IGame {
     List<Pair<TableBox, Float>> end();
     int getValue(int index);
     int getCurrentIndex();
-    TableBox[] getPlayingBoxes();
+    TableBox getBox(int index);
+    int getBoxCount();
 }

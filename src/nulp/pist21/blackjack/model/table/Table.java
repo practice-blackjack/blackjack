@@ -14,7 +14,15 @@ public class Table {
         this.game = game;
     }
 
-    public TableBox[] getBoxes() { return boxes; }
+    public TableBox getBox(int index) {
+        if (index >= 0 && index < boxes.length){
+            return boxes[index];
+        }
+        return null;
+    }
+    public int getBoxCount(){
+        return boxes.length;
+    }
 
     public GameWithDealer getGame() {
         return game;

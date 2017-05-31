@@ -15,10 +15,9 @@ public class TableTest {
     @Test
     public void should_create_clear_boxes(){
         Table table = createTable();
-        Assert.assertNotNull (table.getBoxes());
-        Assert.assertEquals(6, table.getBoxes().length);
-        for (TableBox box: table.getBoxes()) {
-            Assert.assertNotNull(box);
+        Assert.assertEquals(6, table.getBoxCount());
+        for (int i = 0; i < table.getBoxCount(); i++) {
+            Assert.assertNotNull(table.getBox(i));
         }
     }
 

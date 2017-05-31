@@ -11,20 +11,6 @@ import org.junit.Test;
 public class GameWithDealerTest {
 
     @Test
-    public void should_create_dealer_box(){
-        IGame game = new GameWithDealer(new EndlessDeck());
-
-        TableBox boxes[] = new TableBox[]{
-                new TableBox(),
-                new TableBox(),
-                new TableBox()
-        };
-
-        game.start(boxes);
-        Assert.assertEquals(boxes.length + 1, game.getPlayingBoxes().length);
-    }
-
-    @Test
     public void should_give_first_cards(){
         IGame game = new GameWithDealer(new EndlessDeck());
 
@@ -36,9 +22,10 @@ public class GameWithDealerTest {
 
         game.start(boxes);
 
-        for(TableBox box: game.getPlayingBoxes()){
-            Assert.assertEquals(2, box.getHand().length);
+        for(int i = 0; i < game.getBoxCount(); i++){
+            Assert.assertEquals(2, game.getBox(i).getCardsCount());
         }
+        Assert.assertEquals(2, game.getBox(GameWithDealer.DEALER_INDEX).getCardsCount());
     }
 
     @Test
@@ -53,8 +40,9 @@ public class GameWithDealerTest {
         game.start(boxes);
         game.end();
         for(TableBox box: boxes){
-            Assert.assertEquals(0, box.getHand().length);
+            Assert.assertEquals(0, box.getCardsCount());
         }
+        Assert.assertEquals(0, game.getBox(GameWithDealer.DEALER_INDEX).getCardsCount());
     }
 
     @Test
@@ -184,8 +172,7 @@ public class GameWithDealerTest {
     public void should_give_hidden_card_for_dealer(){
         GameWithDealer game = new GameWithDealer(new EndlessDeck());
         game.start(new TableBox[]{});
-        Card[] dealerHand = game.getPlayingBoxes()[game.getDealerIndex()].getHand();
-        Assert.assertEquals(Card.HIDDEN_CARD, dealerHand[0]);
+        Assert.assertEquals(Card.HIDDEN_CARD, game.getBox(GameWithDealer.DEALER_INDEX).getCard(0));
     }
 
     @Test
@@ -197,21 +184,21 @@ public class GameWithDealerTest {
         game.start(boxes);
 
         boxes[0].takeCards();
-        boxes[0].giveCard(game.getPlayingBoxes()[game.getDealerIndex()].getHand()[1]);
+        boxes[0].giveCard(game.getBox(GameWithDealer.DEALER_INDEX).getCard(1));
 
 
-        TableBox dealerBox = game.getPlayingBoxes()[0];
+        TableBox dealerBox = game.getBox(0);
 
-        Assert.assertEquals(game.getValue(0), game.getValue(game.getDealerIndex()));
+        Assert.assertEquals(game.getValue(0), game.getValue(GameWithDealer.DEALER_INDEX));
     }
 
     @Test
     public void should_open_hidden_card_on_dealers_step(){
         GameWithDealer game = new GameWithDealer(new EndlessDeck());
         game.start(new TableBox[]{});
-        TableBox dealerBox = game.getPlayingBoxes()[game.getDealerIndex()];
+        TableBox dealerBox = game.getBox(GameWithDealer.DEALER_INDEX);
         game.next(new GameAction(GameAction.Actions.STAND));
-        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getHand()[0]);
+        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getCard(0));
     }
 
     @Test
