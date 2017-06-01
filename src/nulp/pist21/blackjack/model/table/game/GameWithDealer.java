@@ -83,7 +83,7 @@ public class GameWithDealer implements IGame {
     }
 
     private void openCard(){
-        Card opennedCard = dealerBox.getCard(1);
+        Card opennedCard = dealerBox.getHand()[1];
         dealerBox.takeCards();
         dealerBox.giveCard(hiddenCard);
         hiddenCard = null;
@@ -114,8 +114,7 @@ public class GameWithDealer implements IGame {
             calcBox = playingBoxes[index];
         }
 
-        for(int i = 0; i < calcBox.getCardsCount(); i++){
-            Card calcCard = calcBox.getCard(i);
+        for(Card calcCard: calcBox.getHand()){
             if (calcCard.getValue() == Card.ACE){
                 aces++;
             }
@@ -137,7 +136,7 @@ public class GameWithDealer implements IGame {
             return A_LOT;
         }
         if (points == 21 &&
-                playingBoxes[index].getCardsCount() == 2){
+                playingBoxes[index].getHand().length == 2){
             return BLACK_JACK;
         }
 

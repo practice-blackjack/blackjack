@@ -10,7 +10,7 @@ public class TableBoxTest {
     @Test
     public void should_create_empty_hand() {
         TableBox box = new TableBox();
-        Assert.assertEquals(0, box.getCardsCount());
+        Assert.assertEquals(0, box.getHand().length);
     }
 
     @Test
@@ -18,7 +18,7 @@ public class TableBoxTest {
         TableBox box = new TableBox();
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.CLUBS, Card._7));
-        Assert.assertEquals(2, box.getCardsCount());
+        Assert.assertEquals(2, box.getHand().length);
     }
 
     @Test
@@ -27,7 +27,7 @@ public class TableBoxTest {
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.CLUBS, Card._7));
         box.takeCards();
-        Assert.assertEquals(0, box.getCardsCount());
+        Assert.assertEquals(0, box.getHand().length);
     }
 
     @Test
@@ -36,10 +36,10 @@ public class TableBoxTest {
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
         box.giveCard(new Card(Card.SPADES, Card._7));
 
-        Assert.assertEquals(Card.CLUBS, box.getCard(0).getSuit());
-        Assert.assertEquals(Card.ACE, box.getCard(0).getValue());
+        Assert.assertEquals(Card.CLUBS, box.getHand()[0].getSuit());
+        Assert.assertEquals(Card.ACE, box.getHand()[0].getValue());
 
-        Assert.assertEquals(Card.SPADES, box.getCard(1).getSuit());
-        Assert.assertEquals(Card._7, box.getCard(1).getValue());
+        Assert.assertEquals(Card.SPADES, box.getHand()[1].getSuit());
+        Assert.assertEquals(Card._7, box.getHand()[1].getValue());
     }
 }

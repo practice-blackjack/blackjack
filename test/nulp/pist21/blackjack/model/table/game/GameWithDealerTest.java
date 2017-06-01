@@ -23,9 +23,9 @@ public class GameWithDealerTest {
         game.start(boxes);
 
         for(int i = 0; i < game.getBoxCount(); i++){
-            Assert.assertEquals(2, game.getBox(i).getCardsCount());
+            Assert.assertEquals(2, game.getBox(i).getHand().length);
         }
-        Assert.assertEquals(2, game.getBox(GameWithDealer.DEALER_INDEX).getCardsCount());
+        Assert.assertEquals(2, game.getBox(GameWithDealer.DEALER_INDEX).getHand().length);
     }
 
     @Test
@@ -40,9 +40,9 @@ public class GameWithDealerTest {
         game.start(boxes);
         game.end();
         for(TableBox box: boxes){
-            Assert.assertEquals(0, box.getCardsCount());
+            Assert.assertEquals(0, box.getHand().length);
         }
-        Assert.assertEquals(0, game.getBox(GameWithDealer.DEALER_INDEX).getCardsCount());
+        Assert.assertEquals(0, game.getBox(GameWithDealer.DEALER_INDEX).getHand().length);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class GameWithDealerTest {
     public void should_give_hidden_card_for_dealer(){
         GameWithDealer game = new GameWithDealer(new EndlessDeck());
         game.start(new TableBox[]{});
-        Assert.assertEquals(Card.HIDDEN_CARD, game.getBox(GameWithDealer.DEALER_INDEX).getCard(0));
+        Assert.assertEquals(Card.HIDDEN_CARD, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0]);
     }
 
     @Test
@@ -184,7 +184,7 @@ public class GameWithDealerTest {
         game.start(boxes);
 
         boxes[0].takeCards();
-        boxes[0].giveCard(game.getBox(GameWithDealer.DEALER_INDEX).getCard(1));
+        boxes[0].giveCard(game.getBox(GameWithDealer.DEALER_INDEX).getHand()[1]);
 
 
         TableBox dealerBox = game.getBox(0);
@@ -198,7 +198,7 @@ public class GameWithDealerTest {
         game.start(new TableBox[]{});
         TableBox dealerBox = game.getBox(GameWithDealer.DEALER_INDEX);
         game.next(new GameAction(GameAction.Actions.STAND));
-        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getCard(0));
+        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getHand()[0]);
     }
 
     @Test

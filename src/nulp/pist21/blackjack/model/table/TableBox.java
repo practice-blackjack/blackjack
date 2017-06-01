@@ -21,14 +21,7 @@ public class TableBox{
         hand.clear();
     }
 
-    public Card getCard(int index) {
-        if (index >= 0 && index < hand.size()){
-            return hand.get(index);
-        }
-        return null;
-    }
-
-    public int getCardsCount() {
-        return hand.size();
+    public Card[] getHand(){
+        return hand.toArray(new Card[hand.size()]);
     }
 }
