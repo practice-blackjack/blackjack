@@ -1,0 +1,32 @@
+group 'BlackJack'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'application'
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+mainClassName = "com.lightbend.akka.sample.AkkaQuickstart"
+
+buildscript {
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'com.typesafe.akka:akka-actor_2.12:2.5.2'
+    testCompile 'com.typesafe.akka:akka-testkit_2.12:2.5.2'
+}
