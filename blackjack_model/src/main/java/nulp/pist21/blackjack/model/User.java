@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model;
 
-public class User {
+public class User implements Cloneable {
 
     private String name;
     private String password;
@@ -50,6 +50,11 @@ public class User {
         this.name = name;
         this.password = password;
         this.cash = cash;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new User(name, password, cash);
     }
 
 }

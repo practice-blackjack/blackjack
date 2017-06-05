@@ -2,5 +2,8 @@ build/
 .idea/
 out/
 lib/
+<<<<<<< HEAD
 .gradle/
 build/
+=======
+>>>>>>> 4f58572b777f5a5d5f4521d28557c1666c67341f
