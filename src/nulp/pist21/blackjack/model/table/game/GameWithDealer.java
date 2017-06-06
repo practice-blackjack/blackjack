@@ -1,13 +1,9 @@
 package nulp.pist21.blackjack.model.table.game;
 
-import javafx.util.Pair;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameWithDealer implements IGame {
     private TableBox[] playingBoxes;
@@ -18,9 +14,6 @@ public class GameWithDealer implements IGame {
     private int currentIndex;
 
     public static final int DEALER_INDEX = Integer.MAX_VALUE;
-
-    public static final int BLACK_JACK = Integer.MAX_VALUE;
-    public static final int A_LOT = BLACK_JACK - 1;
 
     public GameWithDealer(IDeck deck) {
         this.deck = deck;
@@ -75,7 +68,7 @@ public class GameWithDealer implements IGame {
     }
 
     private GameAction deallerStep(){
-        if (getValue(DEALER_INDEX) <= 16){
+        if (Combination.getPoints(dealerBox.getHand()) <= 16){
             dealerBox.giveCard(deck.next());
             return new GameAction(GameAction.Actions.HIT);
         }
@@ -91,69 +84,11 @@ public class GameWithDealer implements IGame {
     }
 
     @Override
-    public List<Pair<TableBox, Float>> end(){
-        List<Pair<TableBox, Float>> winners = getWinners();
+    public void end(){
         for (TableBox box: playingBoxes){
             box.takeCards();
         }
         dealerBox.takeCards();
-        return winners;
-    }
-
-    @Override
-    public int getValue(int index){
-        int points = 0;
-
-        int aces = 0;
-
-        TableBox calcBox;
-        if (index == DEALER_INDEX){
-            calcBox = dealerBox;
-        }
-        else {
-            calcBox = playingBoxes[index];
-        }
-
-        for(Card calcCard: calcBox.getHand()){
-            if (calcCard.getValue() == Card.ACE){
-                aces++;
-            }
-            else if (calcCard.getValue() >= Card._10 && calcCard.getValue() <= Card.KING){
-                points += 10;
-            }
-            else if (calcCard != Card.HIDDEN_CARD){
-                points += calcCard.getValue() + 1;
-            }
-        }
-        for (int i = 0; i < aces; i++) {
-            if (points + 11 <= 21){
-                points += 11;
-            }
-            else points += 1;
-        }
-
-        if (points > 21){
-            return A_LOT;
-        }
-        if (points == 21 &&
-                playingBoxes[index].getHand().length == 2){
-            return BLACK_JACK;
-        }
-
-        return points;
-    }
-
-    public List<Pair<TableBox, Float>> getWinners(){
-        List<Pair<TableBox, Float>> winners = new ArrayList<>();
-        for (int i = 0; i < playingBoxes.length; i++){
-            if (getValue(i) > getValue(DEALER_INDEX)){
-                winners.add(new Pair<>(playingBoxes[i], 2f));
-            }
-            else if (getValue(i) == getValue(DEALER_INDEX)){
-                winners.add(new Pair<>(playingBoxes[i], 1f));
-            }
-        }
-        return winners;
     }
 
     @Override
@@ -175,5 +110,60 @@ public class GameWithDealer implements IGame {
     @Override
     public int getBoxCount(){
         return playingBoxes.length;
+    }
+
+
+
+    public static class Combination {
+
+        public static final int BLACK_JACK = Integer.MAX_VALUE;
+
+        public static double getWin(Card first[], Card second[]) {
+            if (getPoints(first) > getPoints(second)){
+                if (getPoints(first) == BLACK_JACK){
+                    return 2.5;
+                }
+                return 2;
+            }
+            else if (getPoints(first) == getPoints(second)){
+                return 1;
+            }
+            return 0;
+        }
+
+        public static boolean IsALot(Card hand[]) {
+            int points = getPoints(hand);
+            return points > 21 && points != BLACK_JACK;
+        }
+
+        public static int getPoints(Card hand[]) {
+            int points = 0;
+
+            int aces = 0;
+
+            for(Card calcCard: hand){
+                if (calcCard.getValue() == Card.ACE){
+                    aces++;
+                }
+                else if (calcCard.getValue() >= Card._10 && calcCard.getValue() <= Card.KING){
+                    points += 10;
+                }
+                else if (calcCard != Card.HIDDEN_CARD){
+                    points += calcCard.getValue() + 1;
+                }
+            }
+            for (int i = 0; i < aces; i++) {
+                if (points + 11 <= 21){
+                    points += 11;
+                }
+                else points += 1;
+            }
+
+            if (points == 21 &&
+                    hand.length == 2){
+                return BLACK_JACK;
+            }
+            return points;
+        }
     }
 }
