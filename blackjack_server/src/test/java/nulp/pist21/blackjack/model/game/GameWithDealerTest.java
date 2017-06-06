@@ -1,13 +1,19 @@
 package nulp.pist21.blackjack.model.game;
 
+import mock.DeckMock;
 import mock.UserMock;
 import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.deck.TurnableCard;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class GameWithDealerTest {
 
@@ -175,37 +181,13 @@ public class GameWithDealerTest {
     }
 
     @Test
-    public void should_work_game_circle(){
-        IGame game = new GameWithDealer();
-        UserMock users[] = new UserMock[]{
-                new UserMock(14),
-                new UserMock(16),
-                new UserMock(18),
-        };
-
+    public void should_return_winners_koefs(){
         TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
                 new TableBox(),
                 new TableBox(),
                 new TableBox()
-        };
-
-        game.start(boxes, new EndlessDeck());
-
-        GameAction action;
-        do{
-            int userId = game.getCurrentIndex();
-            action = users[userId].doStep(game, userId);
-        } while (game.next(action, new EndlessDeck()));
-    }
-
-    @Test
-    public void should_return_winners_koefs(){
-        TableBox boxes[] = new TableBox[]{
-            new TableBox(),
-            new TableBox(),
-            new TableBox(),
-            new TableBox(),
-            new TableBox()
         };
 
         boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
@@ -242,13 +224,13 @@ public class GameWithDealerTest {
 
         Assert.assertEquals(0, GameWithDealer.Combination.getWin(
                 boxes[1], boxes[2]), 0);  //21 - BJ
-        Assert.assertEquals(2.5, GameWithDealer.Combination.getWin(
+        Assert.assertEquals(2.2, GameWithDealer.Combination.getWin(
                 boxes[2], boxes[1]), 0);  //BJ - 21
 
 
         Assert.assertEquals(0, GameWithDealer.Combination.getWin(
                 boxes[0], boxes[2]), 0);  //28 - BJ
-        Assert.assertEquals(2.5, GameWithDealer.Combination.getWin(
+        Assert.assertEquals(2.2, GameWithDealer.Combination.getWin(
                 boxes[2], boxes[0]), 0);  //BJ - 28
 
 
@@ -267,4 +249,125 @@ public class GameWithDealerTest {
         Assert.assertEquals(0, GameWithDealer.Combination.getWin(
                 boxes[0], boxes[0]), 0);  //28 - 28
     }
+
+    @Test
+    public void should_ignore_action_if_a_lot(){
+        TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        IDeck deck = new EndlessDeck();
+
+
+        IGame game = new GameWithDealer();
+        game.start(boxes, deck);
+
+        for(TableBox box: boxes){
+            box.takeCards();
+        }
+
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.JACK));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card._7));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card._8));       //25
+
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.JACK));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._8));       //28
+
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.JACK));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._2));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));    //22
+
+        Assert.assertFalse(game.next(new GameAction(GameAction.Actions.HIT), deck));
+    }
+
+    @Test
+    public void should_ignore_action_if_21(){
+        TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        IDeck deck = new EndlessDeck();
+
+
+        IGame game = new GameWithDealer();
+        game.start(boxes, deck);
+
+        for(TableBox box: boxes){
+            box.takeCards();
+        }
+
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.JACK));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
+
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
+
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._7));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._5));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._9));
+
+        Assert.assertFalse(game.next(new GameAction(GameAction.Actions.HIT), deck));
+    }
+
+    @Test
+    public void should_ignore_action_if_blackjack(){
+        TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        IDeck deck = new EndlessDeck();
+
+
+        IGame game = new GameWithDealer();
+        game.start(boxes, deck);
+
+        for(TableBox box: boxes){
+            box.takeCards();
+        }
+
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
+
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
+
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.ACE));
+
+        Assert.assertFalse(game.next(new GameAction(GameAction.Actions.HIT), deck));
+    }
+
+    @Test
+    public void should_work_game_circle(){
+        IGame game = new GameWithDealer();
+        UserMock users[] = new UserMock[]{
+                new UserMock(14),
+                new UserMock(16),
+                new UserMock(18),
+        };
+
+        TableBox boxes[] = new TableBox[]{
+                new TableBox(),
+                new TableBox(),
+                new TableBox()
+        };
+
+        game.start(boxes, new EndlessDeck());
+
+        GameAction action;
+        do{
+            int userId = game.getCurrentIndex();
+            action = users[userId].doStep(game, userId);
+        } while (game.next(action, new EndlessDeck()));
+    }
+
 }

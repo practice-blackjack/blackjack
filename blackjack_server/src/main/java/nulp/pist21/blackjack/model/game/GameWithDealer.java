@@ -30,28 +30,26 @@ public class GameWithDealer implements IGame {
         }
         dealer.giveCard(deck.next());
         dealer.giveCard(deck.next());
-        currentIndex = 0;
+        currentIndex = -1;
+        currentIndex = getNextIndex();
     }
 
     @Override
     public boolean next(GameAction action, IDeck deck){ //false if round over
         if (currentIndex < players.length){
-            if (action.getAction() == GameAction.Actions.HIT){
+            if (action.getAction() == GameAction.Actions.HIT && Combination.canHit(players[currentIndex])){
                 players[currentIndex].giveCard(deck.next());
             }
             else {
-                currentIndex++;
+                currentIndex = getNextIndex();
             }
         }
 
         //dealer step
         if (currentIndex == players.length){
-            while (dealer.doStep(this, DEALER_INDEX).getAction() != GameAction.Actions.STAND){
+            while (dealer.doStep(this, DEALER_INDEX).getAction() == GameAction.Actions.HIT){
                 dealer.giveCard(deck.next());
             }
-            currentIndex++;
-        }
-        if (currentIndex > players.length){
             return false;
         }
         return true;
@@ -86,6 +84,15 @@ public class GameWithDealer implements IGame {
         return players.length;
     }
 
+    private int getNextIndex(){
+        int index = currentIndex + 1;
+        while (index < players.length){
+            if (Combination.canHit(players[index])) break;
+            index++;
+        }
+        return index;
+    }
+
 
 
     public static class Combination {
@@ -99,7 +106,7 @@ public class GameWithDealer implements IGame {
             if (!isALot(firstPoints)){
                 if (getPoints(first) > getPoints(second) || isALot(secondPoints)){
                     if (getPoints(first) == BLACK_JACK){
-                        return 2.5;
+                        return 2.2;
                     }
                     return 2;
                 }
@@ -116,6 +123,11 @@ public class GameWithDealer implements IGame {
 
         public static boolean isALot(IHand hand) {
             return isALot(getPoints(hand));
+        }
+
+        public static boolean canHit(IHand hand){
+            int points = getPoints(hand);
+            return points < 21 && points != BLACK_JACK;
         }
 
         public static int getPoints(IHand hand) {
