@@ -34,7 +34,7 @@ class TestClient {
     }
 
     public static void main(String[] args) {
-        table = new Table(3, new GameWithDealer(new EndlessDeck()));
+        table = new Table(3, new GameWithDealer(), new EndlessDeck());
         users = new ArrayList<>();
         users.add(new Pair<>("p1", new UserMock(500)));
         users.add(new Pair<>("p2", new UserMock(700)));

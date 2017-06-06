@@ -13,7 +13,7 @@ public class GameWithDealerTest {
 
     @Test
     public void should_give_first_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer();
 
         TableBox boxes[] = new TableBox[]{
                 new TableBox(),
@@ -21,29 +21,29 @@ public class GameWithDealerTest {
                 new TableBox()
         };
 
-        game.start(boxes);
+        game.start(boxes, new EndlessDeck());
 
-        for(int i = 0; i < game.getBoxCount(); i++){
-            Assert.assertEquals(2, game.getBox(i).getHand().length);
+        for(int i = 0; i < game.getPlayerCount(); i++){
+            Assert.assertEquals(2, game.getPlayer(i).getHand().length);
         }
-        Assert.assertEquals(2, game.getBox(GameWithDealer.DEALER_INDEX).getHand().length);
+        Assert.assertEquals(2, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand().length);
     }
 
     @Test
     public void should_take_cards(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer();
         TableBox[] boxes = new TableBox[]{
                 new TableBox(),
                 new TableBox(),
                 new TableBox()
         };
 
-        game.start(boxes);
+        game.start(boxes, new EndlessDeck());
         game.end();
         for(TableBox box: boxes){
             Assert.assertEquals(0, box.getHand().length);
         }
-        Assert.assertEquals(0, game.getBox(GameWithDealer.DEALER_INDEX).getHand().length);
+        Assert.assertEquals(0, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand().length);
     }
 
     @Test
@@ -77,12 +77,12 @@ public class GameWithDealerTest {
         boxes[5].giveCard(new Card(Card.CLUBS, Card._5));       //21
 
 
-        Assert.assertEquals(18, GameWithDealer.Combination.getPoints(boxes[0].getHand()));
-        Assert.assertEquals(15, GameWithDealer.Combination.getPoints(boxes[1].getHand()));
-        Assert.assertEquals(19, GameWithDealer.Combination.getPoints(boxes[2].getHand()));
-        Assert.assertEquals(17, GameWithDealer.Combination.getPoints(boxes[3].getHand()));
-        Assert.assertEquals(21, GameWithDealer.Combination.getPoints(boxes[4].getHand()));
-        Assert.assertEquals(21, GameWithDealer.Combination.getPoints(boxes[5].getHand()));
+        Assert.assertEquals(18, GameWithDealer.Combination.getPoints(boxes[0]));
+        Assert.assertEquals(15, GameWithDealer.Combination.getPoints(boxes[1]));
+        Assert.assertEquals(19, GameWithDealer.Combination.getPoints(boxes[2]));
+        Assert.assertEquals(17, GameWithDealer.Combination.getPoints(boxes[3]));
+        Assert.assertEquals(21, GameWithDealer.Combination.getPoints(boxes[4]));
+        Assert.assertEquals(21, GameWithDealer.Combination.getPoints(boxes[5]));
     }
 
     @Test
@@ -92,8 +92,8 @@ public class GameWithDealerTest {
             boxes[i] = new TableBox();
         }
 
-        IGame game = new GameWithDealer(new EndlessDeck());
-        game.start(boxes);
+        IGame game = new GameWithDealer();
+        game.start(boxes, new EndlessDeck());
         game.end();
 
         boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
@@ -121,14 +121,14 @@ public class GameWithDealerTest {
         boxes[7].giveCard(new Card(Card.CLUBS, Card.ACE));
 
 
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[0].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[1].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[2].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[3].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[4].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[5].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[6].getHand()));
-        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[7].getHand()));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[0]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[1]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[2]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[3]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[4]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[5]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[6]));
+        Assert.assertEquals(GameWithDealer.Combination.BLACK_JACK, GameWithDealer.Combination.getPoints(boxes[7]));
     }
 
     @Test
@@ -155,18 +155,18 @@ public class GameWithDealerTest {
         boxes[3].giveCard(new Card(Card.CLUBS, Card._2));
         boxes[3].giveCard(new Card(Card.CLUBS, Card.QUEEN));       // a lot(30)
 
-        Assert.assertTrue(GameWithDealer.Combination.IsALot(boxes[0].getHand()));
-        Assert.assertTrue(GameWithDealer.Combination.IsALot(boxes[1].getHand()));
-        Assert.assertTrue(GameWithDealer.Combination.IsALot(boxes[2].getHand()));
-        Assert.assertTrue(GameWithDealer.Combination.IsALot(boxes[3].getHand()));
+        Assert.assertTrue(GameWithDealer.Combination.isALot(boxes[0]));
+        Assert.assertTrue(GameWithDealer.Combination.isALot(boxes[1]));
+        Assert.assertTrue(GameWithDealer.Combination.isALot(boxes[2]));
+        Assert.assertTrue(GameWithDealer.Combination.isALot(boxes[3]));
     }
 
     @Test
     public void should_give_hidden_card_for_dealer(){
-        GameWithDealer game = new GameWithDealer(new EndlessDeck());
-        game.start(new TableBox[]{});
-        Assert.assertEquals(Card.UNDEFINED_SUIT, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0].getSuit());
-        Assert.assertEquals(Card.UNDEFINED_VALUE, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0].getValue());
+        GameWithDealer game = new GameWithDealer();
+        game.start(new TableBox[]{}, new EndlessDeck());
+        Assert.assertEquals(Card.UNDEFINED_SUIT, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand()[0].getSuit());
+        Assert.assertEquals(Card.UNDEFINED_VALUE, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand()[0].getValue());
     }
 
     @Test
@@ -179,22 +179,22 @@ public class GameWithDealerTest {
         boxes[0].giveCard(new Card(Card.HEARTS, Card._9));
 
 
-        Assert.assertEquals(9, GameWithDealer.Combination.getPoints(boxes[0].getHand()));
+        Assert.assertEquals(9, GameWithDealer.Combination.getPoints(boxes[0]));
     }
 
     @Test
     public void should_open_hidden_card_on_dealers_step(){
-        GameWithDealer game = new GameWithDealer(new EndlessDeck());
-        game.start(new TableBox[]{});
-        TableBox dealerBox = game.getBox(GameWithDealer.DEALER_INDEX);
-        game.next(new GameAction(GameAction.Actions.STAND));
+        GameWithDealer game = new GameWithDealer();
+        game.start(new TableBox[]{}, new EndlessDeck());
+        IHand dealerBox = game.getPlayer(GameWithDealer.DEALER_INDEX);
+        game.next(new GameAction(GameAction.Actions.STAND), new EndlessDeck());
         Assert.assertNotEquals(Card.UNDEFINED_SUIT, dealerBox.getHand()[0].getSuit());
         Assert.assertNotEquals(Card.UNDEFINED_VALUE, dealerBox.getHand()[0].getValue());
     }
 
     @Test
     public void should_work_game_circle(){
-        IGame game = new GameWithDealer(new EndlessDeck());
+        IGame game = new GameWithDealer();
         UserMock users[] = new UserMock[]{
                 new UserMock(14),
                 new UserMock(16),
@@ -207,17 +207,82 @@ public class GameWithDealerTest {
                 new TableBox()
         };
 
-        game.start(boxes);
+        game.start(boxes, new EndlessDeck());
 
         GameAction action;
         do{
             int userId = game.getCurrentIndex();
             action = users[userId].doStep(game, userId);
-        } while (game.next(action));
+        } while (game.next(action, new EndlessDeck()));
     }
 
     @Test
     public void should_return_winners_koefs(){
+        TableBox boxes[] = new TableBox[]{
+            new TableBox(),
+            new TableBox(),
+            new TableBox(),
+            new TableBox(),
+            new TableBox()
+        };
 
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card._8));
+        boxes[0].giveCard(new Card(Card.CLUBS, Card.QUEEN));    // a lot(28)
+
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.KING));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card.KING));     //21
+
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.JACK));     //Black Jack
+
+        boxes[3].giveCard(new Card(Card.CLUBS, Card._8));
+        boxes[3].giveCard(new Card(Card.CLUBS, Card._7));       //15
+
+        boxes[4].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[4].giveCard(new Card(Card.CLUBS, Card._7));
+        boxes[4].giveCard(new Card(Card.CLUBS, Card.ACE));
+        boxes[4].giveCard(new Card(Card.CLUBS, Card._8));       //17
+
+
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[0], boxes[1]), 0);  //28 - 21
+        Assert.assertEquals(2, GameWithDealer.Combination.getWin(
+                boxes[1], boxes[0]), 0);  //21 - 28
+
+
+        Assert.assertEquals(2, GameWithDealer.Combination.getWin(
+                boxes[1], boxes[3]), 0);  //21 - 15
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[3], boxes[1]), 0);  //15 - 21
+
+
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[1], boxes[2]), 0);  //21 - BJ
+        Assert.assertEquals(2.5, GameWithDealer.Combination.getWin(
+                boxes[2], boxes[1]), 0);  //BJ - 21
+
+
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[0], boxes[2]), 0);  //28 - BJ
+        Assert.assertEquals(2.5, GameWithDealer.Combination.getWin(
+                boxes[2], boxes[0]), 0);  //BJ - 28
+
+
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[3], boxes[4]), 0);  //15 - 17
+        Assert.assertEquals(2, GameWithDealer.Combination.getWin(
+                boxes[4], boxes[3]), 0);  //17 - 15
+
+
+        Assert.assertEquals(1, GameWithDealer.Combination.getWin(
+                boxes[2], boxes[2]), 0);  //BJ - BJ
+        Assert.assertEquals(1, GameWithDealer.Combination.getWin(
+                boxes[4], boxes[4]), 0);  //17 - 17
+        Assert.assertEquals(1, GameWithDealer.Combination.getWin(
+                boxes[1], boxes[1]), 0);  //21 - 21
+        Assert.assertEquals(0, GameWithDealer.Combination.getWin(
+                boxes[0], boxes[0]), 0);  //28 - 28
     }
 }

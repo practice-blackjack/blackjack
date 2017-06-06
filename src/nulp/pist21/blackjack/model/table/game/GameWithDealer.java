@@ -2,49 +2,44 @@ package nulp.pist21.blackjack.model.table.game;
 
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.table.deck.Card;
-import nulp.pist21.blackjack.model.table.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;
+import nulp.pist21.blackjack.model.table.deck.IDeck;
 import nulp.pist21.blackjack.model.table.deck.TurnableCard;
 
 public class GameWithDealer implements IGame {
-    private TableBox[] playingBoxes;
-    private TableBox dealerBox;
-    private IDeck deck;
-    private TurnableCard hiddenCard;
+    private IHand[] players;
+    private Dealer dealer;
 
     private int currentIndex;
 
     public static final int DEALER_INDEX = Integer.MAX_VALUE;
 
-    public GameWithDealer(IDeck deck) {
-        this.deck = deck;
-        this.playingBoxes = new TableBox[]{};
-        this.dealerBox = new TableBox();
+    public GameWithDealer() {
+        this.dealer = new Dealer();
     }
 
     @Override
-    public void start(TableBox[] playingBoxes){
-        this.playingBoxes = playingBoxes;
-        for(TableBox playingBox: playingBoxes){
+    public void start(IHand[] playingBoxes, IDeck deck){
+        this.players = playingBoxes;
+        for(IHand playingBox: playingBoxes){
             playingBox.takeCards();
         }
 
         for(int i = 0; i < 2; i++){
-            for(TableBox playingBox: playingBoxes){
+            for(IHand playingBox: playingBoxes){
                 playingBox.giveCard(deck.next());
             }
         }
-        this.hiddenCard = new TurnableCard(deck.next());
-        dealerBox.giveCard(this.hiddenCard);
-        dealerBox.giveCard(deck.next());
+        dealer.giveCard(deck.next());
+        dealer.giveCard(deck.next());
         currentIndex = 0;
     }
 
     @Override
-    public boolean next(GameAction action){ //false if round over
-        if (currentIndex < playingBoxes.length){
+    public boolean next(GameAction action, IDeck deck){ //false if round over
+        if (currentIndex < players.length){
             if (action.getAction() == GameAction.Actions.HIT){
-                playingBoxes[currentIndex].giveCard(deck.next());
+                players[currentIndex].giveCard(deck.next());
             }
             else {
                 currentIndex++;
@@ -52,35 +47,24 @@ public class GameWithDealer implements IGame {
         }
 
         //dealer step
-        if (currentIndex == playingBoxes.length){
-            hiddenCard.open();
-            GameAction dealerAction;
-            do{
-                dealerAction = deallerStep();
+        if (currentIndex == players.length){
+            while (dealer.doStep(this, DEALER_INDEX).getAction() != GameAction.Actions.STAND){
+                dealer.giveCard(deck.next());
             }
-            while (dealerAction.getAction() != GameAction.Actions.STAND);
             currentIndex++;
         }
-        if (currentIndex > playingBoxes.length){
+        if (currentIndex > players.length){
             return false;
         }
         return true;
     }
 
-    private GameAction deallerStep(){
-        if (Combination.getPoints(dealerBox.getHand()) <= 16){
-            dealerBox.giveCard(deck.next());
-            return new GameAction(GameAction.Actions.HIT);
-        }
-        return new GameAction(GameAction.Actions.STAND);
-    }
-
     @Override
     public void end(){
-        for (TableBox box: playingBoxes){
+        for (IHand box: players){
             box.takeCards();
         }
-        dealerBox.takeCards();
+        dealer.takeCards();
     }
 
     @Override
@@ -89,19 +73,19 @@ public class GameWithDealer implements IGame {
     }
 
     @Override
-    public TableBox getBox(int index) {
+    public IHand getPlayer(int index) {
         if (index == DEALER_INDEX){
-            return dealerBox;
+            return dealer;
         }
-        if (index >= 0 && index < playingBoxes.length){
-            return playingBoxes[index];
+        if (index >= 0 && index < players.length){
+            return players[index];
         }
         return null;
     }
 
     @Override
-    public int getBoxCount(){
-        return playingBoxes.length;
+    public int getPlayerCount(){
+        return players.length;
     }
 
 
@@ -110,30 +94,38 @@ public class GameWithDealer implements IGame {
 
         public static final int BLACK_JACK = Integer.MAX_VALUE;
 
-        public static double getWin(Card first[], Card second[]) {
-            if (getPoints(first) > getPoints(second)){
-                if (getPoints(first) == BLACK_JACK){
-                    return 2.5;
+        public static double getWin(IHand first, IHand second) {
+            int firstPoints = getPoints(first);
+            int secondPoints = getPoints(second);
+
+            if (!isALot(firstPoints)){
+                if (getPoints(first) > getPoints(second) || isALot(secondPoints)){
+                    if (getPoints(first) == BLACK_JACK){
+                        return 2.5;
+                    }
+                    return 2;
                 }
-                return 2;
-            }
-            else if (getPoints(first) == getPoints(second)){
-                return 1;
+                else if (getPoints(first) == getPoints(second)){
+                    return 1;
+                }
             }
             return 0;
         }
 
-        public static boolean IsALot(Card hand[]) {
-            int points = getPoints(hand);
+        public static boolean isALot(int points) {
             return points > 21 && points != BLACK_JACK;
         }
 
-        public static int getPoints(Card hand[]) {
+        public static boolean isALot(IHand hand) {
+            return isALot(getPoints(hand));
+        }
+
+        public static int getPoints(IHand hand) {
             int points = 0;
 
             int aces = 0;
 
-            for(Card calcCard: hand){
+            for(Card calcCard: hand.getHand()){
                 if (calcCard.getValue() == Card.ACE){
                     aces++;
                 }
@@ -152,7 +144,7 @@ public class GameWithDealer implements IGame {
             }
 
             if (points == 21 &&
-                    hand.length == 2){
+                    hand.getHand().length == 2){
                 return BLACK_JACK;
             }
             return points;

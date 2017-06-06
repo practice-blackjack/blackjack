@@ -8,8 +8,8 @@ import org.junit.Test;
 public class TableTest {
 
     public Table createTable(){
-        GameWithDealer game = new GameWithDealer(new EndlessDeck());
-        return new Table(6, game);
+        GameWithDealer game = new GameWithDealer();
+        return new Table(6, game, new EndlessDeck());
     }
 
     @Test
