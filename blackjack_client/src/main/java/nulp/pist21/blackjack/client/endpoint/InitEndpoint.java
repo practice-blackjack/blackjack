@@ -15,7 +15,7 @@ public class InitEndpoint {
 
     private MessageFunction<StringMessage> registerFunction;
     private MessageFunction<TokenMessage> loginFunction;
-    private MessageFunction<StringMessage> unloginFunction;
+    private MessageFunction<StringMessage> logoutFunction;
 
     private Session session;
 
@@ -33,8 +33,8 @@ public class InitEndpoint {
             case "login":
                 if (loginFunction != null) loginFunction.apply(JSON.parseObject(message, TokenMessage.class));
                 break;
-            case "unlogin":
-                if (unloginFunction != null) unloginFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case "logout":
+                if (logoutFunction != null) logoutFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
         }
     }
@@ -47,8 +47,8 @@ public class InitEndpoint {
         this.loginFunction = function;
     }
 
-    public void onUnloginListener(MessageFunction<StringMessage> function) {
-        this.unloginFunction = function;
+    public void onLogoutListener(MessageFunction<StringMessage> function) {
+        this.logoutFunction = function;
     }
 
     public void sendRegisterMessage(User user) {
@@ -59,8 +59,8 @@ public class InitEndpoint {
         sendMessage(new UserMessage("login", user));
     }
 
-    public void sendUnloginMessage() {
-        sendMessage(new Message("unlogin"));
+    public void sendLogoutMessage() {
+        sendMessage(new Message("logout"));
     }
 
     private void sendMessage(Message message) {

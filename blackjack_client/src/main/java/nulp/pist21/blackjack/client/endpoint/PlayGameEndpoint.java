@@ -15,7 +15,7 @@ public class PlayGameEndpoint {
 
     private MessageFunction<WaitMessage> waitActionFunction;
     private MessageFunction<StringMessage> sitFunction;
-    private MessageFunction<StringMessage> stayFunction;
+    private MessageFunction<StringMessage> standFunction;
     private MessageFunction<StringMessage> tokenCheckerFunction;
 
     private Session session;
@@ -43,8 +43,8 @@ public class PlayGameEndpoint {
             case "sit":
                 if (sitFunction != null) sitFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
-            case "stay":
-                if (stayFunction != null) stayFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case "stand":
+                if (standFunction != null) standFunction.apply(JSON.parseObject(message, StringMessage.class));
                 break;
         }
     }
@@ -61,8 +61,8 @@ public class PlayGameEndpoint {
         this.sitFunction = function;
     }
 
-    public void onStayListener(MessageFunction<StringMessage> function) {
-        this.stayFunction = function;
+    public void onStandListener(MessageFunction<StringMessage> function) {
+        this.standFunction = function;
     }
 
     public void sendTokenMessage() {
@@ -81,8 +81,8 @@ public class PlayGameEndpoint {
         sendMessage(new TableSmallInfoMessage("sit", tableInfo, place));
     }
 
-    public void sendStayMessage(TableInfo tableInfo) {
-        sendMessage(new TableSmallInfoMessage("stay", tableInfo));
+    public void sendStandMessage(TableInfo tableInfo) {
+        sendMessage(new TableSmallInfoMessage("stand", tableInfo));
     }
 
     private void sendMessage(Message message) {

@@ -1,10 +1,15 @@
 package nulp.pist21.blackjack.server.endpoint;
 
+import akka.actor.ActorRef;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
 import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
-import nulp.pist21.blackjack.server.data.ProgramData;
+import nulp.pist21.blackjack.server.actor.Actor;
+import nulp.pist21.blackjack.server.actor.WatcherActor;
+import nulp.pist21.blackjack.server.actor.message.EntryTableRequest;
+import nulp.pist21.blackjack.server.actor.message.ExitTableRequest;
+import nulp.pist21.blackjack.server.actor.message.TokenCheck;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -15,12 +20,8 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/game/watch")
 public class WatchGameEndpoint {
 
-    private MessageFunction<TokenMessage> tokenCheckerFunction;
-    private MessageFunction<TableSmallInfoMessage> entryFunction;
-    private MessageFunction<TableSmallInfoMessage> exitFunction;
-
     private Session session;
-    private final ProgramData programData = ProgramData.get();
+    private ActorRef actor;
     private long token = -1;
     private boolean login = false;
 
@@ -44,13 +45,13 @@ public class WatchGameEndpoint {
     public void onOpen(Session session) {
         System.out.println("game_watch open");
         this.session = session;
-        programData.watchGameManager.add(this);
+        actor = Actor.system.actorOf(WatcherActor.props(this));
     }
 
     @OnClose
     public void onClose() {
         System.out.println("game_watch close");
-        programData.watchGameManager.remove(this);
+        Actor.system.stop(actor);
     }
 
     @OnMessage
@@ -58,27 +59,21 @@ public class WatchGameEndpoint {
         System.out.println("game_watch message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
             case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, TokenMessage.class));
+                TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
+                TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
+                actor.tell(tokenCheck, ActorRef.noSender());
                 break;
             case "entry":
-                if (entryFunction != null) entryFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
+                TableSmallInfoMessage tableSmallInfoMessage = JSON.parseObject(message, TableSmallInfoMessage.class);
+                EntryTableRequest entryTableRequest = new EntryTableRequest(tableSmallInfoMessage.getTableInfo());
+                actor.tell(entryTableRequest, ActorRef.noSender());
                 break;
             case "exit":
-                if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
+                TableSmallInfoMessage tableSmallInfoMessage1 = JSON.parseObject(message, TableSmallInfoMessage.class);
+                ExitTableRequest exitTableRequest = new ExitTableRequest(tableSmallInfoMessage1.getTableInfo());
+                actor.tell(exitTableRequest, ActorRef.noSender());
                 break;
         }
-    }
-
-    public void onTokenCheckerMessageListener(MessageFunction<TokenMessage> function) {
-        this.tokenCheckerFunction = function;
-    }
-
-    public void onEntryListener(MessageFunction<TableSmallInfoMessage> function) {
-        this.entryFunction = function;
-    }
-
-    public void onExitListener(MessageFunction<TableSmallInfoMessage> function) {
-        this.exitFunction = function;
     }
 
     public void sendTokenMessage(String message) {
@@ -89,8 +84,8 @@ public class WatchGameEndpoint {
         sendMessage(new TableFullInfoMessage("update", table));
     }
 
-    public void sendUserActionMessage(TableInfo tableInfo, int place, String action) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, place, action));
+    public void sendUserActionMessage(TableInfo tableInfo, int place, String action, int bet) {
+        sendMessage(new UserActionMessage("user_action", tableInfo, place, action, bet));
     }
 
     public void sendEntryMessage(String message) {

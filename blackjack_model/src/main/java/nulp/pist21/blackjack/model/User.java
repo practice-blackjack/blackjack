@@ -53,7 +53,7 @@ public class User implements Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() {
         return new User(name, password, cash);
     }
 

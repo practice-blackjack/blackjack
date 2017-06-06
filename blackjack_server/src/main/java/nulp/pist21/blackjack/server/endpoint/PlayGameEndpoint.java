@@ -1,9 +1,15 @@
 package nulp.pist21.blackjack.server.endpoint;
 
+import akka.actor.ActorRef;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
 import nulp.pist21.blackjack.model.TableInfo;
-import nulp.pist21.blackjack.server.data.ProgramData;
+import nulp.pist21.blackjack.server.actor.Actor;
+import nulp.pist21.blackjack.server.actor.PlayerActor;
+import nulp.pist21.blackjack.server.actor.message.PlayerAction;
+import nulp.pist21.blackjack.server.actor.message.SitTableRequest;
+import nulp.pist21.blackjack.server.actor.message.StandTableRequest;
+import nulp.pist21.blackjack.server.actor.message.TokenCheck;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -14,13 +20,8 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/game/play")
 public class PlayGameEndpoint {
 
-    private MessageFunction<UserActionMessage> userActionFunction;
-    private MessageFunction<TableSmallInfoMessage> sitFunction;
-    private MessageFunction<TableSmallInfoMessage> stayFunction;
-    private MessageFunction<TokenMessage> tokenCheckerFunction;
-
     private Session session;
-    private final ProgramData programData = ProgramData.get();
+    private ActorRef actor;
     private long token = -1;
     private boolean login = false;
 
@@ -44,13 +45,13 @@ public class PlayGameEndpoint {
     public void onOpen(Session session) {
         System.out.println("game_play open");
         this.session = session;
-        programData.playGameManager.add(this);
+        actor = Actor.system.actorOf(PlayerActor.props(this));
     }
 
     @OnClose
     public void onClose() {
         System.out.println("game_play close");
-        programData.playGameManager.remove(this);
+        Actor.system.stop(actor);
     }
 
     @OnMessage
@@ -58,34 +59,26 @@ public class PlayGameEndpoint {
         System.out.println("game_play message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
             case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, TokenMessage.class));
+                TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
+                TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
+                actor.tell(tokenCheck, ActorRef.noSender());
                 break;
             case "user_action":
-                if (userActionFunction != null) userActionFunction.apply(JSON.parseObject(message, UserActionMessage.class));
+                UserActionMessage userActionMessage = JSON.parseObject(message, UserActionMessage.class);
+                PlayerAction playerAction = new PlayerAction(userActionMessage.getTableInfo(), userActionMessage.getPlace(), userActionMessage.getAction(), userActionMessage.getBet());
+                actor.tell(playerAction, ActorRef.noSender());
                 break;
             case "sit":
-                if (sitFunction != null) sitFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
+                TableSmallInfoMessage tableSmallInfoMessage = JSON.parseObject(message, TableSmallInfoMessage.class);
+                SitTableRequest sitTableRequest = new SitTableRequest(tableSmallInfoMessage.getTableInfo(), tableSmallInfoMessage.getPlace());
+                actor.tell(sitTableRequest, ActorRef.noSender());
                 break;
-            case "stay":
-                if (stayFunction != null) stayFunction.apply(JSON.parseObject(message, TableSmallInfoMessage.class));
+            case "stand":
+                TableSmallInfoMessage tableSmallInfoMessage1 = JSON.parseObject(message, TableSmallInfoMessage.class);
+                StandTableRequest standTableRequest = new StandTableRequest(tableSmallInfoMessage1.getTableInfo(), tableSmallInfoMessage1.getPlace());
+                actor.tell(standTableRequest, ActorRef.noSender());
                 break;
         }
-    }
-
-    public void onTokenCheckerMessageListener(MessageFunction<TokenMessage> function) {
-        this.tokenCheckerFunction = function;
-    }
-
-    public void onUserActionMessageListener(MessageFunction<UserActionMessage> function) {
-        this.userActionFunction = function;
-    }
-
-    public void onSitListener(MessageFunction<TableSmallInfoMessage> function) {
-        this.sitFunction = function;
-    }
-
-    public void onStayListener(MessageFunction<TableSmallInfoMessage> function) {
-        this.stayFunction = function;
     }
 
     public void sendTokenMessage(String message) {
@@ -100,8 +93,8 @@ public class PlayGameEndpoint {
         sendMessage(new StringMessage("sit", message));
     }
 
-    public void sendStayMessage(String message) {
-        sendMessage(new StringMessage("stay", message));
+    public void sendStandMessage(String message) {
+        sendMessage(new StringMessage("stand", message));
     }
 
     private void sendMessage(Message message) {

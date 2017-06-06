@@ -6,7 +6,6 @@ import nulp.pist21.blackjack.client.endpoint.LobbyEndpoint;
 import nulp.pist21.blackjack.client.endpoint.PlayGameEndpoint;
 import nulp.pist21.blackjack.client.endpoint.WatchGameEndpoint;
 import nulp.pist21.blackjack.message.*;
-import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
 
@@ -124,7 +123,7 @@ public class Main {
     }
 
     private void unlogin() {
-        initEndpoint.onUnloginListener((StringMessage stringMessage) -> {
+        initEndpoint.onLogoutListener((StringMessage stringMessage) -> {
             System.out.println("server > " + JSON.toJSONString(stringMessage));
             playGameEndpoint.close();
             watchGameEndpoint.close();
@@ -132,7 +131,7 @@ public class Main {
             initEndpoint.close();
             initInit();
         });
-        initEndpoint.sendUnloginMessage();
+        initEndpoint.sendLogoutMessage();
     }
 
     private void getMyData() {
@@ -188,12 +187,12 @@ public class Main {
     }
 
     private void stayTable() {
-        playGameEndpoint.onStayListener((StringMessage stringMessage) -> {
+        playGameEndpoint.onStandListener((StringMessage stringMessage) -> {
             System.out.println("server > " + JSON.toJSONString(stringMessage));
             playGameEndpoint.close();
         });
         TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
-        playGameEndpoint.sendStayMessage(tableInfo);
+        playGameEndpoint.sendStandMessage(tableInfo);
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, DeploymentException {

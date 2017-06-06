@@ -1,10 +1,16 @@
 package nulp.pist21.blackjack.server.endpoint;
 
+import akka.actor.ActorRef;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
-import nulp.pist21.blackjack.server.data.ProgramData;
+import nulp.pist21.blackjack.server.actor.Actor;
+import nulp.pist21.blackjack.server.actor.UserActor;
+import nulp.pist21.blackjack.server.actor.message.MyDataRequest;
+import nulp.pist21.blackjack.server.actor.message.TableListRequest;
+import nulp.pist21.blackjack.server.actor.message.TokenCheck;
+import nulp.pist21.blackjack.server.actor.message.UserDataRequest;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -16,13 +22,8 @@ import java.util.List;
 @ServerEndpoint("/lobby")
 public class LobbyEndpoint {
 
-    private MessageFunction<Message> myDataFunction;
-    private MessageFunction<UserMessage> userDataFunction;
-    private MessageFunction<Message> tableListFunction;
-    private MessageFunction<TokenMessage> tokenCheckerFunction;
-
     private Session session;
-    private final ProgramData programData = ProgramData.get();
+    private ActorRef actor;
     private long token = -1;
     private boolean login = false;
 
@@ -46,13 +47,13 @@ public class LobbyEndpoint {
     public void onOpen(Session session) {
         System.out.println("lobby open");
         this.session = session;
-        programData.lobbyManager.add(this);
+        actor = Actor.system.actorOf(UserActor.props(this));
     }
 
     @OnClose
     public void onClose() {
         System.out.println("lobby close");
-        programData.lobbyManager.remove(this);
+        Actor.system.stop(actor);
     }
 
     @OnMessage
@@ -60,34 +61,26 @@ public class LobbyEndpoint {
         System.out.println("lobby message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
             case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, TokenMessage.class));
+                TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
+                TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
+                actor.tell(tokenCheck, ActorRef.noSender());
                 break;
             case "my_data":
-                if (myDataFunction != null) myDataFunction.apply(JSON.parseObject(message, Message.class));
+                Message message1 = JSON.parseObject(message, Message.class);
+                MyDataRequest myDataRequest = new MyDataRequest();
+                actor.tell(myDataRequest, ActorRef.noSender());
                 break;
             case "user_data":
-                if (userDataFunction != null) userDataFunction.apply(JSON.parseObject(message, UserMessage.class));
+                UserMessage userMessage = JSON.parseObject(message, UserMessage.class);
+                UserDataRequest userDataRequest = new UserDataRequest(userMessage.getUser().getName());
+                actor.tell(userDataRequest, ActorRef.noSender());
                 break;
             case "table_list":
-                if (tableListFunction != null) tableListFunction.apply(JSON.parseObject(message, Message.class));
+                Message message2 = JSON.parseObject(message, Message.class);
+                TableListRequest tableListRequest = new TableListRequest();
+                actor.tell(tableListRequest, ActorRef.noSender());
                 break;
         }
-    }
-
-    public void onTokenCheckerMessageListener(MessageFunction<TokenMessage> function) {
-        this.tokenCheckerFunction = function;
-    }
-
-    public void onMyDataListener(MessageFunction<Message> function) {
-        this.myDataFunction = function;
-    }
-
-    public void onUserDataListener(MessageFunction<UserMessage> function) {
-        this.userDataFunction = function;
-    }
-
-    public void onTableListListener(MessageFunction<Message> function) {
-        this.tableListFunction = function;
     }
 
     public void sendTokenMessage(String message) {

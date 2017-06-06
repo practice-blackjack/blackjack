@@ -1,9 +1,13 @@
 package nulp.pist21.blackjack.server.endpoint;
 
+import akka.actor.ActorRef;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
-import nulp.pist21.blackjack.model.User;
-import nulp.pist21.blackjack.server.data.ProgramData;
+import nulp.pist21.blackjack.server.actor.Actor;
+import nulp.pist21.blackjack.server.actor.InitActor;
+import nulp.pist21.blackjack.server.actor.message.LoginRequest;
+import nulp.pist21.blackjack.server.actor.message.LogoutRequest;
+import nulp.pist21.blackjack.server.actor.message.RegisterRequest;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -14,12 +18,8 @@ import javax.websocket.server.ServerEndpoint;
 @ServerEndpoint("/init")
 public class InitEndpoint {
 
-    private MessageFunction<UserMessage> registerFunction;
-    private MessageFunction<UserMessage> loginFunction;
-    private MessageFunction<Message> unloginFunction;
-
     private Session session;
-    private final ProgramData programData = ProgramData.get();
+    private ActorRef actor;
     private long token = -1;
 
     public long getToken() {
@@ -34,41 +34,35 @@ public class InitEndpoint {
     public void onOpen(Session session) {
         System.out.println("init open");
         this.session = session;
-        programData.initManager.add(this);
+        actor = Actor.system.actorOf(InitActor.props(this));
     }
 
     @OnClose
     public void onClose() {
         System.out.println("init close");
-        programData.initManager.remove(this);
+        Actor.system.stop(actor);
     }
 
     @OnMessage
     public void onMessage(String message) {
         System.out.println("init message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "register":
-                if (registerFunction != null) registerFunction.apply(JSON.parseObject(message, UserMessage.class));
-                break;
-            case "login":
-                if (loginFunction != null) loginFunction.apply(JSON.parseObject(message, UserMessage.class));
-                break;
-            case "unlogin":
-                if (unloginFunction != null) unloginFunction.apply(JSON.parseObject(message, Message.class));
-                break;
+            case "register": {
+                UserMessage msg = JSON.parseObject(message, UserMessage.class);
+                RegisterRequest registerRequest = new RegisterRequest(msg.getUser());
+                actor.tell(registerRequest, ActorRef.noSender());
+            }break;
+            case "login": {
+                UserMessage msg = JSON.parseObject(message, UserMessage.class);
+                LoginRequest loginRequest = new LoginRequest(msg.getUser());
+                actor.tell(loginRequest, ActorRef.noSender());
+            }break;
+            case "logout": {
+                Message msg = JSON.parseObject(message, Message.class);
+                LogoutRequest logoutRequest = new LogoutRequest();
+                actor.tell(logoutRequest, ActorRef.noSender());
+            }break;
         }
-    }
-
-    public void onRegisterListener(MessageFunction<UserMessage> function) {
-        this.registerFunction = function;
-    }
-
-    public void onLoginListener(MessageFunction<UserMessage> function) {
-        this.loginFunction = function;
-    }
-
-    public void onUnloginListener(MessageFunction<Message> function) {
-        this.unloginFunction = function;
     }
 
     public void sendRegisterMessage(String message) {
@@ -79,8 +73,8 @@ public class InitEndpoint {
         sendMessage(new TokenMessage("login", token));
     }
 
-    public void sendUnloginMessage() {
-        sendMessage(new StringMessage("unlogin", "+"));
+    public void sendLogoutMessage() {
+        sendMessage(new StringMessage("logout", "+"));
     }
 
     private void sendMessage(Message message) {
