@@ -40,7 +40,7 @@ public class Main {
     private void initInit() {
         try {
             initEndpoint = new InitEndpoint();
-            container.connectToServer(initEndpoint, new URI("ws://localhost:8080/app/init"));
+            container.connectToServer(initEndpoint, new URI("ws://localhost:8080/blackjack/init"));
         } catch (DeploymentException | IOException | URISyntaxException e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class Main {
         try {
             lobbyEndpoint = new LobbyEndpoint(token);
             lobbyEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/app/lobby"));
+            container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/blackjack/lobby"));
             lobbyEndpoint.onUpdateMessageListener((TableListMessage tableListMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableListMessage));
             });
@@ -63,7 +63,7 @@ public class Main {
         try {
             watchGameEndpoint = new WatchGameEndpoint(token);
             watchGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            container.connectToServer(watchGameEndpoint, new URI("ws://localhost:8080/app/game/watch"));
+            container.connectToServer(watchGameEndpoint, new URI("ws://localhost:8080/blackjack/game/watch"));
             watchGameEndpoint.onUpdateMessageListener((TableFullInfoMessage tableFullInfoMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableFullInfoMessage));
             });
@@ -82,7 +82,7 @@ public class Main {
         try {
             playGameEndpoint = new PlayGameEndpoint(token);
             playGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
-            container.connectToServer(playGameEndpoint, new URI("ws://localhost:8080/app/game/play"));
+            container.connectToServer(playGameEndpoint, new URI("ws://localhost:8080/blackjack/game/play"));
             playGameEndpoint.onWaitActionMessageListener((WaitMessage waitMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(waitMessage));
                 TableInfo tableInfo = waitMessage.getTableInfo();
