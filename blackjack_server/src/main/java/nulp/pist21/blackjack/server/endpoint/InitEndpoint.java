@@ -74,7 +74,7 @@ public class InitEndpoint {
     }
 
     public void sendLogoutMessage() {
-        sendMessage(new StringMessage("logout", "+"));
+        sendMessage(new StringMessage("logout", "logout ok"));
     }
 
     private void sendMessage(Message message) {

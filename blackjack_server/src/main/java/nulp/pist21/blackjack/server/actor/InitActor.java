@@ -2,7 +2,6 @@ package nulp.pist21.blackjack.server.actor;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
-import nulp.pist21.blackjack.message.TokenMessage;
 import nulp.pist21.blackjack.server.actor.message.*;
 import nulp.pist21.blackjack.server.endpoint.InitEndpoint;
 

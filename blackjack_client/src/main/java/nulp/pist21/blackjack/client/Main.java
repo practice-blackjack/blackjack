@@ -122,12 +122,12 @@ public class Main {
         initEndpoint.sendLoginMessage(user);
     }
 
-    private void unlogin() {
+    private void logout() {
         initEndpoint.onLogoutListener((StringMessage stringMessage) -> {
             System.out.println("server > " + JSON.toJSONString(stringMessage));
-            playGameEndpoint.close();
-            watchGameEndpoint.close();
-            lobbyEndpoint.close();
+            if (playGameEndpoint != null) playGameEndpoint.close();
+            if (watchGameEndpoint != null) watchGameEndpoint.close();
+            if (lobbyEndpoint != null) lobbyEndpoint.close();
             initEndpoint.close();
             initInit();
         });
@@ -186,7 +186,7 @@ public class Main {
         playGameEndpoint.sendSitMessage(tableInfo, place);
     }
 
-    private void stayTable() {
+    private void standTable() {
         playGameEndpoint.onStandListener((StringMessage stringMessage) -> {
             System.out.println("server > " + JSON.toJSONString(stringMessage));
             playGameEndpoint.close();
@@ -207,8 +207,8 @@ public class Main {
                 case "login":
                     client.login(command[1], command[2]);
                     break;
-                case "unlogin":
-                    client.unlogin();
+                case "logout":
+                    client.logout();
                     break;
                 case "me":
                     client.getMyData();
@@ -228,8 +228,8 @@ public class Main {
                 case "sit":
                     client.sitTable();
                     break;
-                case "stay":
-                    client.stayTable();
+                case "stand":
+                    client.standTable();
                     break;
             }
         }

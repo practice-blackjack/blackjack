@@ -6,7 +6,6 @@ import akka.actor.Props;
 import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.server.actor.Actor;
-import nulp.pist21.blackjack.server.actor.KernelActor;
 import nulp.pist21.blackjack.server.actor.TableActor;
 import nulp.pist21.blackjack.server.actor.message.*;
 
@@ -21,6 +20,9 @@ public class TableManager extends AbstractActor {
     }
 
     public TableManager() {
+        addTable(new Table());
+        addTable(new Table());
+        addTable(new Table());
     }
 
     @SuppressWarnings("Duplicates")
@@ -35,24 +37,32 @@ public class TableManager extends AbstractActor {
                     ActorRef tableActor = getTableActor(message.tableInfo);
                     if (tableActor != null) {
                         tableActor.tell(message, getSender());
+                    } else {
+                        getSender().tell(new EntryTableResponse(false), getSelf());
                     }
                 })
                 .match(ExitTableRequest.class, message -> {
                     ActorRef tableActor = getTableActor(message.tableInfo);
                     if (tableActor != null) {
                         tableActor.tell(message, getSender());
+                    } else {
+                        getSender().tell(new ExitTableResponse(false), getSelf());
                     }
                 })
                 .match(SitTableRequest.class, message -> {
                     ActorRef tableActor = getTableActor(message.tableInfo);
                     if (tableActor != null) {
                         tableActor.tell(message, getSender());
+                    } else {
+                        getSender().tell(new SitTableResponse(false), getSelf());
                     }
                 })
                 .match(StandTableRequest.class, message -> {
                     ActorRef tableActor = getTableActor(message.tableInfo);
                     if (tableActor != null) {
                         tableActor.tell(message, getSender());
+                    } else {
+                        getSender().tell(new StandTableResponse(false), getSelf());
                     }
                 })
                 .match(PlayerAction.class, message -> {

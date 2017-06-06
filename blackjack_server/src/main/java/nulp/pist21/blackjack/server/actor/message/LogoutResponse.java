@@ -2,10 +2,10 @@ package nulp.pist21.blackjack.server.actor.message;
 
 public class LogoutResponse {
 
-    private final String text;
+    private final boolean isOk;
 
-    public LogoutResponse(String text) {
-        this.text = text;
+    public LogoutResponse(boolean isOk) {
+        this.isOk = isOk;
     }
 
 }

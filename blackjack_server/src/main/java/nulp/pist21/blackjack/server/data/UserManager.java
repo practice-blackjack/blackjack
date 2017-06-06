@@ -39,20 +39,25 @@ public class UserManager extends AbstractActor {
                     User user = existUser(message.user);
                     if (user != null) {
                         Actor.tokenManager.tell(new RefreshUsersToken(user), getSender());
+                    } else {
+                        getSender().tell(new LoginResponse(-1), getSelf());
                     }
                 })
                 .match(MyDataNameRequest.class, message -> {
                     User user = existUserName(message.userName);
-                    if (user != null) {
-                        getSender().tell(new MyDataResponse(user), getSelf());
+                    if (user == null) {
+                        user = new User("", "");
                     }
+                    getSender().tell(new MyDataResponse(user), getSelf());
                 })
                 .match(UserDataRequest.class, message -> {
                     User user = existUserName(message.userName);
-                    if (user != null) {
+                    if (user == null) {
+                        user = new User("", "");
+                    } else {
                         user.setPassword("");
-                        getSender().tell(new MyDataResponse(user), getSelf());
                     }
+                    getSender().tell(new MyDataResponse(user), getSelf());
                 })
                 .build();
     }
