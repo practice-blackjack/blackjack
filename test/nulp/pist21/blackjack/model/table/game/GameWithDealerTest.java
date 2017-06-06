@@ -162,14 +162,6 @@ public class GameWithDealerTest {
     }
 
     @Test
-    public void should_give_hidden_card_for_dealer(){
-        GameWithDealer game = new GameWithDealer();
-        game.start(new TableBox[]{}, new EndlessDeck());
-        Assert.assertEquals(Card.UNDEFINED_SUIT, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand()[0].getSuit());
-        Assert.assertEquals(Card.UNDEFINED_VALUE, game.getPlayer(GameWithDealer.DEALER_INDEX).getHand()[0].getValue());
-    }
-
-    @Test
     public void should_ignore_hidden_card_in_sum(){
         TableBox[] boxes = new TableBox[]{
                 new TableBox(),
@@ -180,16 +172,6 @@ public class GameWithDealerTest {
 
 
         Assert.assertEquals(9, GameWithDealer.Combination.getPoints(boxes[0]));
-    }
-
-    @Test
-    public void should_open_hidden_card_on_dealers_step(){
-        GameWithDealer game = new GameWithDealer();
-        game.start(new TableBox[]{}, new EndlessDeck());
-        IHand dealerBox = game.getPlayer(GameWithDealer.DEALER_INDEX);
-        game.next(new GameAction(GameAction.Actions.STAND), new EndlessDeck());
-        Assert.assertNotEquals(Card.UNDEFINED_SUIT, dealerBox.getHand()[0].getSuit());
-        Assert.assertNotEquals(Card.UNDEFINED_VALUE, dealerBox.getHand()[0].getValue());
     }
 
     @Test
