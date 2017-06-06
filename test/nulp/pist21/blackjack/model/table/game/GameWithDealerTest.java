@@ -5,6 +5,7 @@ import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.table.TableBox;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.EndlessDeck;
+import nulp.pist21.blackjack.model.table.deck.TurnableCard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -164,7 +165,8 @@ public class GameWithDealerTest {
     public void should_give_hidden_card_for_dealer(){
         GameWithDealer game = new GameWithDealer(new EndlessDeck());
         game.start(new TableBox[]{});
-        Assert.assertEquals(Card.HIDDEN_CARD, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0]);
+        Assert.assertEquals(Card.UNDEFINED_SUIT, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0].getSuit());
+        Assert.assertEquals(Card.UNDEFINED_VALUE, game.getBox(GameWithDealer.DEALER_INDEX).getHand()[0].getValue());
     }
 
     @Test
@@ -173,7 +175,7 @@ public class GameWithDealerTest {
                 new TableBox(),
         };
 
-        boxes[0].giveCard(Card.HIDDEN_CARD);
+        boxes[0].giveCard(new TurnableCard(new Card(Card.CLUBS, Card.ACE)));
         boxes[0].giveCard(new Card(Card.HEARTS, Card._9));
 
 
@@ -186,7 +188,8 @@ public class GameWithDealerTest {
         game.start(new TableBox[]{});
         TableBox dealerBox = game.getBox(GameWithDealer.DEALER_INDEX);
         game.next(new GameAction(GameAction.Actions.STAND));
-        Assert.assertNotEquals(Card.HIDDEN_CARD, dealerBox.getHand()[0]);
+        Assert.assertNotEquals(Card.UNDEFINED_SUIT, dealerBox.getHand()[0].getSuit());
+        Assert.assertNotEquals(Card.UNDEFINED_VALUE, dealerBox.getHand()[0].getValue());
     }
 
     @Test

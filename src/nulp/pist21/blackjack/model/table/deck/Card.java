@@ -2,8 +2,8 @@ package nulp.pist21.blackjack.model.table.deck;
 
 public class Card {
 
-    private int suit;
-    private int value;
+    protected int suit;
+    protected int value;
 
     public final static int ACE = 0;
     public final static int _2 = 1;
@@ -32,7 +32,7 @@ public class Card {
 
 
 
-    public final static Card HIDDEN_CARD = new Card(UNDEFINED_SUIT, UNDEFINED_VALUE);
+    //public final static Card HIDDEN_CARD = new Card(UNDEFINED_SUIT, UNDEFINED_VALUE);
 
 
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds", "*"};

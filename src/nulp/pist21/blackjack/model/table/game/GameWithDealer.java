@@ -4,12 +4,13 @@ import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.table.deck.Card;
 import nulp.pist21.blackjack.model.table.deck.IDeck;
 import nulp.pist21.blackjack.model.table.TableBox;
+import nulp.pist21.blackjack.model.table.deck.TurnableCard;
 
 public class GameWithDealer implements IGame {
     private TableBox[] playingBoxes;
     private TableBox dealerBox;
     private IDeck deck;
-    private Card hiddenCard;
+    private TurnableCard hiddenCard;
 
     private int currentIndex;
 
@@ -33,9 +34,8 @@ public class GameWithDealer implements IGame {
                 playingBox.giveCard(deck.next());
             }
         }
-
-        hiddenCard = deck.next();
-        dealerBox.giveCard(Card.HIDDEN_CARD);
+        this.hiddenCard = new TurnableCard(deck.next());
+        dealerBox.giveCard(this.hiddenCard);
         dealerBox.giveCard(deck.next());
         currentIndex = 0;
     }
@@ -53,7 +53,7 @@ public class GameWithDealer implements IGame {
 
         //dealer step
         if (currentIndex == playingBoxes.length){
-            openCard();
+            hiddenCard.open();
             GameAction dealerAction;
             do{
                 dealerAction = deallerStep();
@@ -73,14 +73,6 @@ public class GameWithDealer implements IGame {
             return new GameAction(GameAction.Actions.HIT);
         }
         return new GameAction(GameAction.Actions.STAND);
-    }
-
-    private void openCard(){
-        Card opennedCard = dealerBox.getHand()[1];
-        dealerBox.takeCards();
-        dealerBox.giveCard(hiddenCard);
-        hiddenCard = null;
-        dealerBox.giveCard(opennedCard);
     }
 
     @Override
@@ -148,7 +140,7 @@ public class GameWithDealer implements IGame {
                 else if (calcCard.getValue() >= Card._10 && calcCard.getValue() <= Card.KING){
                     points += 10;
                 }
-                else if (calcCard != Card.HIDDEN_CARD){
+                else if (calcCard.getValue() != Card.UNDEFINED_VALUE){
                     points += calcCard.getValue() + 1;
                 }
             }
