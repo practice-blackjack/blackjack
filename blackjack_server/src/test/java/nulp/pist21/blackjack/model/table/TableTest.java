@@ -1,0 +1,25 @@
+package nulp.pist21.blackjack.model.table;
+
+import nulp.pist21.blackjack.model.deck.EndlessDeck;
+import nulp.pist21.blackjack.model.game.GameWithDealer;
+import org.junit.Assert;
+import org.junit.Test;
+
+public class TableTest {
+
+    public Table createTable(){
+        GameWithDealer game = new GameWithDealer();
+        return new Table(6, game, new EndlessDeck());
+    }
+
+    @Test
+    public void should_create_clear_boxes(){
+        Table table = createTable();
+        Assert.assertEquals(6, table.getBoxCount());
+        for (int i = 0; i < table.getBoxCount(); i++) {
+            Assert.assertNotNull(table.getBox(i));
+        }
+    }
+
+
+}
