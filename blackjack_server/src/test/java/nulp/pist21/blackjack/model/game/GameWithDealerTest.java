@@ -1,6 +1,5 @@
 package nulp.pist21.blackjack.model.game;
 
-import mock.DeckMock;
 import mock.UserMock;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.IDeck;
@@ -10,10 +9,6 @@ import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.deck.TurnableCard;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class GameWithDealerTest {
 

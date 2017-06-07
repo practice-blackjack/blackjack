@@ -8,10 +8,12 @@ import java.util.List;
 
 public class TableBox implements IHand{
 
+    private boolean isActivated;
     private List<Card> hand;
 
     public TableBox() {
         hand = new ArrayList<>();
+        isActivated = false;
     }
 
     @Override
@@ -27,5 +29,14 @@ public class TableBox implements IHand{
     @Override
     public Card[] getHand(){
         return hand.toArray(new Card[hand.size()]);
+    }
+
+    public boolean isActivated(){
+        return isActivated;
+    }
+
+    public void isActivated(boolean activated){
+        isActivated = activated;
+        if (!isActivated) hand.clear();
     }
 }

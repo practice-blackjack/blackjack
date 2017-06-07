@@ -8,8 +8,32 @@ import org.junit.Test;
 public class TableBoxTest {
 
     @Test
-    public void should_create_empty_hand() {
+    public void should_have_empty_hand_on_creating() {
         TableBox box = new TableBox();
+        Assert.assertEquals(0, box.getHand().length);
+    }
+
+    @Test
+    public void should_be_deactivated_on_creating(){
+        TableBox box = new TableBox();
+        Assert.assertFalse(box.isActivated());
+    }
+
+    @Test
+    public void should_set_and_return_activating_status(){
+        TableBox box = new TableBox();
+        box.isActivated(true);
+        Assert.assertTrue(box.isActivated());
+        box.isActivated(false);
+        Assert.assertFalse(box.isActivated());
+    }
+
+    @Test
+    public void should_clear_hand_on_deactivating(){
+        TableBox box = new TableBox();
+        box.isActivated(true);
+        box.giveCard(new Card(Card.CLUBS, Card.ACE));
+        box.isActivated(false);
         Assert.assertEquals(0, box.getHand().length);
     }
 
@@ -42,4 +66,5 @@ public class TableBoxTest {
         Assert.assertEquals(Card.SPADES, box.getHand()[1].getSuit());
         Assert.assertEquals(Card._7, box.getHand()[1].getValue());
     }
+
 }
