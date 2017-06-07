@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import java.awt.Button;
+
 import java.io.IOException;
 
 /**
@@ -16,6 +16,7 @@ import java.io.IOException;
 
 public class PlayController {
     Stage stage;
+    String playerName;
     int bet = 0;
     @FXML
     public TextArea gameLog;
@@ -45,7 +46,16 @@ public class PlayController {
         deal.setDisable(true);
         stand.setVisible(false);
         hit.setVisible(false);
+        gameLog.setText("Game started!\n");
 
+        String name = setPlayerName(playerName);
+        System.out.println(name);
+
+    }
+
+    public String setPlayerName(String playerName){
+        this.playerName = playerName;
+        return playerName;
     }
 
     @FXML
@@ -63,10 +73,10 @@ public class PlayController {
         stage.show();
     }
     public void hitButton(){
-
+        gameLog.appendText("card add\n");
     }
     public void standButton(){
-
+        gameLog.appendText("open card\n");
     }
     public void dealButton(){
         hit.setVisible(true);
@@ -79,6 +89,9 @@ public class PlayController {
         twoHundert.setVisible(false);
         fiveHundert.setVisible(false);
         betLabel.setText("$ " + String.valueOf(bet));
+
+        //logger
+        gameLog.appendText("Bet \t" + String.valueOf(bet) + "\n");
     }
 
     public void setStage(Stage stage) {

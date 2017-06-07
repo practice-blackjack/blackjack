@@ -18,13 +18,16 @@ public class SignInController {
     public TextField lf;
     public Hyperlink regLink;
     Stage stage;
+    public String playerName;
 
     // singIn start
     @FXML
     public void signInButton()throws IOException{
        if(pf.getText().equals("root") && lf.getText().equals("root")) {
            LobbyFrameController(stage);
-       }
+           playerName = "Hello";
+           System.out.println(playerName);
+    }
     }
 
     public void setStage(Stage stage){

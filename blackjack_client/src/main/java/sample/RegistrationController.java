@@ -36,8 +36,6 @@ public class RegistrationController {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
         Parent root = loader.load();
-        LobbyFrameController controller = loader.getController();
-        controller.setStage(primaryStage);
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();

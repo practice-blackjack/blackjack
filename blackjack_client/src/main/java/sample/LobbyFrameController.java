@@ -24,7 +24,8 @@ public class LobbyFrameController {
     public javafx.scene.control.TextField peopleField;
 
     public String[] tableName = new String[10];
-    public String[] rate = new String[10];
+    public Integer[] MinRate = new Integer[10];
+    public Integer[] MaxRate = new Integer[10];
     public String[] people = new String[10];
     private Stage stage;
 
@@ -38,11 +39,17 @@ public class LobbyFrameController {
         tableName[3] = "London";
         tableName[4] = "Costa Rica";
 
-        rate[0] = "5-50$";
-        rate[1] = "51-70$";
-        rate[2] = "71-100$";
-        rate[3] = "101-200$";
-        rate[4] = "201-500$";
+        MinRate[0] = 10;
+        MinRate[1] = 50;
+        MinRate[2] = 100;
+        MinRate[3] = 300;
+        MinRate[4] = 500;
+
+        MaxRate[0] = 50;
+        MaxRate[1] = 100;
+        MaxRate[2] = 200;
+        MaxRate[3] = 500;
+        MaxRate[4] = 1000;
 
         people[0] = "1/4";
         people[1] = "2/6";
@@ -51,10 +58,11 @@ public class LobbyFrameController {
         people[4] = "0/5";
 
         ObservableList<String> data = FXCollections.observableArrayList(
-                tableName[0] + "\t\t\tRate: \t" + rate[0] + "\n\t\t\t\tPeople: \t" + people[0], tableName[1] +
-                        "\t\t\tRate: \t" + rate[1] + "\n\t\t\t\tPeople: \t" + people[1], tableName[2] + "\t\t\tRate: \t"
-                        + rate[2] + "\n\t\t\t\tPeople: \t" + people[2], tableName[3] + "\t\t\tRate: \t" + rate[3] +
-                        "\n\t\t\t\tPeople: \t" + people[3], tableName[4] + "\t\tRate: \t" + rate[4] + "\n\t\t\t\tPeople: \t" + people[4]
+                tableName[0] + "\t\t\tRate: \t" + MinRate[0] + "-" + MaxRate[0] + "\n\t\t\t\tPeople: \t" + people[0], tableName[1] +
+                        "\t\t\tRate: \t" + MinRate[1] + "-" + MaxRate[1] +"\n\t\t\t\tPeople: \t" + people[1], tableName[2] + "\t\t\tRate: \t"
+                        + MinRate[2] + "-" + MaxRate[2] + "\n\t\t\t\tPeople: \t" + people[2], tableName[3] + "\t\t\tRate: \t" + MinRate[3] +
+                        "-" + MaxRate[3] + "\n\t\t\t\tPeople: \t" + people[3], tableName[4] + "\t\tRate: \t" + MinRate[4] + "-" + MaxRate[4] +
+                        "\n\t\t\t\tPeople:" + " \t" + people[4]
         );
         listView.setItems(data);
         // end parsing
@@ -67,7 +75,7 @@ public class LobbyFrameController {
                 if (mouseEvent.getClickCount() == 2) {
                     Integer index = listView.getSelectionModel().getSelectedIndex();
                     nameField.setText(tableName[index]);
-                    rateField.setText(rate[index]);
+                    rateField.setText(MinRate[index].toString() + "-" + MaxRate[index]);
                     peopleField.setText(people[index]);
                     try{
                         FXMLLoader loader = new FXMLLoader();
@@ -90,7 +98,7 @@ public class LobbyFrameController {
                 } else if (mouseEvent.getClickCount() == 1) {
                     Integer index = listView.getSelectionModel().getSelectedIndex();
                     nameField.setText(tableName[index]);
-                    rateField.setText(rate[index]);
+                    rateField.setText(MinRate[index].toString() + "-" + MaxRate[index]);
                     peopleField.setText(people[index]);
                 }
             }

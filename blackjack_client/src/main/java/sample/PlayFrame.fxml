@@ -39,7 +39,7 @@
          </image>
       </ImageView>
       <Canvas height="200.0" layoutX="119.0" layoutY="41.0" width="200.0" />
-      <Button fx:id="deal" layoutX="467.0" layoutY="350.0" mnemonicParsing="false" onAction="#rateButton" prefHeight="42.0" prefWidth="135.0" text="Deal" underline="true">
+      <Button fx:id="deal" layoutX="467.0" layoutY="350.0" mnemonicParsing="false" onAction="#dealButton" prefHeight="42.0" prefWidth="135.0" text="Deal" underline="true">
          <font>
             <Font size="23.0" />
          </font>
