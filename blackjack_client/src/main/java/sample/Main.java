@@ -11,13 +11,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("PlayFrame.fxml"));
+        loader.setLocation(getClass().getResource("SignInFrame.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Black Jack 21");
 
-        PlayController controller = loader.getController();
+        SignInController controller = loader.getController();
         controller.setStage(primaryStage);
         Dimension screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
         primaryStage.setX( screenDimention.getWidth()/2 - 150);

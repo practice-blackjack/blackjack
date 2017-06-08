@@ -66,12 +66,12 @@
             <Font name="Calibri" size="19.0" />
          </font>
       </Label>
-      <Label layoutX="466.0" layoutY="284.0" text="12700" textFill="WHITE">
+      <Label fx:id="lblCash" layoutX="466.0" layoutY="284.0" textFill="WHITE">
          <font>
             <Font name="Calibri" size="19.0" />
          </font>
       </Label>
-      <Label layoutX="462.0" layoutY="257.0" text="BlackPlayer" textFill="WHITE">
+      <Label fx:id="lblPlayerName" layoutX="462.0" layoutY="257.0" textFill="WHITE">
          <font>
             <Font name="Calibri" size="19.0" />
          </font>
@@ -81,7 +81,7 @@
             <Font name="Calibri" size="19.0" />
          </font>
       </Label>
-      <Label layoutX="381.0" layoutY="340.0" text="BlackPlayer@gmail.com" textFill="WHITE">
+      <Label fx:id="lblEmail" layoutX="381.0" layoutY="340.0" textFill="WHITE">
          <font>
             <Font name="Calibri" size="19.0" />
          </font>

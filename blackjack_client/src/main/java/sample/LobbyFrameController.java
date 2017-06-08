@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -22,15 +23,31 @@ public class LobbyFrameController {
     public javafx.scene.control.TextField rateField;
     @FXML
     public javafx.scene.control.TextField peopleField;
+    @FXML
+    public javafx.scene.control.Label lblPlayerName;
+    @FXML
+    public javafx.scene.control.Label lblCash;
+    @FXML
+    public javafx.scene.control.Label lblEmail;
 
     public String[] tableName = new String[10];
     public Integer[] MinRate = new Integer[10];
     public Integer[] MaxRate = new Integer[10];
     public String[] people = new String[10];
+    private String playerName;
+    private Integer cash;
+    private String email;
     private Stage stage;
 
     @FXML
     public void initialize(){
+        playerName = "BlackPlayer";
+        cash = 2500;
+        email = "BlackPlayer@gmail.com";
+        lblPlayerName.setText(playerName);
+        lblCash.setText((cash).toString());
+        lblEmail.setText(email);
+
         // parsing ListView
 
         tableName[0] = "Mexico";
