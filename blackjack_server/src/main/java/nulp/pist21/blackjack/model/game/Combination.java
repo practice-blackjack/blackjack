@@ -66,4 +66,10 @@ public class Combination {
     public int getPoints() {
         return points;
     }
+
+    @Override
+    public String toString() {
+         if (points == BLACK_JACK) return "Black jack";
+        return Integer.toString(points);
+    }
 }
