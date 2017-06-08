@@ -7,7 +7,7 @@ import nulp.pist21.blackjack.model.deck.TurnableCard;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dealer implements IHand, IStrategy {
+public class Dealer implements IHand {
     private List<Card> hand;
     private TurnableCard hiddenCard;
 
@@ -37,10 +37,9 @@ public class Dealer implements IHand, IStrategy {
         return hand.toArray(new Card[hand.size()]);
     }
 
-    @Override
-    public GameAction doStep(IGame game, int index) {
+    public GameAction doStep(IRound round, int index) {
         hiddenCard.open();
-        if (GameWithDealer.Combination.getPoints(this) <= 16){
+        if (new Combination(this).getPoints() <= 16){
             return new GameAction(GameAction.Actions.HIT);
         }
         return new GameAction(GameAction.Actions.STAND);

@@ -1,11 +1,10 @@
 package mock;
 
 import nulp.pist21.blackjack.model.actions.GameAction;
-import nulp.pist21.blackjack.model.game.GameWithDealer;
-import nulp.pist21.blackjack.model.game.IGame;
-import nulp.pist21.blackjack.model.game.IStrategy;
+import nulp.pist21.blackjack.model.game.Combination;
+import nulp.pist21.blackjack.model.game.IRound;
 
-public class UserMock implements IStrategy {
+public class UserMock {
 
     private int stopOn;
 
@@ -13,9 +12,8 @@ public class UserMock implements IStrategy {
         this.stopOn = stopOn;
     }
 
-    @Override
-    public GameAction doStep(IGame game, int index){
-        if (GameWithDealer.Combination.getPoints(game.getPlayer(index)) >= stopOn){
+    public GameAction doStep(IRound round, int index){
+        if (new Combination(round.getPlayer(index)).getPoints() >= stopOn){
             return new GameAction(GameAction.Actions.STAND);
         }
         return new GameAction(GameAction.Actions.HIT);
