@@ -77,7 +77,7 @@ public class RoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card._2));
         boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));    //22
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT), deck));
+        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class RoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card._5));
         boxes[2].giveCard(new Card(Card.CLUBS, Card._9));
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT), deck));
+        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
     }
 
     @Test
@@ -140,7 +140,7 @@ public class RoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
         boxes[2].giveCard(new Card(Card.CLUBS, Card.ACE));
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT), deck));
+        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class RoundTest {
         do{
             int userId = round.getCurrentIndex();
             action = users[userId].doStep(round, userId);
-        } while (round.next(action, new EndlessDeck()));
+        } while (round.next(action));
     }
 
 }

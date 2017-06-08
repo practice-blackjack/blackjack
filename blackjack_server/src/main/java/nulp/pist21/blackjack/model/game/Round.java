@@ -35,7 +35,7 @@ public class Round implements IRound {
     }
 
     @Override
-    public boolean next(GameAction action, IDeck deck){ //false if round over
+    public boolean next(GameAction action){ //false if round over
         if (currentIndex < players.length){
             if (action.getAction() == GameAction.Actions.HIT && new Combination(players[currentIndex]).canHit()){
                 players[currentIndex].giveCard(deck.next());

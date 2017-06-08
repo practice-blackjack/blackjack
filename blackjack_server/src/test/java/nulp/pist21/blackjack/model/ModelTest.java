@@ -54,7 +54,7 @@ public class ModelTest {
         do{
             int userId = round.getCurrentIndex();
             action = users[userId].doStep(round, userId);
-            canNext = round.next(action, new EndlessDeck());
+            canNext = round.next(action);
 
             System.out.println("Players " + (userId + 1) + " turn. ");
 
