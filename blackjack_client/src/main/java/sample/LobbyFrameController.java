@@ -27,27 +27,20 @@ public class LobbyFrameController {
     public javafx.scene.control.Label lblPlayerName;
     @FXML
     public javafx.scene.control.Label lblCash;
-    @FXML
-    public javafx.scene.control.Label lblEmail;
 
     public String[] tableName = new String[10];
     public Integer[] MinRate = new Integer[10];
     public Integer[] MaxRate = new Integer[10];
     public String[] people = new String[10];
-    private String playerName;
-    private Integer cash;
-    private String email;
+
     private Stage stage;
 
     @FXML
     public void initialize(){
-        playerName = "BlackPlayer";
-        cash = 2500;
-        email = "BlackPlayer@gmail.com";
+        String playerName = "BlackPlayer";
+        Integer cash = 2500;
         lblPlayerName.setText(playerName);
         lblCash.setText((cash).toString());
-        lblEmail.setText(email);
-
         // parsing ListView
 
         tableName[0] = "Mexico";
@@ -89,7 +82,7 @@ public class LobbyFrameController {
         listView.setOnMouseClicked(new javafx.event.EventHandler<javafx.scene.input.MouseEvent>() {
             @Override
             public void handle(javafx.scene.input.MouseEvent mouseEvent) {
-                if (mouseEvent.getClickCount() == 2) {
+                    if (mouseEvent.getClickCount() == 2) {
                     Integer index = listView.getSelectionModel().getSelectedIndex();
                     nameField.setText(tableName[index]);
                     rateField.setText(MinRate[index].toString() + "-" + MaxRate[index]);
