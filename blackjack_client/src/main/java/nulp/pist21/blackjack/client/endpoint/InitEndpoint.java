@@ -10,12 +10,16 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import java.io.IOException;
 
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGIN;
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGOUT;
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_REGISTER;
+
 @ClientEndpoint
 public class InitEndpoint {
 
-    private MessageFunction<StringMessage> registerFunction;
+    private MessageFunction<BooleanMessage> registerFunction;
     private MessageFunction<TokenMessage> loginFunction;
-    private MessageFunction<StringMessage> logoutFunction;
+    private MessageFunction<BooleanMessage> logoutFunction;
 
     private Session session;
 
@@ -27,19 +31,19 @@ public class InitEndpoint {
     @OnMessage
     public void onMessage(String message) {
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "register":
-                if (registerFunction != null) registerFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_REGISTER:
+                if (registerFunction != null) registerFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "login":
+            case TYPE_LOGIN:
                 if (loginFunction != null) loginFunction.apply(JSON.parseObject(message, TokenMessage.class));
                 break;
-            case "logout":
-                if (logoutFunction != null) logoutFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_LOGOUT:
+                if (logoutFunction != null) logoutFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
         }
     }
 
-    public void onRegisterListener(MessageFunction<StringMessage> function) {
+    public void onRegisterListener(MessageFunction<BooleanMessage> function) {
         this.registerFunction = function;
     }
 
@@ -47,20 +51,20 @@ public class InitEndpoint {
         this.loginFunction = function;
     }
 
-    public void onLogoutListener(MessageFunction<StringMessage> function) {
+    public void onLogoutListener(MessageFunction<BooleanMessage> function) {
         this.logoutFunction = function;
     }
 
     public void sendRegisterMessage(User user) {
-        sendMessage(new UserMessage("register", user));
+        sendMessage(new UserMessage(TYPE_REGISTER, user));
     }
 
     public void sendLoginMessage(User user) {
-        sendMessage(new UserMessage("login", user));
+        sendMessage(new UserMessage(TYPE_LOGIN, user));
     }
 
     public void sendLogoutMessage() {
-        sendMessage(new Message("logout"));
+        sendMessage(new Message(TYPE_LOGOUT));
     }
 
     private void sendMessage(Message message) {

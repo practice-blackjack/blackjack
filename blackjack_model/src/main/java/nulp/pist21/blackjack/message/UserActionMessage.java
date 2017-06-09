@@ -4,10 +4,6 @@ import nulp.pist21.blackjack.model.TableInfo;
 
 public class UserActionMessage extends Message {
 
-    public final static String HIT = "hit";
-    public final static String STAND = "stand";
-    public final static String BET = "bet";
-
     private TableInfo tableInfo;
     private int place;
     private String action;

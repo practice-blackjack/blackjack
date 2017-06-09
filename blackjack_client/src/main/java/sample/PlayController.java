@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 /**
  * Created by Ol'ko on 22.05.2017.
  */
@@ -88,7 +90,7 @@ public class PlayController {
             int place = waitMessage.getPlace();
             Scanner scn = new Scanner(System.in);
             switch (waitMessage.getWaitType()) {
-                case "bet":
+                case ACTION_WAIT_BET:
                     deal.setVisible(true);
                     hit.setVisible(false);
                     stand.setVisible(false);
@@ -101,7 +103,7 @@ public class PlayController {
                     int bet = scn.nextInt();
                     playGameEndpoint.sendActionMessage(tableInfo, place, bet);
                     break;
-                case "hit_or_stand":
+                case ACTION_WAIT_HIT_OR_STAND:
                     deal.setVisible(false);
                     hit.setVisible(true);
                     stand.setVisible(true);
@@ -117,13 +119,13 @@ public class PlayController {
             }
         });
 
-        watchGameEndpoint.onEntryListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             int place = 0;
             playGameEndpoint.sendSitMessage(currentTable, place);
         });
-        watchGameEndpoint.onExitListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        watchGameEndpoint.onExitListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             watchGameEndpoint.close();
             Platform.runLater(() -> {
                 try {
@@ -140,12 +142,12 @@ public class PlayController {
                 }
             });
         });
-        playGameEndpoint.onSitListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        playGameEndpoint.onSitListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             //todo:
         });
-        playGameEndpoint.onStandListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        playGameEndpoint.onStandListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             playGameEndpoint.close();
             watchGameEndpoint.sendExitMessage(currentTable);
         });
@@ -161,11 +163,11 @@ public class PlayController {
         playGameEndpoint.sendStandMessage(currentTable);
     }
     public void hitButton(){
-        playGameEndpoint.sendActionMessage(currentTable, 0, "hit");
+        playGameEndpoint.sendActionMessage(currentTable, 0, ACTION_HIT);
         gameLog.appendText("card add\n");
     }
     public void standButton(){
-        playGameEndpoint.sendActionMessage(currentTable, 0, "stand");
+        playGameEndpoint.sendActionMessage(currentTable, 0, ACTION_STAND);
         gameLog.appendText("open card\n");
     }
     public void dealButton(){

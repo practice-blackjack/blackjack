@@ -16,6 +16,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @SuppressWarnings("Duplicates")
 public class ProgramData {
 
@@ -76,7 +78,7 @@ public class ProgramData {
 
     private TableInfo currentTable;
 
-    private MessageFunction<StringMessage> tokenChecker = (StringMessage stringMessage) -> {
+    private MessageFunction<BooleanMessage> tokenChecker = (BooleanMessage stringMessage) -> {
         System.out.println("server > " + JSON.toJSONString(stringMessage));
     };
 
@@ -132,11 +134,11 @@ public class ProgramData {
                 int place = waitMessage.getPlace();
                 Scanner scn = new Scanner(System.in);
                 switch (waitMessage.getWaitType()) {
-                    case "bet":
+                    case ACTION_WAIT_BET:
                         int bet = scn.nextInt();
                         playGameEndpoint.sendActionMessage(tableInfo, place, bet);
                         break;
-                    case "hit_or_stand":
+                    case ACTION_WAIT_HIT_OR_STAND:
                         String hitOrStand = scn.nextLine();
                         playGameEndpoint.sendActionMessage(tableInfo, place, hitOrStand);
                         break;

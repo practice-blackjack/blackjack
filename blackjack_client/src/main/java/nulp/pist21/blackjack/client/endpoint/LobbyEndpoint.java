@@ -10,6 +10,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import java.io.IOException;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ClientEndpoint
 public class LobbyEndpoint {
 
@@ -17,7 +19,7 @@ public class LobbyEndpoint {
     private MessageFunction<UserMessage> myDataFunction;
     private MessageFunction<UserMessage> userDataFunction;
     private MessageFunction<TableListMessage> tableListFunction;
-    private MessageFunction<StringMessage> tokenCheckerFunction;
+    private MessageFunction<BooleanMessage> tokenCheckerFunction;
 
     private Session session;
     private final long token;
@@ -35,25 +37,25 @@ public class LobbyEndpoint {
     @OnMessage
     public void onMessage(String message) {
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_TOKEN:
+                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "update":
+            case TYPE_UPDATE:
                 if (updateFunction != null) updateFunction.apply(JSON.parseObject(message, TableListMessage.class));
                 break;
-            case "my_data":
+            case TYPE_MY_DATA:
                 if (myDataFunction != null) myDataFunction.apply(JSON.parseObject(message, UserMessage.class));
                 break;
-            case "user_data":
+            case TYPE_USER_DATA:
                 if (userDataFunction != null) userDataFunction.apply(JSON.parseObject(message, UserMessage.class));
                 break;
-            case "table_list":
+            case TYPE_TABLE_LIST:
                 if (tableListFunction != null) tableListFunction.apply(JSON.parseObject(message, TableListMessage.class));
                 break;
         }
     }
 
-    public void onTokenCheckerMessageListener(MessageFunction<StringMessage> function) {
+    public void onTokenCheckerMessageListener(MessageFunction<BooleanMessage> function) {
         this.tokenCheckerFunction = function;
     }
 
@@ -74,19 +76,19 @@ public class LobbyEndpoint {
     }
 
     public void sendTokenMessage() {
-        sendMessage(new TokenMessage("token", token));
+        sendMessage(new TokenMessage(TYPE_TOKEN, token));
     }
 
     public void sendMyDataMessage() {
-        sendMessage(new Message("my_data"));
+        sendMessage(new Message(TYPE_MY_DATA));
     }
 
     public void sendUserDataMessage(User user) {
-        sendMessage(new UserMessage("user_data", user));
+        sendMessage(new UserMessage(TYPE_USER_DATA, user));
     }
 
     public void sendTableListMessage() {
-        sendMessage(new Message("table_list"));
+        sendMessage(new Message(TYPE_TABLE_LIST));
     }
 
     private void sendMessage(Message message) {

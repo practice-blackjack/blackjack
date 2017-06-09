@@ -17,6 +17,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 
+import static nulp.pist21.blackjack.message.MessageConstant.ACTION_WAIT_BET;
+import static nulp.pist21.blackjack.message.MessageConstant.ACTION_WAIT_HIT_OR_STAND;
+
 public class Main {
 
     private WebSocketContainer container;
@@ -26,8 +29,8 @@ public class Main {
     private WatchGameEndpoint watchGameEndpoint;
     private PlayGameEndpoint playGameEndpoint;
 
-    private MessageFunction<StringMessage> tokenChecker = (StringMessage stringMessage) -> {
-        System.out.println("server > " + JSON.toJSONString(stringMessage));
+    private MessageFunction<BooleanMessage> tokenChecker = (BooleanMessage booleanMessage) -> {
+        System.out.println("server > " + JSON.toJSONString(booleanMessage));
     };
 
     private long token;
@@ -89,11 +92,11 @@ public class Main {
                 int place = waitMessage.getPlace();
                 Scanner scn = new Scanner(System.in);
                 switch (waitMessage.getWaitType()) {
-                    case "bet":
+                    case ACTION_WAIT_BET:
                         int bet = scn.nextInt();
                         playGameEndpoint.sendActionMessage(tableInfo, place, bet);
                         break;
-                    case "hit_or_stand":
+                    case ACTION_WAIT_HIT_OR_STAND:
                         String hitOrStand = scn.nextLine();
                         playGameEndpoint.sendActionMessage(tableInfo, place, hitOrStand);
                         break;
@@ -105,8 +108,8 @@ public class Main {
     }
 
     private void register(String name, String password) {
-        initEndpoint.onRegisterListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        initEndpoint.onRegisterListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
         User user = new User(name, password);
         initEndpoint.sendRegisterMessage(user);
@@ -123,8 +126,8 @@ public class Main {
     }
 
     private void logout() {
-        initEndpoint.onLogoutListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        initEndpoint.onLogoutListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             if (playGameEndpoint != null) playGameEndpoint.close();
             if (watchGameEndpoint != null) watchGameEndpoint.close();
             if (lobbyEndpoint != null) lobbyEndpoint.close();
@@ -159,16 +162,16 @@ public class Main {
     private void entryTable() throws URISyntaxException {
         initWatchGame();
         lobbyEndpoint.close();
-        watchGameEndpoint.onEntryListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
         TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
         watchGameEndpoint.sendEntryMessage(tableInfo);
     }
 
     private void exitTable() throws URISyntaxException {
-        watchGameEndpoint.onExitListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        watchGameEndpoint.onExitListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             initLobby();
             watchGameEndpoint.close();
         });
@@ -178,8 +181,8 @@ public class Main {
 
     private void sitTable() throws URISyntaxException {
         initPlayGame();
-        playGameEndpoint.onSitListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        playGameEndpoint.onSitListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
         TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
         int place = 1;
@@ -187,8 +190,8 @@ public class Main {
     }
 
     private void standTable() {
-        playGameEndpoint.onStandListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
+        playGameEndpoint.onStandListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
             playGameEndpoint.close();
         });
         TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);

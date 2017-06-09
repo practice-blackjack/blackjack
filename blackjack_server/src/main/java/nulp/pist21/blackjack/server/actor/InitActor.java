@@ -39,7 +39,7 @@ public class InitActor extends AbstractActor {
                     endpoint.sendLoginMessage(token);
                 })
                 .match(LogoutResponse.class, message -> {
-                    endpoint.sendLogoutMessage();
+                    endpoint.sendLogoutMessage(true);
                 })
                 .build();
     }

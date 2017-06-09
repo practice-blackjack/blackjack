@@ -10,13 +10,15 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import java.io.IOException;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ClientEndpoint
 public class PlayGameEndpoint {
 
     private MessageFunction<WaitMessage> waitActionFunction;
-    private MessageFunction<StringMessage> sitFunction;
-    private MessageFunction<StringMessage> standFunction;
-    private MessageFunction<StringMessage> tokenCheckerFunction;
+    private MessageFunction<BooleanMessage> sitFunction;
+    private MessageFunction<BooleanMessage> standFunction;
+    private MessageFunction<BooleanMessage> tokenCheckerFunction;
 
     private Session session;
     private final long token;
@@ -34,22 +36,22 @@ public class PlayGameEndpoint {
     @OnMessage
     public void onMessage(String message) {
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_TOKEN:
+                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "wait":
+            case TYPE_WAIT:
                 if (waitActionFunction != null) waitActionFunction.apply(JSON.parseObject(message, WaitMessage.class));
                 break;
-            case "sit":
-                if (sitFunction != null) sitFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_SIT:
+                if (sitFunction != null) sitFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "stand":
-                if (standFunction != null) standFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_STAND:
+                if (standFunction != null) standFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
         }
     }
 
-    public void onTokenCheckerMessageListener(MessageFunction<StringMessage> function) {
+    public void onTokenCheckerMessageListener(MessageFunction<BooleanMessage> function) {
         this.tokenCheckerFunction = function;
     }
 
@@ -57,32 +59,32 @@ public class PlayGameEndpoint {
         this.waitActionFunction = function;
     }
 
-    public void onSitListener(MessageFunction<StringMessage> function) {
+    public void onSitListener(MessageFunction<BooleanMessage> function) {
         this.sitFunction = function;
     }
 
-    public void onStandListener(MessageFunction<StringMessage> function) {
+    public void onStandListener(MessageFunction<BooleanMessage> function) {
         this.standFunction = function;
     }
 
     public void sendTokenMessage() {
-        sendMessage(new TokenMessage("token", token));
+        sendMessage(new TokenMessage(TYPE_TOKEN, token));
     }
 
     public void sendActionMessage(TableInfo tableInfo, int place, int bet) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, place, UserActionMessage.BET, bet));
+        sendMessage(new UserActionMessage(TYPE_USER_ACTION, tableInfo, place, MessageConstant.ACTION_BET, bet));
     }
 
     public void sendActionMessage(TableInfo tableInfo, int place, String hitOrStand) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, place, hitOrStand));
+        sendMessage(new UserActionMessage(TYPE_USER_ACTION, tableInfo, place, hitOrStand));
     }
 
     public void sendSitMessage(TableInfo tableInfo, int place) {
-        sendMessage(new TableSmallInfoMessage("sit", tableInfo, place));
+        sendMessage(new TableSmallInfoMessage(TYPE_SIT, tableInfo, place));
     }
 
     public void sendStandMessage(TableInfo tableInfo) {
-        sendMessage(new TableSmallInfoMessage("stand", tableInfo));
+        sendMessage(new TableSmallInfoMessage(TYPE_STAND, tableInfo));
     }
 
     private void sendMessage(Message message) {

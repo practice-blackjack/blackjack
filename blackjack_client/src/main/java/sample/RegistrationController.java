@@ -11,11 +11,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import nulp.pist21.blackjack.client.endpoint.InitEndpoint;
-import nulp.pist21.blackjack.message.StringMessage;
+import nulp.pist21.blackjack.message.BooleanMessage;
 import nulp.pist21.blackjack.message.TokenMessage;
 import nulp.pist21.blackjack.model.User;
-
-import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 
 /**
@@ -53,25 +51,22 @@ public class RegistrationController {
                 });
             }
         });
-        initEndpoint.onRegisterListener((StringMessage stringMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(stringMessage));
-            switch (stringMessage.getMessage()) {
-                case "user added":
-                    Platform.runLater(() -> {
-                        info.setText("Registration is successfully");
-                        info.setTextFill(Color.GREEN);
-                        RegframeController();
-                    });
-                    String log = login.getText();
-                    String pass = password.getText();
-                    initEndpoint.sendLoginMessage(new User(log, pass));
-                    break;
-                case "error":
-                    Platform.runLater(() -> {
-                        info.setText("Registration is NOT successfully. Retype your password");
-                        info.setTextFill(Color.RED);
-                    });
-                    break;
+        initEndpoint.onRegisterListener((BooleanMessage booleanMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(booleanMessage));
+            if (booleanMessage.isOk()) {
+                Platform.runLater(() -> {
+                    info.setText("Registration is successfully");
+                    info.setTextFill(Color.GREEN);
+                    RegframeController();
+                });
+                String log = login.getText();
+                String pass = password.getText();
+                initEndpoint.sendLoginMessage(new User(log, pass));
+            } else {
+                Platform.runLater(() -> {
+                    info.setText("Registration is NOT successfully. Retype your password");
+                    info.setTextFill(Color.RED);
+                });
             }
         });
     }

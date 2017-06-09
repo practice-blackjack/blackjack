@@ -2,17 +2,16 @@ package nulp.pist21.blackjack.message;
 
 import nulp.pist21.blackjack.model.TableInfo;
 
-public class WaitMessage extends Message {
+import static nulp.pist21.blackjack.message.MessageConstant.*;
 
-    public static final String WAIT_BET = "bet";
-    public static final String WAIT_HIT_OR_STAND = "hit_or_stand";
+public class WaitMessage extends Message {
 
     private TableInfo tableInfo;
     private int place;
     private String waitType;
 
     public WaitMessage() {
-        this("", null, 0, WAIT_BET);
+        this("", null, 0, ACTION_WAIT_HIT_OR_STAND);
     }
 
     public WaitMessage(String type, TableInfo tableInfo, int place, String waitType) {

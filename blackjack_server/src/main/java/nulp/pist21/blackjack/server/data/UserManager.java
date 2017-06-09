@@ -3,8 +3,6 @@ package nulp.pist21.blackjack.server.data;
 import akka.actor.AbstractActor;
 import akka.actor.Props;
 import com.alibaba.fastjson.JSON;
-import nulp.pist21.blackjack.message.StringMessage;
-import nulp.pist21.blackjack.message.UserMessage;
 import nulp.pist21.blackjack.model.User;
 import nulp.pist21.blackjack.server.actor.Actor;
 import nulp.pist21.blackjack.server.actor.message.*;
@@ -54,7 +52,7 @@ public class UserManager extends AbstractActor {
                     } else {
                         user.setPassword("");
                     }
-                    getSender().tell(new MyDataResponse(user), getSelf());
+                    getSender().tell(new UserDataResponse(user), getSelf());
                 })
                 .build();
     }

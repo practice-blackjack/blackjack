@@ -17,6 +17,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ServerEndpoint("/game/play")
 public class PlayGameEndpoint {
 
@@ -58,22 +60,22 @@ public class PlayGameEndpoint {
     public void onMessage(String message) {
         System.out.println("game_play message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
+            case TYPE_TOKEN:
                 TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
                 TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
                 actor.tell(tokenCheck, ActorRef.noSender());
                 break;
-            case "user_action":
+            case TYPE_USER_ACTION:
                 UserActionMessage userActionMessage = JSON.parseObject(message, UserActionMessage.class);
                 PlayerAction playerAction = new PlayerAction(userActionMessage.getTableInfo(), userActionMessage.getPlace(), userActionMessage.getAction(), userActionMessage.getBet());
                 actor.tell(playerAction, ActorRef.noSender());
                 break;
-            case "sit":
+            case TYPE_SIT:
                 TableSmallInfoMessage tableSmallInfoMessage = JSON.parseObject(message, TableSmallInfoMessage.class);
                 SitTableRequest sitTableRequest = new SitTableRequest(tableSmallInfoMessage.getTableInfo(), tableSmallInfoMessage.getPlace());
                 actor.tell(sitTableRequest, ActorRef.noSender());
                 break;
-            case "stand":
+            case TYPE_STAND:
                 TableSmallInfoMessage tableSmallInfoMessage1 = JSON.parseObject(message, TableSmallInfoMessage.class);
                 StandTableRequest standTableRequest = new StandTableRequest(tableSmallInfoMessage1.getTableInfo(), tableSmallInfoMessage1.getPlace());
                 actor.tell(standTableRequest, ActorRef.noSender());
@@ -82,19 +84,19 @@ public class PlayGameEndpoint {
     }
 
     public void sendTokenMessage(boolean isOk) {
-        sendMessage(new StringMessage("token", isOk ? "token ok" : "token error"));
+        sendMessage(new BooleanMessage(TYPE_TOKEN, isOk));
     }
 
     public void sendWaitMessage(TableInfo tableInfo, int place, String type) {
-        sendMessage(new WaitMessage("wait", tableInfo, place, type));
+        sendMessage(new WaitMessage(TYPE_WAIT, tableInfo, place, type));
     }
 
-    public void sendSitMessage(String message) {
-        sendMessage(new StringMessage("sit", message));
+    public void sendSitMessage(boolean isOk) {
+        sendMessage(new BooleanMessage(TYPE_SIT, isOk));
     }
 
-    public void sendStandMessage(String message) {
-        sendMessage(new StringMessage("stand", message));
+    public void sendStandMessage(boolean isOk) {
+        sendMessage(new BooleanMessage(TYPE_STAND, isOk));
     }
 
     private void sendMessage(Message message) {

@@ -10,14 +10,16 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import java.io.IOException;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ClientEndpoint
 public class WatchGameEndpoint {
 
-    private MessageFunction<StringMessage> tokenCheckerFunction;
+    private MessageFunction<BooleanMessage> tokenCheckerFunction;
     private MessageFunction<TableFullInfoMessage> updateFunction;
     private MessageFunction<UserActionMessage> userActionFunction;
-    private MessageFunction<StringMessage> entryFunction;
-    private MessageFunction<StringMessage> exitFunction;
+    private MessageFunction<BooleanMessage> entryFunction;
+    private MessageFunction<BooleanMessage> exitFunction;
     private MessageFunction<ResultMessage> resultFunction;
 
     private Session session;
@@ -36,28 +38,28 @@ public class WatchGameEndpoint {
     @OnMessage
     public void onMessage(String message) {
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
-                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_TOKEN:
+                if (tokenCheckerFunction != null) tokenCheckerFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "update":
+            case TYPE_UPDATE:
                 if (updateFunction != null) updateFunction.apply(JSON.parseObject(message, TableFullInfoMessage.class));
                 break;
-            case "user_action":
+            case TYPE_USER_ACTION:
                 if (userActionFunction != null) userActionFunction.apply(JSON.parseObject(message, UserActionMessage.class));
                 break;
-            case "entry":
-                if (entryFunction != null) entryFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_ENTRY:
+                if (entryFunction != null) entryFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "exit":
-                if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, StringMessage.class));
+            case TYPE_EXIT:
+                if (exitFunction != null) exitFunction.apply(JSON.parseObject(message, BooleanMessage.class));
                 break;
-            case "result":
+            case TYPE_RESULT:
                 if (resultFunction != null) resultFunction.apply(JSON.parseObject(message, ResultMessage.class));
                 break;
         }
     }
 
-    public void onTokenCheckerMessageListener(MessageFunction<StringMessage> function) {
+    public void onTokenCheckerMessageListener(MessageFunction<BooleanMessage> function) {
         this.tokenCheckerFunction = function;
     }
 
@@ -69,11 +71,11 @@ public class WatchGameEndpoint {
         this.userActionFunction = function;
     }
 
-    public void onEntryListener(MessageFunction<StringMessage> function) {
+    public void onEntryListener(MessageFunction<BooleanMessage> function) {
         this.entryFunction = function;
     }
 
-    public void onExitListener(MessageFunction<StringMessage> function) {
+    public void onExitListener(MessageFunction<BooleanMessage> function) {
         this.exitFunction = function;
     }
 
@@ -82,15 +84,15 @@ public class WatchGameEndpoint {
     }
 
     public void sendTokenMessage() {
-        sendMessage(new TokenMessage("token", token));
+        sendMessage(new TokenMessage(TYPE_TOKEN, token));
     }
 
     public void sendEntryMessage(TableInfo tableInfo) {
-        sendMessage(new TableSmallInfoMessage("entry", tableInfo));
+        sendMessage(new TableSmallInfoMessage(TYPE_ENTRY, tableInfo));
     }
 
     public void sendExitMessage(TableInfo tableInfo) {
-        sendMessage(new TableSmallInfoMessage("exit", tableInfo));
+        sendMessage(new TableSmallInfoMessage(TYPE_EXIT, tableInfo));
     }
 
     private void sendMessage(Message message) {

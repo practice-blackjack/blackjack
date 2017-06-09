@@ -17,6 +17,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ServerEndpoint("/game/watch")
 public class WatchGameEndpoint {
 
@@ -58,17 +60,17 @@ public class WatchGameEndpoint {
     public void onMessage(String message) {
         System.out.println("game_watch message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
+            case TYPE_TOKEN:
                 TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
                 TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
                 actor.tell(tokenCheck, ActorRef.noSender());
                 break;
-            case "entry":
+            case TYPE_ENTRY:
                 TableSmallInfoMessage tableSmallInfoMessage = JSON.parseObject(message, TableSmallInfoMessage.class);
                 EntryTableRequest entryTableRequest = new EntryTableRequest(tableSmallInfoMessage.getTableInfo());
                 actor.tell(entryTableRequest, ActorRef.noSender());
                 break;
-            case "exit":
+            case TYPE_EXIT:
                 TableSmallInfoMessage tableSmallInfoMessage1 = JSON.parseObject(message, TableSmallInfoMessage.class);
                 ExitTableRequest exitTableRequest = new ExitTableRequest(tableSmallInfoMessage1.getTableInfo());
                 actor.tell(exitTableRequest, ActorRef.noSender());
@@ -77,27 +79,27 @@ public class WatchGameEndpoint {
     }
 
     public void sendTokenMessage(boolean isOk) {
-        sendMessage(new StringMessage("token", isOk ? "token ok" : "token error"));
+        sendMessage(new BooleanMessage(TYPE_TOKEN, isOk));
     }
 
     public void sendUpdateMessage(Table table) {
-        sendMessage(new TableFullInfoMessage("update", table));
+        sendMessage(new TableFullInfoMessage(TYPE_UPDATE, table));
     }
 
     public void sendUserActionMessage(TableInfo tableInfo, int place, String action, int bet) {
-        sendMessage(new UserActionMessage("user_action", tableInfo, place, action, bet));
+        sendMessage(new UserActionMessage(TYPE_USER_ACTION, tableInfo, place, action, bet));
     }
 
     public void sendEntryMessage(boolean isOk) {
-        sendMessage(new StringMessage("entry", isOk ? "entry ok" : "entry error"));
+        sendMessage(new BooleanMessage(TYPE_ENTRY, isOk));
     }
 
     public void sendExitMessage(boolean isOk) {
-        sendMessage(new StringMessage("exit", isOk ? "entry ok" : "entry error"));
+        sendMessage(new BooleanMessage(TYPE_EXIT, isOk));
     }
 
     public void sendResultMessage(String message) {
-        sendMessage(new ResultMessage("result"));
+        sendMessage(new ResultMessage(TYPE_RESULT));
     }
 
     private void sendMessage(Message message) {

@@ -50,10 +50,10 @@ public class PlayerActor extends AbstractActor {
                     endpoint.sendTokenMessage(message.isOk);
                 })
                 .match(SitTableResponse.class, message -> {
-                    endpoint.sendSitMessage(message.isOk ? "sit ok" : "sit error");
+                    endpoint.sendSitMessage(message.isOk);
                 })
                 .match(StandTableResponse.class, message -> {
-                    endpoint.sendStandMessage(message.isOk ? "stand ok" : "stand error");
+                    endpoint.sendStandMessage(message.isOk);
                 })
                 .match(WaitAction.class, message -> {
                     endpoint.sendWaitMessage(message.tableInfo, message.place, message.waitType);

@@ -15,6 +15,10 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGIN;
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGOUT;
+import static nulp.pist21.blackjack.message.MessageConstant.TYPE_REGISTER;
+
 @ServerEndpoint("/init")
 public class InitEndpoint {
 
@@ -47,17 +51,17 @@ public class InitEndpoint {
     public void onMessage(String message) {
         System.out.println("init message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "register": {
+            case TYPE_REGISTER: {
                 UserMessage msg = JSON.parseObject(message, UserMessage.class);
                 RegisterRequest registerRequest = new RegisterRequest(msg.getUser());
                 actor.tell(registerRequest, ActorRef.noSender());
             }break;
-            case "login": {
+            case TYPE_LOGIN: {
                 UserMessage msg = JSON.parseObject(message, UserMessage.class);
                 LoginRequest loginRequest = new LoginRequest(msg.getUser());
                 actor.tell(loginRequest, ActorRef.noSender());
             }break;
-            case "logout": {
+            case TYPE_LOGOUT: {
                 Message msg = JSON.parseObject(message, Message.class);
                 LogoutRequest logoutRequest = new LogoutRequest();
                 actor.tell(logoutRequest, ActorRef.noSender());
@@ -66,15 +70,15 @@ public class InitEndpoint {
     }
 
     public void sendRegisterMessage(boolean isOk) {
-        sendMessage(new StringMessage("register", isOk ? "user added" : "error"));
+        sendMessage(new BooleanMessage(TYPE_REGISTER, isOk));
     }
 
     public void sendLoginMessage(long token) {
-        sendMessage(new TokenMessage("login", token));
+        sendMessage(new TokenMessage(TYPE_LOGIN, token));
     }
 
-    public void sendLogoutMessage() {
-        sendMessage(new StringMessage("logout", "logout ok"));
+    public void sendLogoutMessage(boolean isOk) {
+        sendMessage(new BooleanMessage(TYPE_LOGOUT, isOk));
     }
 
     private void sendMessage(Message message) {

@@ -19,6 +19,8 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 @ServerEndpoint("/lobby")
 public class LobbyEndpoint {
 
@@ -60,22 +62,22 @@ public class LobbyEndpoint {
     public void onMessage(String message) {
         System.out.println("lobby message " + message);
         switch (JSON.parseObject(message, Message.class).getType()) {
-            case "token":
+            case TYPE_TOKEN:
                 TokenMessage tokenMessage = JSON.parseObject(message, TokenMessage.class);
                 TokenCheck tokenCheck = new TokenCheck(tokenMessage.getToken());
                 actor.tell(tokenCheck, ActorRef.noSender());
                 break;
-            case "my_data":
+            case TYPE_MY_DATA:
                 Message message1 = JSON.parseObject(message, Message.class);
                 MyDataRequest myDataRequest = new MyDataRequest();
                 actor.tell(myDataRequest, ActorRef.noSender());
                 break;
-            case "user_data":
+            case TYPE_USER_DATA:
                 UserMessage userMessage = JSON.parseObject(message, UserMessage.class);
                 UserDataRequest userDataRequest = new UserDataRequest(userMessage.getUser().getName());
                 actor.tell(userDataRequest, ActorRef.noSender());
                 break;
-            case "table_list":
+            case TYPE_TABLE_LIST:
                 Message message2 = JSON.parseObject(message, Message.class);
                 TableListRequest tableListRequest = new TableListRequest();
                 actor.tell(tableListRequest, ActorRef.noSender());
@@ -84,23 +86,23 @@ public class LobbyEndpoint {
     }
 
     public void sendTokenMessage(boolean isOk) {
-        sendMessage(new StringMessage("token", isOk ? "token ok" : "token error"));
+        sendMessage(new BooleanMessage(TYPE_TOKEN, isOk));
     }
 
     public void sendUpdateMessage(List<TableInfo> tableList) {
-        sendMessage(new TableListMessage("table_list", tableList));
+        sendMessage(new TableListMessage(TYPE_UPDATE, tableList));
     }
 
     public void sendMyDataMessage(User user) {
-        sendMessage(new UserMessage("my_data", user));
+        sendMessage(new UserMessage(TYPE_MY_DATA, user));
     }
 
     public void sendUserDataMessage(User user) {
-        sendMessage(new UserMessage("user_data", user));
+        sendMessage(new UserMessage(TYPE_USER_DATA, user));
     }
 
     public void sendTableListMessage(List<TableInfo> tableList) {
-        sendMessage(new TableListMessage("table_list", tableList));
+        sendMessage(new TableListMessage(TYPE_TABLE_LIST, tableList));
     }
 
     private void sendMessage(Message message) {
