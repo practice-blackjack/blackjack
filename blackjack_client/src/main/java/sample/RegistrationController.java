@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import nulp.pist21.blackjack.client.endpoint.InitEndpoint;
 import nulp.pist21.blackjack.message.StringMessage;
+import nulp.pist21.blackjack.message.TokenMessage;
 import nulp.pist21.blackjack.model.User;
 
 import javax.websocket.WebSocketContainer;
@@ -42,6 +43,16 @@ public class RegistrationController {
     @FXML
     public void initialize() {
         initEndpoint = programData.getInitEndpoint();
+        initEndpoint.onLoginListener((TokenMessage tokenMessage) -> {
+            System.out.println("server > " + JSON.toJSONString(tokenMessage));
+            long token = tokenMessage.getToken();
+            programData.setToken(token);
+            if (token != -1) {
+                Platform.runLater(() -> {
+                    LobbyFrameController();
+                });
+            }
+        });
         initEndpoint.onRegisterListener((StringMessage stringMessage) -> {
             System.out.println("server > " + JSON.toJSONString(stringMessage));
             switch (stringMessage.getMessage()) {
@@ -95,7 +106,19 @@ public class RegistrationController {
         }
     }
 
-    public void setWebSocketContainer(WebSocketContainer container) {
+    protected void LobbyFrameController() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
+            Parent root = loader.load();
+            LobbyFrameController controller = loader.getController();
+            controller.setStage(primaryStage);
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (IOException e) {
+
+        }
 
     }
 }
