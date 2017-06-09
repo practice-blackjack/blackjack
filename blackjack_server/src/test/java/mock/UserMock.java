@@ -13,7 +13,7 @@ public class UserMock {
     }
 
     public GameAction doStep(IRound round, int index){
-        if (new Combination(round.getPlayer(index)).getPoints() >= stopOn){
+        if (new Combination(round.getHand(index)).getPoints() >= stopOn){
             return new GameAction(GameAction.Actions.STAND);
         }
         return new GameAction(GameAction.Actions.HIT);

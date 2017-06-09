@@ -7,6 +7,7 @@ import nulp.pist21.blackjack.model.game.Round;
 import java.util.Arrays;
 
 public class Table {
+
     private TableBox[] boxes;
     private IDeck deck;
 
@@ -18,14 +19,8 @@ public class Table {
         this.deck = deck;
     }
 
-    public TableBox getBox(int index) {
-        if (index >= 0 && index < boxes.length){
-            return boxes[index];
-        }
-        return null;
-    }
-    public int getBoxCount(){
-        return boxes.length;
+    public TableBox[] getBoxes() {
+        return boxes;
     }
 
     public IRound startRound() {

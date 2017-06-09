@@ -5,10 +5,13 @@ import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.game.Combination;
+import nulp.pist21.blackjack.model.game.IHand;
 import nulp.pist21.blackjack.model.game.IRound;
 import nulp.pist21.blackjack.model.game.Round;
 import nulp.pist21.blackjack.model.table.Table;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class ModelTest {
 
@@ -23,9 +26,9 @@ public class ModelTest {
 
         Table table = new Table(3, new EndlessDeck());
 
-        table.getBox(0).isActivated(true);
-        table.getBox(1).isActivated(true);
-        table.getBox(2).isActivated(true);
+        table.getBoxes()[0].isActivated(true);
+        table.getBoxes()[1].isActivated(true);
+        table.getBoxes()[2].isActivated(true);
 
         IRound round = table.startRound();
 
@@ -34,25 +37,26 @@ public class ModelTest {
         System.out.println();
 
         System.out.println("Dealers cards: ");
-        for (Card card: round.getPlayer(Round.DEALER_INDEX).getHand()) {
+        for (Card card: round.getHand(Round.DEALER_INDEX).getHand()) {
             System.out.println("   " + card.toString());
         }
-        System.out.println("   Points: " + new Combination(round.getPlayer(Round.DEALER_INDEX)));
+        System.out.println("   Points: " + new Combination(round.getHand(Round.DEALER_INDEX)));
         System.out.println();
 
         for (int i = 0; i < 3; i++){
             System.out.println("Player " + (i + 1) + " cards: ");
-            for (Card card: round.getPlayer(i).getHand()) {
+            for (Card card: round.getHand(i).getHand()) {
                 System.out.println("   " + card.toString());
             }
-            System.out.println("Points: " + new Combination(round.getPlayer(i)));
+            System.out.println("Points: " + new Combination(round.getHand(i)));
             System.out.println();
         }
 
         GameAction action;
         boolean canNext;
         do{
-            int userId = round.getCurrentIndex();
+            IHand userHand = round.getCurrentHand();
+            int userId = Arrays.asList(table.getBoxes()).indexOf(userHand);
             action = users[userId].doStep(round, userId);
             canNext = round.next(action);
 
@@ -61,24 +65,24 @@ public class ModelTest {
             System.out.println("   Action: " + action.getAction());
 
             System.out.println("   Cards: ");
-            for (Card card: round.getPlayer(userId).getHand()) {
+            for (Card card: round.getHand(userId).getHand()) {
                 System.out.println("      " + card.toString());
             }
 
-            System.out.println("   Points: " + new Combination(round.getPlayer(userId)));
+            System.out.println("   Points: " + new Combination(round.getHand(userId)));
 
             System.out.println();
         } while (canNext);
 
         System.out.println("Dealers cards: ");
-        for (Card card: round.getPlayer(Round.DEALER_INDEX).getHand()) {
+        for (Card card: round.getHand(Round.DEALER_INDEX).getHand()) {
             System.out.println("   " + card.toString());
         }
-        System.out.println("Points: " + new Combination(round.getPlayer(Round.DEALER_INDEX)));
+        System.out.println("Points: " + new Combination(round.getHand(Round.DEALER_INDEX)));
         System.out.println();
 
         for (int i = 0; i < 3; i++){
-            double kof = new Combination(round.getPlayer(i)).getWin(new Combination(round.getPlayer(Round.DEALER_INDEX)));
+            double kof = new Combination(round.getHand(i)).getWin(new Combination(round.getHand(Round.DEALER_INDEX)));
             System.out.println("Players " + (i + 1) + " win kof: " + kof);
         }
 

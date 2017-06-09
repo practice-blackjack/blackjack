@@ -31,7 +31,7 @@ public class Round implements IRound {
         }
         dealer.giveCard(deck.next());
         dealer.giveCard(deck.next());
-        goToNextPlayer();
+        goToNextHand();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class Round implements IRound {
                 players[currentIndex].giveCard(deck.next());
             }
             else {
-                goToNextPlayer();
+                goToNextHand();
             }
         }
 
@@ -64,12 +64,14 @@ public class Round implements IRound {
     }
 
     @Override
-    public int getCurrentIndex() {
-        return currentIndex;
+    public IHand getCurrentHand() {
+        if (currentIndex >= 0 && currentIndex < players.length)
+            return players[currentIndex];
+        return null;
     }
 
     @Override
-    public IHand getPlayer(int index) {
+    public IHand getHand(int index) {
         if (index == DEALER_INDEX){
             return dealer;
         }
@@ -80,11 +82,11 @@ public class Round implements IRound {
     }
 
     @Override
-    public int getPlayerCount(){
+    public int getHandCount(){
         return players.length;
     }
 
-    private void goToNextPlayer(){
+    private void goToNextHand(){
         currentIndex++;
         while (currentIndex < players.length){
             if (new Combination(players[currentIndex]).canHit()) break;

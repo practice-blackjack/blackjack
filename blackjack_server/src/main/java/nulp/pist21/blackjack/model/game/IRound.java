@@ -7,7 +7,7 @@ public interface IRound {
     void start();
     boolean next(GameAction action);
     void end();
-    int getCurrentIndex();
-    IHand getPlayer(int index);
-    int getPlayerCount();
+    IHand getCurrentHand();
+    IHand getHand(int index);
+    int getHandCount();
 }

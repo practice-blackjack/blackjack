@@ -23,10 +23,10 @@ public class RoundTest {
 
         round.start();
 
-        for(int i = 0; i < round.getPlayerCount(); i++){
-            Assert.assertEquals(2, round.getPlayer(i).getHand().length);
+        for(int i = 0; i < round.getHandCount(); i++){
+            Assert.assertEquals(2, round.getHand(i).getHand().length);
         }
-        Assert.assertEquals(2, round.getPlayer(Round.DEALER_INDEX).getHand().length);
+        Assert.assertEquals(2, round.getHand(Round.DEALER_INDEX).getHand().length);
 }
 
     @Test
@@ -44,7 +44,7 @@ public class RoundTest {
         for(TableBox box: boxes){
             Assert.assertEquals(0, box.getHand().length);
         }
-        Assert.assertEquals(0, game.getPlayer(Round.DEALER_INDEX).getHand().length);
+        Assert.assertEquals(0, game.getHand(Round.DEALER_INDEX).getHand().length);
     }
 
     @Test
@@ -161,11 +161,9 @@ public class RoundTest {
         IRound round = new Round(boxes, new EndlessDeck());
         round.start();
 
-        GameAction action;
         do{
-            int userId = round.getCurrentIndex();
-            action = users[userId].doStep(round, userId);
-        } while (round.next(action));
+
+        } while (round.next(new GameAction(GameAction.Actions.HIT)));
     }
 
 }

@@ -14,22 +14,22 @@ public class TableTest {
     @Test
     public void should_create_clear_boxes_and_return_them(){
         Table table = createTable();
-        Assert.assertEquals(6, table.getBoxCount());
-        for (int i = 0; i < table.getBoxCount(); i++) {
-            Assert.assertNotNull(table.getBox(i));
+        Assert.assertEquals(6, table.getBoxes().length);
+        for (int i = 0; i < table.getBoxes().length; i++) {
+            Assert.assertNotNull(table.getBoxes()[i]);
         }
     }
 
     @Test
     public void should_init_game_with_activated_table_boxes(){
         Table table = createTable();
-        table.getBox(0).isActivated(true);
-        table.getBox(2).isActivated(true);
-        table.getBox(4).isActivated(true);
+        table.getBoxes()[0].isActivated(true);
+        table.getBoxes()[2].isActivated(true);
+        table.getBoxes()[4].isActivated(true);
 
         IRound round = table.startRound();
 
-        Assert.assertEquals(3, round.getPlayerCount());
+        Assert.assertEquals(3, round.getHandCount());
     }
 
 
