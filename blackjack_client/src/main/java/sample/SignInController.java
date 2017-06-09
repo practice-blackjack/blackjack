@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -13,6 +14,8 @@ import java.io.IOException;
  * Created by Ol'ko on 22.05.2017.
  */
 public class SignInController {
+    @FXML
+    public Label lblInfoSignIn;
     @FXML
     public PasswordField pf;
     public TextField lf;
@@ -27,7 +30,9 @@ public class SignInController {
            LobbyFrameController(stage);
            playerName = "Hello";
            System.out.println(playerName);
-    }
+    }else{
+           lblInfoSignIn.setText("Error! You print error login or password!");
+         }
     }
 
     public void setStage(Stage stage){
@@ -43,6 +48,8 @@ public class SignInController {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("RegistrationFrame.fxml"));
         Parent root = loader.load();
+        RegistrationController controller = loader.getController();
+        controller.setStage(stage);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
