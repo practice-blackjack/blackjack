@@ -3,7 +3,6 @@ package nulp.pist21.blackjack.server.data;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import nulp.pist21.blackjack.model.Table;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.server.actor.Actor;
 import nulp.pist21.blackjack.server.actor.TableActor;
@@ -20,17 +19,17 @@ public class TableManager extends AbstractActor {
     }
 
     public TableManager() {
-        addTable(new Table());
-        addTable(new Table());
-        addTable(new Table());
+        addTable(new TableInfo("table 1", 6, 0, 50, 10));
+        addTable(new TableInfo("table 2", 6, 0, 50, 10));
+        addTable(new TableInfo("table 3", 6, 0, 50, 10));
     }
 
     @SuppressWarnings("Duplicates")
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(TableListRequest.class, greeting -> {
-                    List<TableInfo> tablesInfo = getTablesInfo();
+                .match(TableListRequest.class, message -> {
+                    List<TableInfo> tablesInfo = getTableInfoList();
                     getSender().tell(new TableListResponse(tablesInfo), getSelf());
                 })
                 .match(EntryTableRequest.class, message -> {
@@ -74,30 +73,37 @@ public class TableManager extends AbstractActor {
                 .build();
     }
 
-    private List<Table> tableList = new ArrayList<>();
-    private List<ActorRef> tableActorList = new ArrayList<>();
+    private List<TableRecord> tableRecords = new ArrayList<>();
 
-    public void addTable(Table table) {
-        tableList.add(table);
-        ActorRef actorRef = Actor.system.actorOf(TableActor.props(table));
-        tableActorList.add(actorRef);
-    }
-
-    public List<TableInfo> getTablesInfo() {
-        return tableList.stream().map(Table::getTableInfo).collect(Collectors.toList());
+    public void addTable(TableInfo tableInfo) {
+        ActorRef actorRef = Actor.system.actorOf(TableActor.props(tableInfo));
+        tableRecords.add(new TableRecord(tableInfo, actorRef));
     }
 
     public ActorRef getTableActor(TableInfo tableInfo) {
-        for (int i = 0; i < tableList.size(); i++) {
-            Table t = tableList.get(i);
-            //todo: equals
-            if (t.getTableInfo().equals(tableInfo)) {
-                //todo: get ref
-                ActorRef actorRef = tableActorList.get(i);
-                return actorRef;
+        for (TableRecord tr : tableRecords) {
+            TableInfo ti = tr.tableInfo;
+            if (ti.equals(tableInfo)) {
+                return tr.tableRef;
             }
         }
         return null;
+    }
+
+    public List<TableInfo> getTableInfoList() {
+        return tableRecords.stream().map(tr -> tr.tableInfo).collect(Collectors.toList());
+    }
+
+    private class TableRecord {
+
+        private final TableInfo tableInfo;
+        private final ActorRef tableRef;
+
+        private TableRecord(TableInfo tableInfo, ActorRef tableRef) {
+            this.tableInfo = tableInfo;
+            this.tableRef = tableRef;
+        }
+
     }
 
 }

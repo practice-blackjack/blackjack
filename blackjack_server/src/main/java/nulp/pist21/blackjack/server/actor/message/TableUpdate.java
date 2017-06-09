@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.server.actor.message;
 
-import nulp.pist21.blackjack.model.Table;
+import nulp.pist21.blackjack.model.table.Table;
 
 public class TableUpdate {
 

@@ -61,4 +61,16 @@ public class TableInfo {
         this.min = min;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TableInfo)) {
+            return false;
+        }
+        TableInfo tableInfo = (TableInfo) obj;
+        return name.equals(tableInfo.name) &&
+                maxPlayerCount == tableInfo.maxPlayerCount &&
+                min == tableInfo.min &&
+                max == tableInfo.max;
+    }
+
 }
