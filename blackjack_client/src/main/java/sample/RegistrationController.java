@@ -3,6 +3,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -16,7 +17,7 @@ import java.io.IOException;
  */
 
 public class RegistrationController {
-    Stage primaryStage;
+    private Stage stage;
     @FXML
     private TextField login;
     @FXML
@@ -26,35 +27,67 @@ public class RegistrationController {
     @FXML
     private PasswordField confirmPassword;
     @FXML
+    private Button backToSignIn;
+    @FXML
     private Label info;
 
-    public void setStage(Stage stage){
-        this.primaryStage = stage;
-    }
+    @FXML
+    public void actionBackToSignIn(){
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("SignInFrame.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
 
-    protected void RegframeController(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+            SignInController controller = loader.getController();
+            controller.setStage(stage);
 
-    public void registerButton() throws IOException {
+            stage.setTitle("SignIn Frame Frame");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            stage.show();
+
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+    @FXML
+    public void registerButton() {
         String log = login.getText();
-        String mail = email.getText();
         String pass = password.getText();
         String confPass = confirmPassword.getText();
         if (pass.equals(confPass)) {
             info.setText("Registration is successfully");
             info.setTextFill(Color.GREEN);
-            RegframeController(primaryStage);
+            try{
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
+                Parent root = loader.load();
+                Scene scene = new Scene(root);
+
+                LobbyFrameController controller = loader.getController();
+                controller.setStage(stage);
+
+                stage.setTitle("Lobby Frame");
+                stage.setResizable(false);
+                stage.setScene(scene);
+                stage.show();
+
+
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
 
         } else {
             info.setText("Registration is NOT successfully. Retype your password");
             info.setTextFill(Color.RED);
         }
+
+    }
+    public void setStage(Stage stage) {
+        this.stage = stage;
+
     }
 }
 
