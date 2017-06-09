@@ -19,9 +19,8 @@ public class RoundTest {
                 new TableBox()
         };
 
-        IRound round = new Round(boxes, new EndlessDeck());
-
-        round.start();
+        IRound round = new Round();
+        round.start(boxes, new EndlessDeck());
 
         for(int i = 0; i < round.getHandCount(); i++){
             Assert.assertEquals(2, round.getHand(i).getHand().length);
@@ -37,14 +36,14 @@ public class RoundTest {
                 new TableBox()
         };
 
-        IRound game = new Round(boxes, new EndlessDeck());
+        IRound round = new Round();
 
-        game.start();
-        game.end();
+        round.start(boxes, new EndlessDeck());
+        round.end();
         for(TableBox box: boxes){
             Assert.assertEquals(0, box.getHand().length);
         }
-        Assert.assertEquals(0, game.getHand(Round.DEALER_INDEX).getHand().length);
+        Assert.assertEquals(0, round.getHand(Round.DEALER_INDEX).getHand().length);
     }
 
     @Test
@@ -58,8 +57,8 @@ public class RoundTest {
         IDeck deck = new EndlessDeck();
 
 
-        IRound round = new Round(boxes, deck);
-        round.start();
+        IRound round = new Round();
+        round.start(boxes, deck);
 
         for(TableBox box: boxes){
             box.takeCards();
@@ -91,8 +90,8 @@ public class RoundTest {
         IDeck deck = new EndlessDeck();
 
 
-        IRound round = new Round(boxes, deck);
-        round.start();
+        IRound round = new Round();
+        round.start(boxes, deck);
 
         for(TableBox box: boxes){
             box.takeCards();
@@ -124,8 +123,8 @@ public class RoundTest {
         IDeck deck = new EndlessDeck();
 
 
-        IRound round = new Round(boxes, deck);
-        round.start();
+        IRound round = new Round();
+        round.start(boxes, deck);
 
         for(TableBox box: boxes){
             box.takeCards();
@@ -158,8 +157,8 @@ public class RoundTest {
                 new TableBox()
         };
 
-        IRound round = new Round(boxes, new EndlessDeck());
-        round.start();
+        IRound round = new Round();
+        round.start(boxes, new EndlessDeck());
 
         do{
 

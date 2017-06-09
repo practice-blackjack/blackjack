@@ -10,6 +10,7 @@ public class Table {
 
     private TableBox[] boxes;
     private IDeck deck;
+    private Round round;
 
     public Table(int boxes, IDeck deck) {
         this.boxes = new TableBox[boxes];
@@ -17,15 +18,20 @@ public class Table {
             this.boxes[i] = new TableBox();
         }
         this.deck = deck;
+        this.round = new Round();
     }
 
     public TableBox[] getBoxes() {
         return boxes;
     }
 
-    public IRound startRound() {
-        TableBox[] playingBoxes = Arrays.stream(boxes).filter(box -> box.isActivated()).toArray(TableBox[]::new);
-        return new Round(playingBoxes, deck);
+    public IRound getRound() {
+        if (round.getCurrentHand() == null){
+            round.end();
+            TableBox[] playingBoxes = Arrays.stream(boxes).filter(box -> box.isActivated()).toArray(TableBox[]::new);
+            round.start(playingBoxes, deck);
+        }
+        return round;
     }
 
     public IDeck getDeck() {

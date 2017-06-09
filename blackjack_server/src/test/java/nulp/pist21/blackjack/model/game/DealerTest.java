@@ -27,7 +27,7 @@ public class DealerTest {
         dealer.giveCard(new Card(Card.CLUBS, Card._6));
         dealer.giveCard(new Card(Card.DIAMONDS, Card._10));
 
-        dealer.doStep(new Round(new TableBox[]{}, new EndlessDeck()), Round.DEALER_INDEX);
+        dealer.doStep(new Round(), Round.DEALER_INDEX);
 
         Assert.assertEquals(Card.CLUBS, dealer.getHand()[0].getSuit());
         Assert.assertEquals(Card._6, dealer.getHand()[0].getValue());

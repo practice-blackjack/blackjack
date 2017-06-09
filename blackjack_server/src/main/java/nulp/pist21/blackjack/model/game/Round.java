@@ -11,15 +11,18 @@ public class Round implements IRound {
 
     public static final int DEALER_INDEX = Integer.MAX_VALUE;
 
-    public Round(IHand[] players, IDeck deck) {
-        this.players = players;
-        this.deck = deck;
+    public Round() {
         dealer = new Dealer();
-        currentIndex = -1;
+        players = new IHand[]{};
     }
 
     @Override
-    public void start(){
+    public void start(IHand[] players, IDeck deck){
+        this.players = players;
+        this.deck = deck;
+
+        currentIndex = -1;
+
         for(IHand playerBox: players){
             playerBox.takeCards();
         }

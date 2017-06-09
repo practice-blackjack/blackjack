@@ -4,7 +4,7 @@ import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.IDeck;
 
 public interface IRound {
-    void start();
+    void start(IHand[] players, IDeck deck);
     boolean next(GameAction action);
     void end();
     IHand getCurrentHand();

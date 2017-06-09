@@ -30,10 +30,8 @@ public class ModelTest {
         table.getBoxes()[1].isActivated(true);
         table.getBoxes()[2].isActivated(true);
 
-        IRound round = table.startRound();
-
+        IRound round = table.getRound();
         System.out.println("Round started.");
-        round.start();
         System.out.println();
 
         System.out.println("Dealers cards: ");

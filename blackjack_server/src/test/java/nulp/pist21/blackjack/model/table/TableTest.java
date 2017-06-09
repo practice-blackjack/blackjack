@@ -27,7 +27,7 @@ public class TableTest {
         table.getBoxes()[2].isActivated(true);
         table.getBoxes()[4].isActivated(true);
 
-        IRound round = table.startRound();
+        IRound round = table.getRound();
 
         Assert.assertEquals(3, round.getHandCount());
     }
