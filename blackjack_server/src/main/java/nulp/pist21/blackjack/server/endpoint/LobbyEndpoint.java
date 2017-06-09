@@ -83,8 +83,8 @@ public class LobbyEndpoint {
         }
     }
 
-    public void sendTokenMessage(String message) {
-        sendMessage(new StringMessage("token", message));
+    public void sendTokenMessage(boolean isOk) {
+        sendMessage(new StringMessage("token", isOk ? "token ok" : "token error"));
     }
 
     public void sendUpdateMessage(List<TableInfo> tableList) {

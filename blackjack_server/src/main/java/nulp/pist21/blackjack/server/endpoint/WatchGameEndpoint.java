@@ -76,8 +76,8 @@ public class WatchGameEndpoint {
         }
     }
 
-    public void sendTokenMessage(String message) {
-        sendMessage(new StringMessage("token", message));
+    public void sendTokenMessage(boolean isOk) {
+        sendMessage(new StringMessage("token", isOk ? "token ok" : "token error"));
     }
 
     public void sendUpdateMessage(Table table) {
@@ -88,12 +88,12 @@ public class WatchGameEndpoint {
         sendMessage(new UserActionMessage("user_action", tableInfo, place, action, bet));
     }
 
-    public void sendEntryMessage(String message) {
-        sendMessage(new StringMessage("entry", message));
+    public void sendEntryMessage(boolean isOk) {
+        sendMessage(new StringMessage("entry", isOk ? "entry ok" : "entry error"));
     }
 
-    public void sendExitMessage(String message) {
-        sendMessage(new StringMessage("exit", message));
+    public void sendExitMessage(boolean isOk) {
+        sendMessage(new StringMessage("exit", isOk ? "entry ok" : "entry error"));
     }
 
     public void sendResultMessage(String message) {

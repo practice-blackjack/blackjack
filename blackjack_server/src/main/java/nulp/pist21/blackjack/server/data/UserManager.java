@@ -26,14 +26,11 @@ public class UserManager extends AbstractActor {
         return receiveBuilder()
                 .match(RegisterRequest.class, message -> {
                     User user = existUserName(message.user.getName());
-                    String msg;
-                    if (user == null) {
+                    boolean res = user == null;
+                    if (res) {
                         addUser(message.user);
-                        msg = "user added";
-                    } else {
-                        msg = "error";
                     }
-                    getSender().tell(new RegisterResponse(msg), getSelf());
+                    getSender().tell(new RegisterResponse(res), getSelf());
                 })
                 .match(LoginRequest.class, message -> {
                     User user = existUser(message.user);

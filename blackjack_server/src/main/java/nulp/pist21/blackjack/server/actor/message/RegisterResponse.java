@@ -2,10 +2,10 @@ package nulp.pist21.blackjack.server.actor.message;
 
 public class RegisterResponse {
 
-    public final String text;
+    public final boolean isOk;
 
-    public RegisterResponse(String text) {
-        this.text = text;
+    public RegisterResponse(boolean isOk) {
+        this.isOk = isOk;
     }
 
 }

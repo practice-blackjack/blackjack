@@ -26,28 +26,28 @@ public class UserActor extends AbstractActor {
                 })
                 .match(MyDataRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tokenManager.tell(new MyDataTokenRequest(endpoint.getToken()), getSelf());
                 })
                 .match(UserDataRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.userManager.tell(message, getSelf());
                 })
                 .match(TableListRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(TokenChecked.class, message -> {
                     endpoint.setLogin(message.isOk);
-                    endpoint.sendTokenMessage(message.isOk ? "token ok" : "token error");
+                    endpoint.sendTokenMessage(message.isOk);
                 })
                 .match(MyDataResponse.class, message -> {
                     endpoint.sendMyDataMessage(message.user);

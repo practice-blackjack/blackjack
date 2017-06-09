@@ -26,27 +26,27 @@ public class WatcherActor extends AbstractActor {
                 })
                 .match(EntryTableRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(ExitTableRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(TokenChecked.class, message -> {
                     endpoint.setLogin(message.isOk);
-                    endpoint.sendTokenMessage(message.isOk ? "token ok" : "token error");
+                    endpoint.sendTokenMessage(message.isOk);
                 })
                 .match(EntryTableResponse.class, message -> {
-                    endpoint.sendEntryMessage(message.isOk ? "entry ok" : "entry error");
+                    endpoint.sendEntryMessage(message.isOk);
                 })
                 .match(ExitTableResponse.class, message -> {
-                    endpoint.sendExitMessage(message.isOk ? "exit ok" : "exit error");
+                    endpoint.sendExitMessage(message.isOk);
                 })
                 //todo:
                 .match(TableUpdate.class, message -> {

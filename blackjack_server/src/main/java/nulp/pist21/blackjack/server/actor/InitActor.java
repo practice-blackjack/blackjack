@@ -31,7 +31,7 @@ public class InitActor extends AbstractActor {
                     Actor.tokenManager.tell(new LogoutTokenRequest(token), getSelf());
                 })
                 .match(RegisterResponse.class, message -> {
-                    endpoint.sendRegisterMessage(message.text);
+                    endpoint.sendRegisterMessage(message.isOk);
                 })
                 .match(LoginResponse.class, message -> {
                     long token = message.token;

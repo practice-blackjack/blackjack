@@ -26,28 +26,28 @@ public class PlayerActor extends AbstractActor {
                 })
                 .match(SitTableRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(PlayerAction.class, message -> {
                     if (!endpoint.isLogin()) {
-                        endpoint.sendTokenMessage("token error");
+                        endpoint.sendTokenMessage(false);
                         return;
                     }
                     Actor.tableManager.tell(message, getSelf());
                 })
                 .match(TokenChecked.class, message -> {
                     endpoint.setLogin(message.isOk);
-                    endpoint.sendTokenMessage(message.isOk ? "token ok" : "token error");
+                    endpoint.sendTokenMessage(message.isOk);
                 })
                 .match(SitTableResponse.class, message -> {
                     endpoint.sendSitMessage(message.isOk ? "sit ok" : "sit error");

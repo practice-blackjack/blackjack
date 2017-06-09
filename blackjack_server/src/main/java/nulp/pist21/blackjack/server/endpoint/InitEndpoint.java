@@ -65,8 +65,8 @@ public class InitEndpoint {
         }
     }
 
-    public void sendRegisterMessage(String message) {
-        sendMessage(new StringMessage("register", message));
+    public void sendRegisterMessage(boolean isOk) {
+        sendMessage(new StringMessage("register", isOk ? "user added" : "error"));
     }
 
     public void sendLoginMessage(long token) {
