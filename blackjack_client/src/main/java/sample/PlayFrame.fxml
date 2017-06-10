@@ -26,59 +26,32 @@
             <Font size="19.0" />
          </font>
       </Button>
-      <Button fx:id="hit" layoutX="467.0" layoutY="355.0" mnemonicParsing="false" onAction="#hitButton" text="Hit">
+      <Button fx:id="hit" layoutX="446.0" layoutY="355.0" mnemonicParsing="false" onAction="#hitButton" prefHeight="42.0" prefWidth="75.0" text="Hit">
          <font>
-            <Font name="System Bold Italic" size="19.0" />
+            <Font size="19.0" />
          </font>
       </Button>
       <Button layoutY="-1.0" mnemonicParsing="false" onAction="#toMenu" text="Menu" />
-      <Button layoutX="567.0" mnemonicParsing="false" onAction="#exitButton" text="Exit" />
+      <Button fx:id="btnStandUp" layoutX="567.0" mnemonicParsing="false" onAction="#exitButton" text="Exit" visible="false" />
       <ImageView fitHeight="42.0" fitWidth="47.0" layoutX="272.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@img/fishka.png" />
          </image>
       </ImageView>
       <Canvas height="200.0" layoutX="119.0" layoutY="41.0" width="200.0" />
-      <Button fx:id="deal" layoutX="467.0" layoutY="350.0" mnemonicParsing="false" onAction="#dealButton" prefHeight="42.0" prefWidth="135.0" text="Deal" underline="true">
+      <Button fx:id="btnSitDown" layoutX="447.0" layoutY="355.0" mnemonicParsing="false" onAction="#dealButton" prefHeight="42.0" prefWidth="154.0" text="Sit Down">
          <font>
-            <Font size="23.0" />
+            <Font size="18.0" />
          </font>
       </Button>
-      <ImageView fx:id="fifty" fitHeight="47.0" fitWidth="35.0" layoutX="541.0" layoutY="312.0" onMouseClicked="#fiftyButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/fifteen.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="oneHundert" fitHeight="42.0" fitWidth="35.0" layoutX="564.0" layoutY="283.0" onMouseClicked="#oneHundertButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/oneHundert.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="ten" fitHeight="42.0" fitWidth="35.0" layoutX="467.0" layoutY="312.0" onMouseClicked="#tenButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/ten.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="twenty" fitHeight="68.0" fitWidth="35.0" layoutX="504.0" layoutY="312.0" onMouseClicked="#twentyButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/twenty.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="twoHundert" fitHeight="73.0" fitWidth="35.0" layoutX="564.0" layoutY="246.0" onMouseClicked="#twoHundertButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/twoHundert.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="fiveHundert" fitHeight="73.0" fitWidth="35.0" layoutX="564.0" layoutY="211.0" onMouseClicked="#fiveHundertButtonPress" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/fiveHundert.png" />
-         </image>
-      </ImageView>
       <TextArea fx:id="gameLog" layoutY="297.0" prefHeight="104.0" prefWidth="303.0" />
       <Label fx:id="betLabel" layoutX="64.0" layoutY="16.0" textFill="WHITE">
          <font>
             <Font name="System Italic" size="18.0" />
          </font>
       </Label>
+      <Button fx:id="btnSecondbet" layoutX="501.0" layoutY="355.0" mnemonicParsing="false" onAction="#actionBtnSecondbet" prefHeight="42.0" prefWidth="47.0" text="20" />
+      <Button fx:id="btnThirdbet" layoutX="552.0" layoutY="355.0" mnemonicParsing="false" onAction="#actionBtnThirdbet" prefHeight="42.0" prefWidth="47.0" text="50" />
+      <Button fx:id="btnFirstbet" layoutX="450.0" layoutY="355.0" mnemonicParsing="false" onAction="#actionBtnFirstbet" prefHeight="42.0" prefWidth="47.0" text="10" />
    </children>
 </AnchorPane>
