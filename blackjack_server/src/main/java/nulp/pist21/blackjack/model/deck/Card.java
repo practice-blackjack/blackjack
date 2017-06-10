@@ -38,6 +38,10 @@ public class Card {
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds", "*"};
     public final static String[] VALUES = new String[] {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "*"};
 
+    public Card() {
+
+    }
+
     public Card(int suit, int value) {
         this.suit = suit % MAX_SUIT;
         this.value = value % MAX_VALUE;
@@ -60,6 +64,14 @@ public class Card {
 
     public int getValue() {
         return value;
+    }
+
+    public void setSuit(int suit) {
+        this.suit = suit;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 
     @Override

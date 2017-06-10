@@ -48,7 +48,7 @@ public class TableManager extends AbstractActor {
                         getSender().tell(new ExitTableResponse(false), getSelf());
                     }
                 })
-                .match(SitTableRequest.class, message -> {
+                .match(SitTableUserRequest.class, message -> {
                     ActorRef tableActor = getTableActor(message.tableInfo);
                     if (tableActor != null) {
                         tableActor.tell(message, getSender());

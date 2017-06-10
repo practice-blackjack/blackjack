@@ -29,7 +29,7 @@ public class PlayerActor extends AbstractActor {
                         endpoint.sendTokenMessage(false);
                         return;
                     }
-                    Actor.tableManager.tell(message, getSelf());
+                    Actor.tokenManager.tell(new SitTableTokenRequest(message.tableInfo, message.place, endpoint.getToken()), getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     if (!endpoint.isLogin()) {

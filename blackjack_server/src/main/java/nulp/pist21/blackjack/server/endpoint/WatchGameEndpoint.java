@@ -3,8 +3,8 @@ package nulp.pist21.blackjack.server.endpoint;
 import akka.actor.ActorRef;
 import com.alibaba.fastjson.JSON;
 import nulp.pist21.blackjack.message.*;
+import nulp.pist21.blackjack.model.TableFullInfo;
 import nulp.pist21.blackjack.model.TableInfo;
-import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.server.actor.Actor;
 import nulp.pist21.blackjack.server.actor.WatcherActor;
 import nulp.pist21.blackjack.server.actor.message.EntryTableRequest;
@@ -84,8 +84,8 @@ public class WatchGameEndpoint {
         sendMessage(new BooleanMessage(TYPE_TOKEN, isOk));
     }
 
-    public void sendUpdateMessage(Table table) {
-        sendMessage(new TableFullInfoMessage(TYPE_UPDATE, table));
+    public void sendUpdateMessage(TableFullInfo tableFullInfo) {
+        sendMessage(new TableFullInfoMessage(TYPE_UPDATE, tableFullInfo));
     }
 
     public void sendUserActionMessage(TableInfo tableInfo, int place, String action, int bet) {

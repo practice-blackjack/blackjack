@@ -50,7 +50,7 @@ public class WatcherActor extends AbstractActor {
                 })
                 //todo:
                 .match(TableUpdate.class, message -> {
-                    endpoint.sendUpdateMessage(message.table);
+                    endpoint.sendUpdateMessage(message.tableFullInfo);
                 })
                 //todo:
                 .match(WatchPlayerAction.class, message -> {

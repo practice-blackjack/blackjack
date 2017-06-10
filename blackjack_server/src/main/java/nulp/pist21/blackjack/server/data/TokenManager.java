@@ -40,9 +40,16 @@ public class TokenManager extends AbstractActor {
                     User user = getUser(message.token);
                     getSender().tell(new TokenChecked(user != null), getSelf());
                 })
+                .match(SitTableTokenRequest.class, message -> {
+                    User user = getUser(message.token);
+                    if (user != null) {
+                        Actor.tableManager.tell(new SitTableUserRequest(message.tableInfo, message.place, user), getSender());
+                    } else {
+                        getSender().tell(new SitTableResponse(false), getSelf());
+                    }
+                })
                 .build();
     }
-
 
 
     private Map<Long, User> tokenList = new TreeMap<>();

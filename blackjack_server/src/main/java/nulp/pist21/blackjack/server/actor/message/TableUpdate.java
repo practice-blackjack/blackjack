@@ -1,13 +1,13 @@
 package nulp.pist21.blackjack.server.actor.message;
 
-import nulp.pist21.blackjack.model.table.Table;
+import nulp.pist21.blackjack.model.TableFullInfo;
 
 public class TableUpdate {
 
-    public final Table table;
+    public final TableFullInfo tableFullInfo;
 
-    public TableUpdate(Table table) {
-        this.table = table;
+    public TableUpdate(TableFullInfo tableFullInfo) {
+        this.tableFullInfo = tableFullInfo;
     }
 
 }

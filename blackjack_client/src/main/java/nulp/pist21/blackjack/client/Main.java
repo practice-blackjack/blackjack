@@ -31,10 +31,6 @@ public class Main {
     private WatchGameEndpoint watchGameEndpoint;
     private PlayGameEndpoint playGameEndpoint;
 
-    private MessageFunction<BooleanMessage> tokenChecker = (BooleanMessage booleanMessage) -> {
-        System.out.println("server > " + JSON.toJSONString(booleanMessage));
-    };
-
     private long token;
 
     private List<TableInfo> tableList = new ArrayList<>();
@@ -56,7 +52,12 @@ public class Main {
     private void initLobby() {
         try {
             lobbyEndpoint = new LobbyEndpoint(token);
-            lobbyEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            lobbyEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    lobbyEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/blackjack/lobby"));
             lobbyEndpoint.onUpdateMessageListener((TableListMessage tableListMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableListMessage));
@@ -69,7 +70,12 @@ public class Main {
     private void initWatchGame() throws URISyntaxException {
         try {
             watchGameEndpoint = new WatchGameEndpoint(token);
-            watchGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            watchGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    watchGameEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(watchGameEndpoint, new URI("ws://localhost:8080/blackjack/game/watch"));
             watchGameEndpoint.onUpdateMessageListener((TableFullInfoMessage tableFullInfoMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableFullInfoMessage));
@@ -88,13 +94,19 @@ public class Main {
     private void initPlayGame() throws URISyntaxException {
         try {
             playGameEndpoint = new PlayGameEndpoint(token);
-            playGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            playGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    playGameEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(playGameEndpoint, new URI("ws://localhost:8080/blackjack/game/play"));
             playGameEndpoint.onWaitActionMessageListener((WaitMessage waitMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(waitMessage));
                 TableInfo tableInfo = waitMessage.getTableInfo();
                 int place = waitMessage.getPlace();
                 Scanner scn = new Scanner(System.in);
+                System.out.println("[action] you >");
                 switch (waitMessage.getWaitType()) {
                     case ACTION_WAIT_BET:
                         int bet = scn.nextInt();
@@ -214,6 +226,7 @@ public class Main {
         Scanner scn = new Scanner(System.in);
         Main client = new Main();
         while (true) {
+            System.out.println("[command] you >");
             String[] command = scn.nextLine().split(" ");
             switch (command[0]) {
                 case "register":
