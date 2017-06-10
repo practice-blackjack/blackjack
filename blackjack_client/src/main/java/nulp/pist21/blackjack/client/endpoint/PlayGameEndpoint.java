@@ -83,14 +83,18 @@ public class PlayGameEndpoint {
         sendMessage(new TableSmallInfoMessage(TYPE_SIT, tableInfo, place));
     }
 
-    public void sendStandMessage(TableInfo tableInfo) {
-        sendMessage(new TableSmallInfoMessage(TYPE_STAND, tableInfo));
+    public void sendStandMessage(TableInfo tableInfo, int place) {
+        sendMessage(new TableSmallInfoMessage(TYPE_STAND, tableInfo, place));
     }
 
     private void sendMessage(Message message) {
-        if (session != null && session.isOpen()) {
-            String json = JSON.toJSONString(message);
-            session.getAsyncRemote().sendText(json);
+        try {
+            if (session != null && session.isOpen()) {
+                String json = JSON.toJSONString(message);
+                session.getBasicRemote().sendText(json);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -100,6 +104,10 @@ public class PlayGameEndpoint {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isOpen() {
+        return session.isOpen();
     }
 
 }

@@ -29,7 +29,7 @@ public class UserActionMessage extends Message {
         return tableInfo;
     }
 
-    public void setTable(TableInfo tableInfo) {
+    public void setTableInfo(TableInfo tableInfo) {
         this.tableInfo = tableInfo;
     }
 

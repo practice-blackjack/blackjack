@@ -12,6 +12,10 @@ public class Table {
     private IDeck deck;
     private Round round;
 
+    public Table() {
+
+    }
+
     public Table(int boxes, IDeck deck) {
         this.boxes = new TableBox[boxes];
         for (int i = 0; i < boxes; i++) {

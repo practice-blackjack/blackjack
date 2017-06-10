@@ -17,6 +17,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import java.io.IOException;
+
 import static nulp.pist21.blackjack.message.MessageConstant.*;
 
 @ServerEndpoint("/game/watch")
@@ -103,9 +105,13 @@ public class WatchGameEndpoint {
     }
 
     private void sendMessage(Message message) {
-        String json = JSON.toJSONString(message);
-        System.out.println("game_watch send " + json);
-        session.getAsyncRemote().sendText(json);
+        try {
+            String json = JSON.toJSONString(message);
+            System.out.println("game_watch send " + json);
+            session.getBasicRemote().sendText(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

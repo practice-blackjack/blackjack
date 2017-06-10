@@ -59,6 +59,7 @@ public class PlayController {
     private PlayGameEndpoint playGameEndpoint;
 
     private TableInfo currentTable;
+    private int place = 0;
 
     @FXML
     public void initialize(){
@@ -121,7 +122,6 @@ public class PlayController {
 
         watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
-            int place = 0;
             playGameEndpoint.sendSitMessage(currentTable, place);
         });
         watchGameEndpoint.onExitListener((BooleanMessage booleanMessage) -> {
@@ -160,7 +160,7 @@ public class PlayController {
         //System.exit(0);
     }
     public void toMenu() {
-        playGameEndpoint.sendStandMessage(currentTable);
+        playGameEndpoint.sendStandMessage(currentTable, place);
     }
     public void hitButton(){
         playGameEndpoint.sendActionMessage(currentTable, 0, ACTION_HIT);

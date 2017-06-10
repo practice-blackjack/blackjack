@@ -81,7 +81,8 @@ public class TableManager extends AbstractActor {
     }
 
     public ActorRef getTableActor(TableInfo tableInfo) {
-        for (TableRecord tr : tableRecords) {
+        for (int i = 0; i < tableRecords.size(); i++) {
+            TableRecord tr = tableRecords.get(i);
             TableInfo ti = tr.tableInfo;
             if (ti.equals(tableInfo)) {
                 return tr.tableRef;

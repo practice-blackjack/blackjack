@@ -15,6 +15,8 @@ import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import static nulp.pist21.blackjack.message.MessageConstant.ACTION_WAIT_BET;
@@ -34,6 +36,8 @@ public class Main {
     };
 
     private long token;
+
+    private List<TableInfo> tableList = new ArrayList<>();
 
     public Main() throws URISyntaxException, IOException, DeploymentException {
         container = ContainerProvider.getWebSocketContainer();
@@ -155,47 +159,55 @@ public class Main {
     private void getTableList() {
         lobbyEndpoint.onTableListListener((TableListMessage tableListMessage) -> {
             System.out.println("server > " + JSON.toJSONString(tableListMessage));
+            tableList = tableListMessage.getTableList();
         });
         lobbyEndpoint.sendTableListMessage();
     }
 
-    private void entryTable() throws URISyntaxException {
+    private void entryTable(int table) throws URISyntaxException {
         initWatchGame();
         lobbyEndpoint.close();
         watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
-        TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
-        watchGameEndpoint.sendEntryMessage(tableInfo);
+        TableInfo tableInfo = tableList.get(table);
+        if (tableInfo != null) {
+            watchGameEndpoint.sendEntryMessage(tableInfo);
+        }
     }
 
-    private void exitTable() throws URISyntaxException {
+    private void exitTable(int table) throws URISyntaxException {
         watchGameEndpoint.onExitListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
             initLobby();
             watchGameEndpoint.close();
         });
-        TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
-        watchGameEndpoint.sendExitMessage(tableInfo);
+        TableInfo tableInfo = tableList.get(table);
+        if (tableInfo != null) {
+            watchGameEndpoint.sendExitMessage(tableInfo);
+        }
     }
 
-    private void sitTable() throws URISyntaxException {
+    private void sitTable(int table, int place) throws URISyntaxException {
         initPlayGame();
         playGameEndpoint.onSitListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
-        TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
-        int place = 1;
-        playGameEndpoint.sendSitMessage(tableInfo, place);
+        TableInfo tableInfo = tableList.get(table);
+        if (tableInfo != null) {
+            playGameEndpoint.sendSitMessage(tableInfo, place);
+        }
     }
 
-    private void standTable() {
+    private void standTable(int table, int place) {
         playGameEndpoint.onStandListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
             playGameEndpoint.close();
         });
-        TableInfo tableInfo = new TableInfo("", 0, 0, 0,0);
-        playGameEndpoint.sendStandMessage(tableInfo);
+        TableInfo tableInfo = tableList.get(table);
+        if (tableInfo != null) {
+            playGameEndpoint.sendStandMessage(tableInfo, place);
+        }
     }
 
     public static void main(String[] args) throws URISyntaxException, IOException, DeploymentException {
@@ -223,16 +235,16 @@ public class Main {
                     client.getTableList();
                     break;
                 case "entry":
-                    client.entryTable();
+                    client.entryTable(Integer.parseInt(command[1]));
                     break;
                 case "exit":
-                    client.exitTable();
+                    client.exitTable(Integer.parseInt(command[1]));
                     break;
                 case "sit":
-                    client.sitTable();
+                    client.sitTable(Integer.parseInt(command[1]), Integer.parseInt(command[2]));
                     break;
                 case "stand":
-                    client.standTable();
+                    client.standTable(Integer.parseInt(command[1]), Integer.parseInt(command[2]));
                     break;
             }
         }

@@ -15,6 +15,8 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import java.io.IOException;
+
 import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGIN;
 import static nulp.pist21.blackjack.message.MessageConstant.TYPE_LOGOUT;
 import static nulp.pist21.blackjack.message.MessageConstant.TYPE_REGISTER;
@@ -82,9 +84,15 @@ public class InitEndpoint {
     }
 
     private void sendMessage(Message message) {
-        String json = JSON.toJSONString(message);
-        System.out.println("init send " + json);
-        session.getAsyncRemote().sendText(json);
+        try {
+            if (session != null && session.isOpen()) {
+                String json = JSON.toJSONString(message);
+                System.out.println("init send " + json);
+                session.getBasicRemote().sendText(json);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

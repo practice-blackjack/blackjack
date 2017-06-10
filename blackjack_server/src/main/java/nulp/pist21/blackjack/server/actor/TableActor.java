@@ -3,6 +3,7 @@ package nulp.pist21.blackjack.server.actor;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import nulp.pist21.blackjack.message.MessageConstant;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Deck;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static nulp.pist21.blackjack.message.MessageConstant.*;
+
 public class TableActor extends AbstractActor {
 
     static public Props props(TableInfo tableInfo) {
@@ -23,12 +26,55 @@ public class TableActor extends AbstractActor {
 
     private ActorRef[] players;
     private List<ActorRef> watchers;
+    private TableInfo tableInfo;
     private Table table;
+
+    private boolean wait;
 
     public TableActor(TableInfo tableInfo) {
         players = new ActorRef[tableInfo.getMaxPlayerCount()];
         watchers = new ArrayList<>();
+        this.tableInfo = tableInfo;
         this.table = new Table(tableInfo.getMaxPlayerCount(), new Deck(2));
+        wait = false;
+        new Thread(() -> gameCycle()).start();
+    }
+
+    public void gameCycle() {
+        ActorRef[] players;
+        ActorRef player;
+        long time;
+        while (true) {
+            players = Arrays.copyOf(this.players, this.players.length);
+            for (int i = 0; i < players.length; i++) {
+                player = players[i];
+                if (player == null) {
+                    continue;
+                }
+                wait = true;
+                player.tell(new WaitAction(tableInfo, i, ACTION_WAIT_BET), getSelf());
+                time = System.currentTimeMillis();
+                while (wait){
+                    if (System.currentTimeMillis() - time > 30000) {
+                        break;
+                    }
+                }
+            }
+            for (int i = 0; i < players.length; i++) {
+                player = players[i];
+                if (player == null) {
+                    continue;
+                }
+                wait = true;
+                player.tell(new WaitAction(tableInfo, i, ACTION_WAIT_HIT_OR_STAND), getSelf());
+                time = System.currentTimeMillis();
+                while (wait){
+                    if (System.currentTimeMillis() - time > 30000) {
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -46,11 +92,12 @@ public class TableActor extends AbstractActor {
                 })
                 .match(SitTableRequest.class, message -> {
                     ActorRef sender = getSender();
-                    if (players[message.place] == null) {
+                    boolean result = players[message.place] == null;
+                    if (result) {
                         table.getBoxes()[message.place].isActivated(true);
                         players[message.place] = sender;
                     }
-                    sender.tell(new SitTableResponse(true), getSelf());
+                    sender.tell(new SitTableResponse(result), getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     ActorRef sender = getSender();
@@ -67,13 +114,24 @@ public class TableActor extends AbstractActor {
                     IRound round = table.getRound();
                     IHand userHand = round.getCurrentHand();
                     int place = Arrays.asList(table.getBoxes()).indexOf(userHand);
-                    if (message.place != place) {
+                    if (message.place != place || !wait) {
                         return;
                     }
-                    //todo:
-                    GameAction action = new GameAction(GameAction.Actions.HIT);
-                    round.next(action);
-
+                    GameAction.Actions action = null;
+                    switch (message.action) {
+                        case ACTION_BET:
+                            //todo:
+                            break;
+                        case ACTION_HIT:
+                            action = GameAction.Actions.HIT;
+                            break;
+                        case ACTION_STAND:
+                            action = GameAction.Actions.STAND;
+                            break;
+                    }
+                    GameAction gameAction = new GameAction(action);
+                    round.next(gameAction);
+                    wait = false;
                     watchers.forEach(w -> {
                         w.tell(new TableUpdate(table), getSelf());
                     });

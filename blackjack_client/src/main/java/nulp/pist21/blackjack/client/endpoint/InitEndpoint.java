@@ -68,8 +68,14 @@ public class InitEndpoint {
     }
 
     private void sendMessage(Message message) {
-        String json = JSON.toJSONString(message);
-        session.getAsyncRemote().sendText(json);
+        try {
+            if (session != null && session.isOpen()) {
+                String json = JSON.toJSONString(message);
+                session.getBasicRemote().sendText(json);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void close() {
@@ -79,4 +85,9 @@ public class InitEndpoint {
             e.printStackTrace();
         }
     }
+
+    public boolean isOpen() {
+        return session.isOpen();
+    }
+
 }

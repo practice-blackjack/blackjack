@@ -17,6 +17,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.List;
 
 import static nulp.pist21.blackjack.message.MessageConstant.*;
@@ -106,9 +107,13 @@ public class LobbyEndpoint {
     }
 
     private void sendMessage(Message message) {
-        String json = JSON.toJSONString(message);
-        System.out.println("lobby send " + json);
-        session.getAsyncRemote().sendText(json);
+        try {
+            String json = JSON.toJSONString(message);
+            System.out.println("lobby send " + json);
+            session.getBasicRemote().sendText(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

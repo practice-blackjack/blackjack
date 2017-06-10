@@ -34,28 +34,28 @@ public class ProgramData {
     private WebSocketContainer container;
 
     public InitEndpoint getInitEndpoint() {
-        if (initEndpoint == null) {
+        if (initEndpoint == null || !initEndpoint.isOpen()) {
             initInit();
         }
         return initEndpoint;
     }
 
     public LobbyEndpoint getLobbyEndpoint() {
-        if (lobbyEndpoint == null) {
+        if (lobbyEndpoint == null || !lobbyEndpoint.isOpen()) {
             initLobby();
         }
         return lobbyEndpoint;
     }
 
     public WatchGameEndpoint getWatchGameEndpoint() {
-        if (watchGameEndpoint == null) {
+        if (watchGameEndpoint == null || !watchGameEndpoint.isOpen()) {
             initWatchGame();
         }
         return watchGameEndpoint;
     }
 
     public PlayGameEndpoint getPlayGameEndpoint() {
-        if (playGameEndpoint == null) {
+        if (playGameEndpoint == null || !playGameEndpoint.isOpen()) {
             initPlayGame();
         }
         return playGameEndpoint;
