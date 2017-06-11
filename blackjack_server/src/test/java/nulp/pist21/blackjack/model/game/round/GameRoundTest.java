@@ -2,6 +2,7 @@ package nulp.pist21.blackjack.model.game.round;
 
 import mock.UserMock;
 import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.deck.IDeck;
 import nulp.pist21.blackjack.model.game.Dealer;
@@ -47,37 +48,31 @@ public class GameRoundTest {
         Assert.assertEquals(0, dealer.getHand().length);
     }
 
-    /*@Test
+    @Test
     public void should_go_to_next_if_a_lot(){
         TableBox boxes[] = new TableBox[]{
                 new TableBox(),
                 new TableBox(),
                 new TableBox()
         };
-        EndlessDeck deck = new DeckMock(new ArrayList<Card>() {
-            new Card
-        });
+        IDeck deck = new EndlessDeck();
         Dealer dealer = new Dealer();
 
         IRound round = new GameRound(boxes, deck, dealer);
 
-        for(TableBox box: boxes){
-            box.takeCards();
-        }
+        round.end();
 
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.JACK));
-        boxes[0].giveCard(new Card(Card.CLUBS, Card._7));
-        boxes[0].giveCard(new Card(Card.CLUBS, Card._8));       //25
-
-        boxes[1].giveCard(new Card(Card.CLUBS, Card.JACK));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
-        boxes[1].giveCard(new Card(Card.CLUBS, Card._8));       //28
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
+        boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
 
-        boxes[2].giveCard(new Card(Card.CLUBS, Card.JACK));
-        boxes[2].giveCard(new Card(Card.CLUBS, Card._2));
-        boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));    //22
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._10));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card._3));
+        boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
+        round.next(new GameAction(GameAction.Actions.STAND));
+
+        Assert.assertTrue(round.isEnd());
     }
 
     @Test
@@ -92,13 +87,7 @@ public class GameRoundTest {
 
         IRound round = new GameRound(boxes, deck, dealer);
 
-        for(TableBox box: boxes){
-            box.takeCards();
-        }
-
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.JACK));
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
+        round.end();
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
@@ -108,7 +97,9 @@ public class GameRoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card._5));
         boxes[2].giveCard(new Card(Card.CLUBS, Card._9));
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
+        round.next(new GameAction(GameAction.Actions.STAND));
+
+        Assert.assertFalse(round.isEnd());
     }
 
     @Test
@@ -124,12 +115,7 @@ public class GameRoundTest {
 
         IRound round = new GameRound(boxes, deck, dealer);
 
-        for(TableBox box: boxes){
-            box.takeCards();
-        }
-
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.ACE));
-        boxes[0].giveCard(new Card(Card.CLUBS, Card.KING));
+        round.end();
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
@@ -137,8 +123,10 @@ public class GameRoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
         boxes[2].giveCard(new Card(Card.CLUBS, Card.ACE));
 
-        Assert.assertFalse(round.next(new GameAction(GameAction.Actions.HIT)));
-    }*/
+        round.next(new GameAction(GameAction.Actions.STAND));
+
+        Assert.assertFalse(round.isEnd());
+    }
 
     @Test
     public void should_work_game_circle(){

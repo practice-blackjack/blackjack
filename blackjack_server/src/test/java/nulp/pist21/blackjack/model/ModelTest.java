@@ -22,7 +22,7 @@ public class ModelTest {
                 new UserMock(18, 300),
         };
 
-        Table table = new Table(3, new EndlessDeck());
+        Table table = new Table(3, new EndlessDeck(), 100, 300);
 
         table.getBoxes()[0].isActivated(true);
         table.getBoxes()[1].isActivated(true);

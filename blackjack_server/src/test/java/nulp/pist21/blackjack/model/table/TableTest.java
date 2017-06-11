@@ -1,6 +1,7 @@
 package nulp.pist21.blackjack.model.table;
 
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
+import nulp.pist21.blackjack.model.game.round.BetRound;
 import nulp.pist21.blackjack.model.game.round.IRound;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import org.junit.Test;
 public class TableTest {
 
     public Table createTable(){
-        return new Table(6, new EndlessDeck());
+        return new Table(6, new EndlessDeck(), 100, 200);
     }
 
     @Test
@@ -29,7 +30,7 @@ public class TableTest {
 
         table.startRound();
 
-        //Assert.assertEquals(3, round.getHandCount());
+        Assert.assertEquals(3, table.getPlayingBoxes().length);
     }
 
 

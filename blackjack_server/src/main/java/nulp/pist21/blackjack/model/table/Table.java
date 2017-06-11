@@ -21,20 +21,25 @@ public class Table {
     private GameRound gameRound;
     private IRound currentRound;
 
-    public Table(int boxes, IDeck deck) {
+    private int minBet;
+    private int maxBet;
+
+    public Table(int boxes, IDeck deck, int minBet, int maxBet) {
         this.boxes = new TableBox[boxes];
         for (int i = 0; i < boxes; i++) {
             this.boxes[i] = new TableBox();
         }
         this.deck = deck;
         this.dealer = new Dealer();
+
+        this.minBet = minBet;
+        this.maxBet = maxBet;
     }
 
     public boolean doAction(Action action){
         if (currentRound == null){
             return false;
         }
-        currentRound.next(action);
 
         if (currentRound.isEnd()){
             if (currentRound instanceof BetRound){
@@ -45,6 +50,7 @@ public class Table {
                 return false;
             }
         }
+        currentRound.next(action);
         return true;
     }
 
@@ -53,17 +59,21 @@ public class Table {
     }
 
     public boolean isRoundOver(){
-        return currentRound instanceof GameRound && currentRound.isEnd();
+        return currentRound == gameRound && currentRound.isEnd();
     }
 
     public void startRound(){
         playingBoxes = Arrays.stream(boxes).filter(box -> box.isActivated()).toArray(TableBox[]::new);
-        betRound = new BetRound(playingBoxes);
+        betRound = new BetRound(playingBoxes, minBet, maxBet);
         currentRound = betRound;
     }
 
     public TableBox getCurrentBox(){
         return playingBoxes[currentRound.getIndex()];
+    }
+
+    public TableBox[] getPlayingBoxes() {
+        return playingBoxes;
     }
 
     public int getCurrentIndex(){

@@ -7,9 +7,13 @@ import nulp.pist21.blackjack.model.game.IBetable;
 public class BetRound implements IRound {
     private IBetable players[];
     private int index;
+    private int minBet;
+    private int maxBet;
 
-    public BetRound(IBetable[] players) {
+    public BetRound(IBetable[] players, int minBet, int maxBet) {
         this.players = players;
+        this.minBet = minBet;
+        this.maxBet = maxBet;
     }
 
     @Override
@@ -20,7 +24,11 @@ public class BetRound implements IRound {
         if (!(action instanceof BetAction)){
             return false;
         }
-        players[index].setBet(((BetAction) action).getBet());
+        BetAction betAction = (BetAction) action;
+        if (betAction.getBet() < minBet || betAction.getBet() > maxBet){
+            return false;
+        }
+        players[index].setBet(betAction.getBet());
         index++;
         return true;
     }
