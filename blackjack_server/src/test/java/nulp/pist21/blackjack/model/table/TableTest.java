@@ -1,8 +1,6 @@
 package nulp.pist21.blackjack.model.table;
 
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.game.round.BetRound;
-import nulp.pist21.blackjack.model.game.round.IRound;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +26,7 @@ public class TableTest {
         table.getBoxes()[2].isActivated(true);
         table.getBoxes()[4].isActivated(true);
 
-        table.startRound();
+        table.startGame();
 
         Assert.assertEquals(3, table.getPlayingBoxes().length);
     }

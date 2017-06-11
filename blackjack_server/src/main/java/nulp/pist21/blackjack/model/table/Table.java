@@ -24,6 +24,11 @@ public class Table {
     private int minBet;
     private int maxBet;
 
+    public enum RoundTypes {
+        BETROUND,
+        GAMEROUND
+    }
+
     public Table(int boxes, IDeck deck, int minBet, int maxBet) {
         this.boxes = new TableBox[boxes];
         for (int i = 0; i < boxes; i++) {
@@ -54,15 +59,18 @@ public class Table {
         return true;
     }
 
-    public IRound getCurrentRound() {
-        return currentRound;
+    public RoundTypes getRoundType() {
+        if (currentRound instanceof BetRound){
+            return RoundTypes.BETROUND;
+        }
+        return RoundTypes.GAMEROUND;
     }
 
-    public boolean isRoundOver(){
+    public boolean isGameOver(){
         return currentRound == gameRound && currentRound.isEnd();
     }
 
-    public void startRound(){
+    public void startGame(){
         playingBoxes = Arrays.stream(boxes).filter(box -> box.isActivated()).toArray(TableBox[]::new);
         betRound = new BetRound(playingBoxes, minBet, maxBet);
         currentRound = betRound;

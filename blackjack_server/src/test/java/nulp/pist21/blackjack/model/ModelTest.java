@@ -1,7 +1,6 @@
 package nulp.pist21.blackjack.model;
 
 import mock.UserMock;
-import nulp.pist21.blackjack.model.actions.Action;
 import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
@@ -28,7 +27,7 @@ public class ModelTest {
         table.getBoxes()[1].isActivated(true);
         table.getBoxes()[2].isActivated(true);
 
-        table.startRound();
+        table.startGame();
         System.out.println("GameRound started.");
         System.out.println();
 
@@ -59,7 +58,7 @@ public class ModelTest {
         }
 
         System.out.println("Game started.");
-        while (!table.isRoundOver()){
+        while (!table.isGameOver()){
             int userId = table.getCurrentIndex();
             GameAction action = (GameAction) users[userId].doStep(table);
             Assert.assertTrue(table.doAction(action));
