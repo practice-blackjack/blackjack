@@ -172,15 +172,24 @@ public class Main {
         lobbyEndpoint.onTableListListener((TableListMessage tableListMessage) -> {
             System.out.println("server > " + JSON.toJSONString(tableListMessage));
             tableList = tableListMessage.getTableList();
+            try {
+                initWatchGame();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         });
         lobbyEndpoint.sendTableListMessage();
     }
 
     private void entryTable(int table) throws URISyntaxException {
-        initWatchGame();
         lobbyEndpoint.close();
         watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
+            try {
+                initPlayGame();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
         });
         TableInfo tableInfo = tableList.get(table);
         if (tableInfo != null) {
@@ -201,7 +210,6 @@ public class Main {
     }
 
     private void sitTable(int table, int place) throws URISyntaxException {
-        initPlayGame();
         playGameEndpoint.onSitListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
