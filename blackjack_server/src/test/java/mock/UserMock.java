@@ -4,6 +4,7 @@ import nulp.pist21.blackjack.model.actions.Action;
 import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
+import nulp.pist21.blackjack.model.game.round.IGame;
 import nulp.pist21.blackjack.model.table.Table;
 
 public class UserMock {
@@ -20,12 +21,12 @@ public class UserMock {
         this(stopOn, 100);
     }
 
-    public Action doStep(Table table){
-        if (table.getCurrentBox().getBet() == 0){
+    public Action doStep(IGame game){
+        if (game.getCurrentBox().getBet() == 0){
             return new BetAction(bet);
         }
 
-        if (new Combination(table.getCurrentBox()).getPoints() >= stopOn){
+        if (new Combination(game.getCurrentBox()).getPoints() >= stopOn){
             return new GameAction(GameAction.Actions.STAND);
         }
         return new GameAction(GameAction.Actions.HIT);

@@ -99,7 +99,7 @@ public class GameRoundTest {
 
         round.next(new GameAction(GameAction.Actions.STAND));
 
-        Assert.assertFalse(round.isEnd());
+        Assert.assertTrue(round.isEnd());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class GameRoundTest {
 
         round.next(new GameAction(GameAction.Actions.STAND));
 
-        Assert.assertFalse(round.isEnd());
+        Assert.assertTrue(round.isEnd());
     }
 
     @Test
