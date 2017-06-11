@@ -1,6 +1,7 @@
-package nulp.pist21.blackjack.model.game;
+package nulp.pist21.blackjack.model.game.calculating;
 
 import nulp.pist21.blackjack.model.deck.Card;
+import nulp.pist21.blackjack.model.game.IHand;
 
 public class Combination {
     public static final int BLACK_JACK = Integer.MAX_VALUE;

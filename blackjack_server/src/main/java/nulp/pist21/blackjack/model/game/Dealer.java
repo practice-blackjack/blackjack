@@ -3,6 +3,8 @@ package nulp.pist21.blackjack.model.game;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.TurnableCard;
+import nulp.pist21.blackjack.model.game.calculating.Combination;
+import nulp.pist21.blackjack.model.game.round.IRound;
 
 import java.util.ArrayList;
 import java.util.List;
