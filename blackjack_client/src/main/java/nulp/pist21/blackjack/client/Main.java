@@ -243,7 +243,7 @@ public class Main {
                 case "login":
                     client.login(command[1], command[2]);
                     break;
-                case "logout":
+                case "logoutButtonClick":
                     client.logout();
                     break;
                 case "me":
@@ -264,7 +264,7 @@ public class Main {
                 case "sit":
                     client.sitTable(Integer.parseInt(command[1]), Integer.parseInt(command[2]));
                     break;
-                case "stand":
+                case "actionStandButton":
                     client.standTable(Integer.parseInt(command[1]), Integer.parseInt(command[2]));
                     break;
             }

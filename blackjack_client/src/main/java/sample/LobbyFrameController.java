@@ -4,108 +4,121 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import nulp.pist21.blackjack.client.endpoint.InitEndpoint;
 import nulp.pist21.blackjack.client.endpoint.LobbyEndpoint;
+import nulp.pist21.blackjack.message.BooleanMessage;
+import nulp.pist21.blackjack.message.MessageFunction;
 import nulp.pist21.blackjack.message.TableListMessage;
+import nulp.pist21.blackjack.message.UserMessage;
 import nulp.pist21.blackjack.model.TableInfo;
+import nulp.pist21.blackjack.model.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Ol'ko on 29.05.2017.
- */
 public class LobbyFrameController {
 
     private final ProgramData programData = ProgramData.get();
+    private InitEndpoint initEndpoint;
+    private LobbyEndpoint lobbyEndpoint;
 
-    @FXML
-    private javafx.scene.control.ListView<String> listView;
-    @FXML
-    public javafx.scene.control.TextField nameField;
-    @FXML
-    public javafx.scene.control.TextField rateField;
-    @FXML
-    public javafx.scene.control.TextField peopleField;
+    @FXML private ListView<String> tableListView;
+    @FXML public TextField nameField;
+    @FXML public TextField rateField;
+    @FXML public TextField peopleField;
+    @FXML public Label userNameLabel;
+    @FXML public Label userCashLabel;
+    @FXML public Label infoLabel;
 
-    private ObservableList<String> listItems;
+    private ObservableList<String> tableListViewItems;
     private List<TableInfo> tables;
 
     @FXML
-    public javafx.scene.control.Label lblPlayerName;
-    @FXML
-    public javafx.scene.control.Label lblCash;
-
-    private Stage stage;
-
-    private LobbyEndpoint lobbyEndpoint;
-
-    @FXML
     public void initialize(){
-        //todo:
-        lblPlayerName.setText("name");
-        lblCash.setText("1000");
-        listItems = FXCollections.observableArrayList();
-        listView.setItems(listItems);
-        lobbyEndpoint = programData.getLobbyEndpoint();
-        lobbyEndpoint.onUpdateMessageListener((TableListMessage tableListMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tableListMessage));
-        });
-        lobbyEndpoint.onTableListListener((TableListMessage tableListMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tableListMessage));
-            tables = tableListMessage.getTableList();
-            List<String> collect = tables.stream().map(ti -> ti.getName() + "\t\t\tRate: \t" + ti.getMin() + "-" + ti.getMax() + "\n\t\t\t\tPeople: \t" + ti.getPlayerCount() + "/" + ti.getMaxPlayerCount()).collect(Collectors.toList());
-            Platform.runLater(() ->{
-                listItems.clear();
-                listItems.addAll(collect);
-                listView.refresh();
+        initEndpoint = programData.getInitEndpoint();
+        initEndpoint.onLogoutListener((BooleanMessage message) -> {
+            Platform.runLater(() -> {
+                if (message.isOk()) {
+                    infoLabel.setTextFill(Color.GREEN);
+                    infoLabel.setText("Logout is successfully");
+                    programData.getStageRouter().goTo(StageRouter.SIGN_IN);
+                } else {
+                    infoLabel.setTextFill(Color.RED);
+                    infoLabel.setText("Logout error");
+                }
             });
         });
+        lobbyEndpoint = programData.getLobbyEndpoint();
+        lobbyEndpoint.onMyDataListener((UserMessage message) -> {
+            System.out.println("server > " + JSON.toJSONString(message));
+            Platform.runLater(() -> {
+                User currentUser = message.getUser();
+                userNameLabel.setText(currentUser.getName());
+                userCashLabel.setText(String.valueOf(currentUser.getCash()));
+            });
+        });
+        lobbyEndpoint.onTableListListener((TableListMessage message) -> {
+            System.out.println("server > " + JSON.toJSONString(message));
+            tables = message.getTableList();
+            //todo:
+            List<String> collect = tables.stream().map(ti -> ti.getName() + "\t\t\tRate: \t" + ti.getMin() + "-" + ti.getMax() + "\n\t\t\t\tPeople: \t" + ti.getPlayerCount() + "/" + ti.getMaxPlayerCount()).collect(Collectors.toList());
+            Platform.runLater(() ->{
+                tableListViewItems.clear();
+                tableListViewItems.addAll(collect);
+                tableListView.refresh();
+                if(tableListViewItems.size() > 0) {
+                    tableListView.getSelectionModel().select(0);
+                }
+            });
+        });
+        lobbyEndpoint.onUpdateMessageListener((TableListMessage message) -> {
+            System.out.println("server > " + JSON.toJSONString(message));
+            tables = message.getTableList();
+            //todo:
+            List<String> collect = tables.stream().map(ti -> ti.getName() + "\t\t\tRate: \t" + ti.getMin() + "-" + ti.getMax() + "\n\t\t\t\tPeople: \t" + ti.getPlayerCount() + "/" + ti.getMaxPlayerCount()).collect(Collectors.toList());
+            Platform.runLater(() ->{
+                tableListViewItems.clear();
+                tableListViewItems.addAll(collect);
+                tableListView.refresh();
+            });
+        });
+
+        Stage stage = programData.getStage();
+        stage.setTitle("Black Jack / Lobby");
+        tableListViewItems = FXCollections.observableArrayList();
+        tableListView.setItems(tableListViewItems);
+        lobbyEndpoint.sendMyDataMessage();
         lobbyEndpoint.sendTableListMessage();
     }
-    public void select(){
-        listView.setOnMouseClicked((javafx.scene.input.MouseEvent mouseEvent) -> {
-            int index = listView.getSelectionModel().getSelectedIndex();
+
+    @FXML
+    public void tableListViewClick(){
+        tableListView.setOnMouseClicked((javafx.scene.input.MouseEvent mouseEvent) -> {
+            int index = tableListView.getSelectionModel().getSelectedIndex();
             if (index != -1) {
                 TableInfo currentTable = tables.get(index);
-                programData.setCurrentTable(currentTable);
                 nameField.setText(currentTable.getName());
                 rateField.setText(currentTable.getMin() + "-" + currentTable.getMax());
                 peopleField.setText(currentTable.getPlayerCount() + "/" + currentTable.getMaxPlayerCount());
-            }
-            if (mouseEvent.getClickCount() == 2) {
-                try{
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource("PlayFrame.fxml"));
-                    Parent root = loader.load();
-                    Scene scene = new Scene(root);
-
-                    PlayController controller = loader.getController();
-                    controller.setStage(stage);
-
-                    stage.setTitle("Game Frame");
-                    stage.setResizable(false);
-                    stage.setScene(scene);
-                    stage.show();
-
-                }catch (Exception ex){
-                    ex.printStackTrace();
+                if (mouseEvent.getClickCount() == 2) {
+                    programData.setCurrentTable(currentTable);
+                    programData.getStageRouter().goTo(StageRouter.PLAY);
                 }
             }
         });
     }
 
-  @FXML
-  public void settingsButton(){
-
-  }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-        select();
+    @FXML
+    public void logoutButtonClick() {
+        initEndpoint.sendLogoutMessage();
     }
+
+    @FXML
+    public void settingsButtonClick(){
+        //todo:
+    }
+
 }

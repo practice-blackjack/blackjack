@@ -2,10 +2,6 @@ package sample;
 import com.alibaba.fastjson.JSON;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -15,134 +11,74 @@ import nulp.pist21.blackjack.client.endpoint.InitEndpoint;
 import nulp.pist21.blackjack.message.BooleanMessage;
 import nulp.pist21.blackjack.message.TokenMessage;
 import nulp.pist21.blackjack.model.User;
-import java.io.IOException;
-
-/**
- * Created by Ol'ko on 22.05.2017.
- */
 
 public class RegistrationController {
 
     private final ProgramData programData = ProgramData.get();
-
-    private Stage stage;
-    @FXML
-    private TextField login;
-    @FXML
-    private TextField email;
-    @FXML
-    private PasswordField password;
-    @FXML
-    private PasswordField confirmPassword;
-    @FXML
-    private Button backToSignIn;
-    @FXML
-    private Label info;
-
     private InitEndpoint initEndpoint;
+
+    @FXML private TextField loginField;
+    @FXML private PasswordField passwordField;
+    @FXML private PasswordField confirmPasswordField;
+    @FXML private Label infoLabel;
 
     @FXML
     public void initialize() {
         initEndpoint = programData.getInitEndpoint();
-        initEndpoint.onLoginListener((TokenMessage tokenMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(tokenMessage));
-            long token = tokenMessage.getToken();
+        initEndpoint.onLoginListener((TokenMessage message) -> {
+            System.out.println("server > " + JSON.toJSONString(message));
+            long token = message.getToken();
             programData.setToken(token);
             Platform.runLater(() -> {
                 if (token != -1) {
-                    LobbyFrameController();
-                    info.setText("Login is successfully");
+                    infoLabel.setTextFill(Color.GREEN);
+                    infoLabel.setText("Login is successfully");
+                    programData.initLobby();
+                    programData.getStageRouter().goTo(StageRouter.LOBBY);
                 } else {
-                    info.setText("Error! You print error login or password!");
+                    infoLabel.setTextFill(Color.RED);
+                    infoLabel.setText("Error! You print error loginField or passwordField!");
                 }
             });
         });
-        initEndpoint.onRegisterListener((BooleanMessage booleanMessage) -> {
-            System.out.println("server > " + JSON.toJSONString(booleanMessage));
-            if (booleanMessage.isOk()) {
+        initEndpoint.onRegisterListener((BooleanMessage message) -> {
+            System.out.println("server > " + JSON.toJSONString(message));
+            if (message.isOk()) {
                 Platform.runLater(() -> {
-                    info.setText("Registration is successfully");
-                    info.setTextFill(Color.GREEN);
-                    RegframeController();
+                    infoLabel.setTextFill(Color.GREEN);
+                    infoLabel.setText("Registration is successfully");
                 });
-                String log = login.getText();
-                String pass = password.getText();
-                initEndpoint.sendLoginMessage(new User(log, pass));
+                String login = this.loginField.getText();
+                String password = this.passwordField.getText();
+                initEndpoint.sendLoginMessage(new User(login, password));
             } else {
                 Platform.runLater(() -> {
-                    info.setText("Registration is NOT successfully. Retype your password");
-                    info.setTextFill(Color.RED);
+                    infoLabel.setTextFill(Color.RED);
+                    infoLabel.setText("Registration is NOT successfully. Retype your passwordField");
                 });
             }
         });
-    }
 
-    protected void RegframeController() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        }catch (IOException e) {
-
-        }
+        Stage stage = programData.getStage();
+        stage.setTitle("Black Jack / Registration");
     }
 
     @FXML
-    public void actionBackToSignIn(){
-        try{
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("SignInFrame.fxml"));
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-
-            SignInController controller = loader.getController();
-            controller.setStage(stage);
-
-            stage.setTitle("SignIn Frame Frame");
-            stage.setResizable(false);
-            stage.setScene(scene);
-            stage.show();
-
-
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+    public void toSignInButtonClick(){
+        programData.getStageRouter().goTo(StageRouter.SIGN_IN);
     }
 
     @FXML
-    public void registerButton() {
-        String log = login.getText();
-        String pass = password.getText();
-        String confPass = confirmPassword.getText();
-        if (pass.equals(confPass)) {
+    public void registerButtonClick() {
+        String login = this.loginField.getText();
+        String password = this.passwordField.getText();
+        String confirmPassword = this.confirmPasswordField.getText();
+        if (password.equals(confirmPassword)) {
+            initEndpoint.sendRegisterMessage(new User(login, password));
         } else {
-            info.setText("Registration is NOT successfully. Retype your password");
-            info.setTextFill(Color.RED);
+            infoLabel.setText("Registration is NOT successfully. Retype your passwordField");
+            infoLabel.setTextFill(Color.RED);
         }
-
-    }
-    public void setStage(Stage stage) {
-        this.stage = stage;
-
-    }
-
-    protected void LobbyFrameController() {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
-            Parent root = loader.load();
-            LobbyFrameController controller = loader.getController();
-            controller.setStage(stage);
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-
-        }
-
     }
 }
 
