@@ -4,8 +4,7 @@ import nulp.pist21.blackjack.model.actions.Action;
 import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.round.IGame;
-import nulp.pist21.blackjack.model.table.Table;
+import nulp.pist21.blackjack.model.game.IGame;
 
 public class UserMock {
 

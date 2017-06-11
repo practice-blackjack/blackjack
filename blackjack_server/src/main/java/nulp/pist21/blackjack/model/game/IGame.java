@@ -1,5 +1,6 @@
-package nulp.pist21.blackjack.model.game.round;
+package nulp.pist21.blackjack.model.game;
 
+import nulp.pist21.blackjack.model.game.round.IRound;
 import nulp.pist21.blackjack.model.table.TableBox;
 
 public interface IGame {

@@ -7,7 +7,6 @@ import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.game.GameWithDealer;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.round.IGame;
 import nulp.pist21.blackjack.model.table.Table;
 import org.junit.Assert;
 import org.junit.Test;

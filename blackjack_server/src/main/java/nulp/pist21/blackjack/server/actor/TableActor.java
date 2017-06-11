@@ -8,18 +8,19 @@ import nulp.pist21.blackjack.model.Player;
 import nulp.pist21.blackjack.model.TableFullInfo;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.User;
+import nulp.pist21.blackjack.model.actions.Action;
+import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.Deck;
-import nulp.pist21.blackjack.model.game.IHand;
-import nulp.pist21.blackjack.model.game.IRound;
-import nulp.pist21.blackjack.model.game.Round;
+import nulp.pist21.blackjack.model.game.GameWithDealer;
+import nulp.pist21.blackjack.model.game.round.BetRound;
+import nulp.pist21.blackjack.model.game.round.GameRound;
+import nulp.pist21.blackjack.model.game.round.IRound;
 import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.server.actor.message.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static nulp.pist21.blackjack.message.MessageConstant.*;
 
@@ -34,54 +35,23 @@ public class TableActor extends AbstractActor {
     private List<ActorRef> watchers;
     private TableInfo tableInfo;
     private Table table;
-
-    private boolean wait;
+    private GameWithDealer game;
+    private Timer timer;
+    private long delay;
 
     public TableActor(TableInfo tableInfo) {
         players = new ActorRef[tableInfo.getMaxPlayerCount()];
         users = new User[tableInfo.getMaxPlayerCount()];
         watchers = new ArrayList<>();
         this.tableInfo = tableInfo;
-        this.table = new Table(tableInfo.getMaxPlayerCount(), new Deck(2));
-        wait = false;
-        new Thread(() -> gameCycle()).start();
+        this.table = new Table(tableInfo.getMaxPlayerCount(), tableInfo.getMin(), tableInfo.getMax(), new Deck(2));
+        this.game = new GameWithDealer(table);
+        this.delay = 30000;
+        timer = new Timer();
     }
 
     public void gameCycle() {
-        ActorRef[] players;
-        ActorRef player;
-        long time;
-        while (true) {
-            players = Arrays.copyOf(this.players, this.players.length);
-            for (int i = 0; i < players.length; i++) {
-                player = players[i];
-                if (player == null) {
-                    continue;
-                }
-                wait = true;
-                player.tell(new WaitAction(tableInfo, i, ACTION_WAIT_BET), getSelf());
-                time = System.currentTimeMillis();
-                while (wait){
-                    if (System.currentTimeMillis() - time > 30000) {
-                        break;
-                    }
-                }
-            }
-            for (int i = 0; i < players.length; i++) {
-                player = players[i];
-                if (player == null) {
-                    continue;
-                }
-                wait = true;
-                player.tell(new WaitAction(tableInfo, i, ACTION_WAIT_HIT_OR_STAND), getSelf());
-                time = System.currentTimeMillis();
-                while (wait){
-                    if (System.currentTimeMillis() - time > 30000) {
-                        break;
-                    }
-                }
-            }
-        }
+
     }
 
     @Override
@@ -101,15 +71,20 @@ public class TableActor extends AbstractActor {
                     ActorRef sender = getSender();
                     boolean result = players[message.place] == null;
                     if (result) {
+                        boolean wasEmpty = table.isEmpty();
                         table.getBoxes()[message.place].isActivated(true);
                         players[message.place] = sender;
                         users[message.place] = message.user;
+                        if (wasEmpty){
+                            timer.schedule(new TimedOutAction(), delay);
+                            notifyCurrentPlayer();
+                        }
                     }
                     sender.tell(new SitTableResponse(result), getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     ActorRef sender = getSender();
-                    if (players[message.place].equals(sender)) {
+                    if (sender.equals(players[message.place])) {
                         table.getBoxes()[message.place].isActivated(false);
                         players[message.place] = null;
                     }
@@ -119,47 +94,80 @@ public class TableActor extends AbstractActor {
                     if (players[message.place] != getSender()) {
                         return;
                     }
-                    IRound round = table.getRound();
-                    IHand userHand = round.getCurrentHand();
-                    int place = Arrays.asList(table.getBoxes()).indexOf(userHand);
-                    if (message.place != place || !wait) {
+                    int place = game.getCurrentIndex();
+                    if (message.place != place) {
                         return;
                     }
-                    GameAction.Actions action = null;
+                    Action action = null;
                     switch (message.action) {
                         case ACTION_BET:
-                            //todo:
+                            action = new BetAction(message.bet);
                             break;
                         case ACTION_HIT:
-                            action = GameAction.Actions.HIT;
+                            action = new GameAction(GameAction.Actions.HIT);
                             break;
                         case ACTION_STAND:
-                            action = GameAction.Actions.STAND;
+                            action = new GameAction(GameAction.Actions.STAND);
                             break;
                     }
-                    GameAction gameAction = new GameAction(action);
-                    round.next(gameAction);
-                    wait = false;
-                    watchers.forEach(w -> {
-                        w.tell(new TableUpdate(getTableFullInfo(table)), getSelf());
-                    });
+                    if (!game.isOver() &&
+                            game.getCurrentRound().next(action)){
+                        timer.cancel();
+                        watchers.forEach(w -> {
+                            w.tell(new TableUpdate(getTableFullInfo()), getSelf());
+                        });
+
+                        if (game.isOver()){
+                            if (table.isEmpty()){
+                                timer.cancel();
+                            }
+                        }
+                        else {
+                            notifyCurrentPlayer();
+                            timer.schedule(new TimedOutAction(), delay);
+                        }
+                    }
                 })
                 .build();
     }
 
-    public TableFullInfo getTableFullInfo(Table table) {
-        IRound round = table.getRound();
-        IHand userHand = round.getCurrentHand();
-        int currentUser = Arrays.asList(table.getBoxes()).indexOf(userHand);
-        Card[] dealerHand = round.getHand(Round.DEALER_INDEX).getHand();
+    private void notifyCurrentPlayer(){
+        int playerPlace = game.getCurrentIndex();
+        ActorRef currentPlayer = players[playerPlace];
+        if (game.getCurrentRound() instanceof BetRound){
+            currentPlayer.tell(new WaitAction(tableInfo, playerPlace, MessageConstant.ACTION_WAIT_BET), getSelf());
+        }
+        else if (game.getCurrentRound() instanceof GameRound){
+            currentPlayer.tell(new WaitAction(tableInfo, playerPlace, MessageConstant.ACTION_WAIT_HIT_OR_STAND), getSelf());
+        }
+    }
+
+    public TableFullInfo getTableFullInfo() {
+        IRound round = game.getCurrentRound();
+        int currentUser = game.getCurrentIndex();
+        Card[] dealerHand = game.getDealer().getHand();
         Player[] players = new Player[tableInfo.getMaxPlayerCount()];
-        for (int i = 0; i < round.getHandCount(); i++) {
-            IHand hand = round.getHand(i);
-            int index = Arrays.asList(table.getBoxes()).indexOf(hand);
-            User user = users[index];
-            players[index] = new Player(user.getName(), user.getCash(), hand.getHand());
+        for (int i = 0; i < table.getBoxes().length; i++) {
+            User user = users[i];
+            players[i] = new Player(user.getName(), user.getCash(), table.getBoxes()[i].getHand());
         }
         return new TableFullInfo(dealerHand, players, currentUser);
+    }
+
+    private class TimedOutAction extends TimerTask{
+        @Override
+        public void run() {
+            if (game.isOver()){
+                return;
+            }
+
+            if (game.getCurrentRound() instanceof BetRound){
+                game.getCurrentRound().next(new BetAction(tableInfo.getMin()));
+            }
+            else if (game.getCurrentRound() instanceof GameRound){
+                game.getCurrentRound().next(new GameAction(GameAction.Actions.STAND));
+            }
+        }
     }
 
 }

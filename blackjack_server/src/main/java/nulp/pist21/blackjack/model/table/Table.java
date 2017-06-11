@@ -2,6 +2,8 @@ package nulp.pist21.blackjack.model.table;
 
 import nulp.pist21.blackjack.model.deck.IDeck;
 
+import java.util.Arrays;
+
 public class Table {
     private TableBox[] boxes;
     private IDeck deck;
@@ -17,6 +19,10 @@ public class Table {
         this.minBet = minBet;
         this.maxBet = maxBet;
         this.deck = deck;
+    }
+
+    public boolean isEmpty(){
+        return !Arrays.stream(boxes).anyMatch(box -> box.isActivated());
     }
 
     public TableBox[] getBoxes() {

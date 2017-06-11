@@ -5,7 +5,6 @@ import mock.UserMock;
 import nulp.pist21.blackjack.model.actions.Action;
 import nulp.pist21.blackjack.model.actions.BetAction;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.game.round.IGame;
 import nulp.pist21.blackjack.model.game.round.IRound;
 import nulp.pist21.blackjack.model.table.Table;
 import nulp.pist21.blackjack.model.table.TableBox;
