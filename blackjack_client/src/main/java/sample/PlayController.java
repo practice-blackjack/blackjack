@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
@@ -39,21 +40,17 @@ public class PlayController {
     @FXML
     public javafx.scene.control.Button hit;
     @FXML
-    public javafx.scene.control.Button deal;
-    @FXML
-    public ImageView ten;
-    @FXML
-    public ImageView twenty;
-    @FXML
-    public ImageView fifty;
-    @FXML
-    public ImageView oneHundert;
-    @FXML
-    public ImageView twoHundert;
-    @FXML
-    public ImageView fiveHundert;
+    public javafx.scene.control.Button btnStandUp;
     @FXML
     public Label betLabel;
+    @FXML
+    public javafx.scene.control.Button btnSitDown;
+    @FXML
+    public javafx.scene.control.Button btnFirstbet;
+    @FXML
+    public javafx.scene.control.Button btnSecondbet;
+    @FXML
+    public javafx.scene.control.Button btnThirdbet;
 
     private WatchGameEndpoint watchGameEndpoint;
     private PlayGameEndpoint playGameEndpoint;
@@ -63,15 +60,8 @@ public class PlayController {
 
     @FXML
     public void initialize(){
-        deal.setDisable(false);
         stand.setVisible(false);
         hit.setVisible(false);
-        ten.setVisible(false);
-        twenty.setVisible(false);
-        fifty.setVisible(false);
-        oneHundert.setVisible(false);
-        twoHundert.setVisible(false);
-        fiveHundert.setVisible(false);
         gameLog.setText("Game started!\n");
 
         watchGameEndpoint = programData.getWatchGameEndpoint();
@@ -92,34 +82,19 @@ public class PlayController {
             Scanner scn = new Scanner(System.in);
             switch (waitMessage.getWaitType()) {
                 case ACTION_WAIT_BET:
-                    deal.setVisible(true);
                     hit.setVisible(false);
                     stand.setVisible(false);
-                    ten.setVisible(true);
-                    twenty.setVisible(true);
-                    fifty.setVisible(true);
-                    oneHundert.setVisible(false);
-                    twoHundert.setVisible(false);
-                    fiveHundert.setVisible(false);
                     int bet = scn.nextInt();
                     playGameEndpoint.sendActionMessage(tableInfo, place, bet);
                     break;
                 case ACTION_WAIT_HIT_OR_STAND:
-                    deal.setVisible(false);
                     hit.setVisible(true);
                     stand.setVisible(true);
-                    ten.setVisible(false);
-                    twenty.setVisible(false);
-                    fifty.setVisible(false);
-                    oneHundert.setVisible(false);
-                    twoHundert.setVisible(false);
-                    fiveHundert.setVisible(false);
                     String hitOrStand = scn.nextLine();
                     playGameEndpoint.sendActionMessage(tableInfo, place, hitOrStand);
                     break;
             }
         });
-
         watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
             playGameEndpoint.sendSitMessage(currentTable, place);
@@ -157,7 +132,16 @@ public class PlayController {
 
     @FXML
     public void exitButton(){
-        //System.exit(0);
+        btnSitDown.setVisible(true);
+        btnStandUp.setVisible(false);
+        gameLog.appendText("Player stand up!\n" + "_______________" + "\n");
+        btnFirstbet.setVisible(false);
+        btnSecondbet.setVisible(false);
+        btnThirdbet.setVisible(false);
+        hit.setVisible(false);
+        stand.setVisible(false);
+        bet = 0;
+        betLabel.setText("$ " + String.valueOf(bet));
     }
     public void toMenu() {
         playGameEndpoint.sendStandMessage(currentTable, place);
@@ -165,46 +149,72 @@ public class PlayController {
     public void hitButton(){
         playGameEndpoint.sendActionMessage(currentTable, 0, ACTION_HIT);
         gameLog.appendText("card add\n");
+        btnFirstbet.setVisible(true);
+        btnSecondbet.setVisible(true);
+        btnThirdbet.setVisible(true);
+        hit.setVisible(false);
+        stand.setVisible(false);
     }
     public void standButton(){
         playGameEndpoint.sendActionMessage(currentTable, 0, ACTION_STAND);
         gameLog.appendText("open card\n");
+        btnFirstbet.setVisible(true);
+        btnSecondbet.setVisible(true);
+        btnThirdbet.setVisible(true);
+        hit.setVisible(false);
+        stand.setVisible(false);
     }
     public void dealButton(){
         playGameEndpoint.sendActionMessage(currentTable, 0, bet);
-
+        gameLog.appendText("Player sit down!\n");
+        btnSitDown.setVisible(false);
+        btnStandUp.setVisible(true);
+        btnFirstbet.setVisible(true);
+        btnSecondbet.setVisible(true);
+        btnThirdbet.setVisible(true);
         betLabel.setText("$ " + String.valueOf(bet));
-        //logger
-        gameLog.appendText("Bet \t" + String.valueOf(bet) + "\n");
     }
 
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
-    public void tenButtonPress(){
-        deal.setDisable(false);
-        bet = 10;
+    @FXML
+    public void actionBtnFirstbet(){
+        hit.setVisible(true);
+        stand.setVisible(true);
+        btnFirstbet.setVisible(false);
+        btnSecondbet.setVisible(false);
+        btnThirdbet.setVisible(false);
+        bet += 10;
+        //logger
+        gameLog.appendText("Bet \t" + String.valueOf(bet) + "\n");
+        betLabel.setText("$ " + String.valueOf(bet));
+
     }
-    public void twentyButtonPress(){
-        deal.setDisable(false);
-        bet = 20;
+    @FXML
+    public void actionBtnSecondbet(){
+        hit.setVisible(true);
+        stand.setVisible(true);
+        btnFirstbet.setVisible(false);
+        btnSecondbet.setVisible(false);
+        btnThirdbet.setVisible(false);
+        bet += 20;
+        //logger
+        gameLog.appendText("Bet \t" + String.valueOf(bet) + "\n");
+        betLabel.setText("$ " + String.valueOf(bet));
     }
-    public void fiftyButtonPress(){
-        deal.setDisable(false);
-        bet = 50;
-}
-    public void oneHundertButtonPress(){
-        deal.setDisable(false);
-        bet = 100;
-    }
-    public void twoHundertButtonPress(){
-        deal.setDisable(false);
-        bet = 200;
-    }
-    public void fiveHundertButtonPress(){
-        deal.setDisable(false);
-        bet = 500;
+    @FXML
+    public void actionBtnThirdbet(){
+        hit.setVisible(true);
+        stand.setVisible(true);
+        btnFirstbet.setVisible(false);
+        btnSecondbet.setVisible(false);
+        btnThirdbet.setVisible(false);
+        bet += 50;
+        //logger
+        gameLog.appendText("Bet \t" + String.valueOf(bet) + "\n");
+        betLabel.setText("$ " + String.valueOf(bet));
     }
 }
 

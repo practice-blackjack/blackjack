@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import nulp.pist21.blackjack.client.endpoint.LobbyEndpoint;
 import nulp.pist21.blackjack.message.TableListMessage;
@@ -30,15 +31,24 @@ public class LobbyFrameController {
     public javafx.scene.control.TextField rateField;
     @FXML
     public javafx.scene.control.TextField peopleField;
-    private Stage stage;
 
     private ObservableList<String> listItems;
     private List<TableInfo> tables;
+
+    @FXML
+    public javafx.scene.control.Label lblPlayerName;
+    @FXML
+    public javafx.scene.control.Label lblCash;
+
+    private Stage stage;
 
     private LobbyEndpoint lobbyEndpoint;
 
     @FXML
     public void initialize(){
+        //todo:
+        lblPlayerName.setText("name");
+        lblCash.setText("1000");
         listItems = FXCollections.observableArrayList();
         listView.setItems(listItems);
         lobbyEndpoint = programData.getLobbyEndpoint();
@@ -88,6 +98,7 @@ public class LobbyFrameController {
             }
         });
     }
+
   @FXML
   public void settingsButton(){
 

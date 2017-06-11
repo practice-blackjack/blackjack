@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -24,7 +25,7 @@ public class RegistrationController {
 
     private final ProgramData programData = ProgramData.get();
 
-    Stage primaryStage;
+    private Stage stage;
     @FXML
     private TextField login;
     @FXML
@@ -33,6 +34,8 @@ public class RegistrationController {
     private PasswordField password;
     @FXML
     private PasswordField confirmPassword;
+    @FXML
+    private Button backToSignIn;
     @FXML
     private Label info;
 
@@ -45,11 +48,14 @@ public class RegistrationController {
             System.out.println("server > " + JSON.toJSONString(tokenMessage));
             long token = tokenMessage.getToken();
             programData.setToken(token);
-            if (token != -1) {
-                Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                if (token != -1) {
                     LobbyFrameController();
-                });
-            }
+                    info.setText("Login is successfully");
+                } else {
+                    info.setText("Error! You print error login or password!");
+                }
+            });
         });
         initEndpoint.onRegisterListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
@@ -71,34 +77,56 @@ public class RegistrationController {
         });
     }
 
-    public void setStage(Stage stage){
-        this.primaryStage = stage;
-    }
-
     protected void RegframeController() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
             Parent root = loader.load();
             Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            stage.setScene(scene);
+            stage.show();
         }catch (IOException e) {
 
         }
     }
 
+    @FXML
+    public void actionBackToSignIn(){
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("SignInFrame.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+
+            SignInController controller = loader.getController();
+            controller.setStage(stage);
+
+            stage.setTitle("SignIn Frame Frame");
+            stage.setResizable(false);
+            stage.setScene(scene);
+            stage.show();
+
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
+    @FXML
     public void registerButton() {
         String log = login.getText();
-        String mail = email.getText();
         String pass = password.getText();
         String confPass = confirmPassword.getText();
         if (pass.equals(confPass)) {
-            initEndpoint.sendRegisterMessage(new User(log, pass));
         } else {
             info.setText("Registration is NOT successfully. Retype your password");
             info.setTextFill(Color.RED);
         }
+
+    }
+    public void setStage(Stage stage) {
+        this.stage = stage;
+
     }
 
     protected void LobbyFrameController() {
@@ -107,10 +135,10 @@ public class RegistrationController {
             loader.setLocation(getClass().getResource("LobbyFrame.fxml"));
             Parent root = loader.load();
             LobbyFrameController controller = loader.getController();
-            controller.setStage(primaryStage);
+            controller.setStage(stage);
             Scene scene = new Scene(root);
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            stage.setScene(scene);
+            stage.show();
         } catch (IOException e) {
 
         }
