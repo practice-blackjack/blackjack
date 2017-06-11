@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model.actions;
 
-public class BetAction {
+public class BetAction implements Action {
     private int bet;
 
     public BetAction(int bet) {

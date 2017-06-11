@@ -1,7 +1,8 @@
-package nulp.pist21.blackjack.model.game;
+package nulp.pist21.blackjack.model.calculating;
 
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.TurnableCard;
+import nulp.pist21.blackjack.model.game.calculating.Combination;
 import nulp.pist21.blackjack.model.table.TableBox;
 import org.junit.Assert;
 import org.junit.Test;
