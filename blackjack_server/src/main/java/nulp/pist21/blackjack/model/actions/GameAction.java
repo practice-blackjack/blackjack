@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model.actions;
 
-public class GameAction {
+public class GameAction implements Action {
     public enum Actions{
         STAND,
         HIT,
