@@ -1,14 +1,14 @@
-package nulp.pist21.blackjack.model.game.calculating;
+package nulp.pist21.blackjack.model.calculating;
 
+import nulp.pist21.blackjack.model.Hand;
 import nulp.pist21.blackjack.model.deck.Card;
-import nulp.pist21.blackjack.model.game.IHand;
 
 public class Combination {
     public static final int BLACK_JACK = Integer.MAX_VALUE;
 
     private int points;
 
-    public Combination(IHand hand) {
+    public Combination(Hand hand) {
         points = 0;
 
         int aces = 0;

@@ -1,22 +1,19 @@
-package nulp.pist21.blackjack.model.game.managers;
-
-import nulp.pist21.blackjack.model.game.IBank;
+package nulp.pist21.blackjack.model.managers;
 
 public class BetManager {
-    private IBank banks[];
+    private int banks[];
     private int index;
     private int minBet;
     private int maxBet;
 
     public BetManager(int minBet, int maxBet) {
-        this.banks = new IBank[0];
+        this.banks = new int[0];
         this.minBet = minBet;
         this.maxBet = maxBet;
     }
 
-    public void start(IBank banks[]){
-        end();
-        this.banks = banks;
+    public void start(int bankCount){
+        this.banks = new int[bankCount];
         index = 0;
     }
 
@@ -27,19 +24,17 @@ public class BetManager {
         if (money < minBet || money > maxBet){
             return false;
         }
-        banks[index].setBet(money);
+        banks[index] = money;
         index++;
         return true;
     }
 
-    public void end() {
-        for (IBank player: banks) {
-            player.setBet(0);
-        }
+    public int getIndex() {
+        return index;
     }
 
-    public IBank getCurrentBank() {
-        return banks[index];
+    public int[] getBanks() {
+        return banks;
     }
 
     public boolean isOver() {

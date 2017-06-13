@@ -1,9 +1,8 @@
 package nulp.pist21.blackjack.model.game;
 
+import nulp.pist21.blackjack.model.Dealer;
+import nulp.pist21.blackjack.model.Hand;
 import nulp.pist21.blackjack.model.deck.Card;
-import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.game.managers.PlayManager;
-import nulp.pist21.blackjack.model.table.TableBox;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,7 +27,7 @@ public class DealerTest {
         dealer.giveCard(new Card(Card.CLUBS, Card._6));
         dealer.giveCard(new Card(Card.DIAMONDS, Card._10));
 
-        dealer.doStep(new TableBox[0]);
+        dealer.doStep(new Hand[0]);
 
         Assert.assertEquals(Card.CLUBS, dealer.getHand()[0].getSuit());
         Assert.assertEquals(Card._6, dealer.getHand()[0].getValue());

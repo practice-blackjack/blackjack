@@ -1,9 +1,9 @@
 package mock;
 
 import nulp.pist21.blackjack.model.Player;
-import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.managers.BetManager;
-import nulp.pist21.blackjack.model.game.managers.PlayManager;
+import nulp.pist21.blackjack.model.calculating.Combination;
+import nulp.pist21.blackjack.model.managers.BetManager;
+import nulp.pist21.blackjack.model.managers.PlayManager;
 
 public class UserMock extends Player {
 
@@ -24,14 +24,16 @@ public class UserMock extends Player {
     }
 
     public int doBet(BetManager bets){
-        if (bets.getCurrentBank().getBet() == 0){
+        int index = bets.getIndex();
+        if (bets.getBanks()[index] == 0){
             return bet;
         }
         return 0;
     }
 
     public PlayManager.Actions doStep(PlayManager play){
-        if (new Combination(play.getCurrentHand()).getPoints() >= stopOn){
+        int index = play.getIndex();
+        if (new Combination(play.getHands()[index]).getPoints() >= stopOn){
             return PlayManager.Actions.STAND;
         }
         return PlayManager.Actions.HIT;

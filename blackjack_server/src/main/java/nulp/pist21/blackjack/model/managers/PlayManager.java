@@ -1,13 +1,13 @@
-package nulp.pist21.blackjack.model.game.managers;
+package nulp.pist21.blackjack.model.managers;
 
 import nulp.pist21.blackjack.model.deck.IDeck;
-import nulp.pist21.blackjack.model.game.Dealer;
-import nulp.pist21.blackjack.model.game.IHand;
-import nulp.pist21.blackjack.model.game.calculating.Combination;
+import nulp.pist21.blackjack.model.Dealer;
+import nulp.pist21.blackjack.model.Hand;
+import nulp.pist21.blackjack.model.calculating.Combination;
 
 public class PlayManager {
 
-    private IHand[] hands;
+    private Hand[] hands;
     private Dealer dealer;
     private IDeck deck;
     private int index;
@@ -23,16 +23,20 @@ public class PlayManager {
         index = -1;
     }
 
-    public void start(IHand hands[]){
-        this.hands = hands;
+    public void start(int handCount){
+        this.hands = new Hand[handCount];
+        for (int i = 0; i < handCount; i++) {
+            hands[i] = new Hand();
+        }
+        dealer.takeCards();
 
-        for(IHand playerBox: hands){
-            playerBox.takeCards();
+        for(Hand hand: hands){
+            hand.takeCards();
         }
 
         for(int i = 0; i < 2; i++){
-            for(IHand player: hands){
-                player.giveCard(deck.next());
+            for(Hand hand: hands){
+                hand.giveCard(deck.next());
             }
         }
         dealer.giveCard(deck.next());
@@ -64,15 +68,12 @@ public class PlayManager {
         return true;
     }
 
-    public void end(){
-        for (IHand box: hands){
-            box.takeCards();
-        }
-        dealer.takeCards();
+    public int getIndex() {
+        return index;
     }
 
-    public IHand getCurrentHand() {
-        return hands[index];
+    public Hand[] getHands() {
+        return hands;
     }
 
     public boolean isOver(){

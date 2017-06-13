@@ -3,16 +3,13 @@ package nulp.pist21.blackjack.model;
 import mock.UserMock;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.game.Dealer;
-import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.managers.BetManager;
-import nulp.pist21.blackjack.model.game.managers.PlayManager;
-import nulp.pist21.blackjack.model.table.Table;
-import nulp.pist21.blackjack.model.table.TableBox;
+import nulp.pist21.blackjack.model.calculating.Combination;
+import nulp.pist21.blackjack.model.managers.BetManager;
+import nulp.pist21.blackjack.model.managers.PlayManager;
+import nulp.pist21.blackjack.model.managers.PlayerManager;
+import nulp.pist21.blackjack.model.table.Sit;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 public class ModelTest {
 
@@ -25,19 +22,19 @@ public class ModelTest {
                 new UserMock(18, 300),
         };
 
-        Table table = new Table(3);
+        PlayerManager playerManager = new PlayerManager(3);
 
-        table.getBoxes()[0].activate(users[0]);
-        table.getBoxes()[1].activate(users[1]);
-        table.getBoxes()[2].activate(users[2]);
+        playerManager.getBoxes()[0].activate(users[0]);
+        playerManager.getBoxes()[1].activate(users[1]);
+        playerManager.getBoxes()[2].activate(users[2]);
 
         BetManager bets = new BetManager(100, 300);
         PlayManager play = new PlayManager(new EndlessDeck(), new Dealer());
-        TableBox playingBoxes[] = table.getPlayingBoxes();
+        Sit playingBoxes[] = playerManager.getPlayingBoxes();
 
         System.out.println("GameRound started.");
         System.out.println();
-        bets.start(playingBoxes);
+        bets.start(playingBoxes.length);
 
         System.out.println("Getting bets.");
         for (int i = 0; i < 3; i++){
@@ -48,7 +45,7 @@ public class ModelTest {
         System.out.println("Bets taken.");
         System.out.println();
 
-        play.start(playingBoxes);
+        play.start(playingBoxes.length);
 
         System.out.println("Dealers cards: ");
 
@@ -60,16 +57,16 @@ public class ModelTest {
 
         for (int i = 0; i < 3; i++){
             System.out.println("Player " + (i + 1) + " cards: ");
-            for (Card card: table.getBoxes()[i].getHand()) {
+            for (Card card: play.getHands()[i].getHand()) {
                 System.out.println("   " + card.toString());
             }
-            System.out.println("Points: " + new Combination(table.getBoxes()[i]));
+            System.out.println("Points: " + new Combination(play.getHands()[i]));
             System.out.println();
         }
 
         System.out.println("Game started.");
         while (!play.isOver()){
-            int userId = Arrays.asList(table.getBoxes()).indexOf(play.getCurrentHand());
+            int userId = play.getIndex();
             PlayManager.Actions action = users[userId].doStep(play);
             Assert.assertTrue(play.next(action));
 
@@ -78,11 +75,11 @@ public class ModelTest {
             System.out.println("   Action: " + action);
 
             System.out.println("   Cards: ");
-            for (Card card: table.getBoxes()[userId].getHand()) {
+            for (Card card: play.getHands()[userId].getHand()) {
                 System.out.println("      " + card.toString());
             }
 
-            System.out.println("   Points: " + new Combination(table.getBoxes()[userId]));
+            System.out.println("   Points: " + new Combination(play.getHands()[userId]));
 
             System.out.println();
         }
@@ -95,7 +92,7 @@ public class ModelTest {
         System.out.println();
 
         for (int i = 0; i < 3; i++){
-            double kof = new Combination(table.getBoxes()[i]).getWin(new Combination(play.getDealer()));
+            double kof = new Combination(play.getHands()[i]).getWin(new Combination(play.getDealer()));
             System.out.println("Players " + (i + 1) + " win kof: " + kof);
         }
 
