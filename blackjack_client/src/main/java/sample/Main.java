@@ -5,29 +5,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import javax.websocket.ContainerProvider;
-import javax.websocket.WebSocketContainer;
 import java.awt.*;
 
 public class Main extends Application {
 
+    private final ProgramData programData;
+
+    public Main() {
+        this.programData = ProgramData.get();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("SignInFrame.fxml"));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Black Jack 21");
-
-        SignInController controller = loader.getController();
-        controller.setStage(primaryStage);
-        Dimension screenDimention = Toolkit.getDefaultToolkit().getScreenSize();
-        primaryStage.setX( screenDimention.getWidth()/2 - 150);
-        primaryStage.setY(screenDimention.getHeight()/2 - 150);
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        programData.setStage(primaryStage);
+        programData.getStageRouter().goTo(StageRouter.SIGN_IN);
     }
     public static void main(String[] args) {
         launch(args);

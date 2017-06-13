@@ -1,6 +1,7 @@
 package sample;
 
 import com.alibaba.fastjson.JSON;
+import javafx.stage.Stage;
 import nulp.pist21.blackjack.client.endpoint.InitEndpoint;
 import nulp.pist21.blackjack.client.endpoint.LobbyEndpoint;
 import nulp.pist21.blackjack.client.endpoint.PlayGameEndpoint;
@@ -69,6 +70,15 @@ public class ProgramData {
         this.token = token;
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stageRouter = new StageRouter(stage);
+        this.stage = stage;
+    }
+
     private InitEndpoint initEndpoint;
     private LobbyEndpoint lobbyEndpoint;
     private WatchGameEndpoint watchGameEndpoint;
@@ -76,13 +86,13 @@ public class ProgramData {
 
     private long token;
 
+    private Stage stage;
+
     private TableInfo currentTable;
 
-    private MessageFunction<BooleanMessage> tokenChecker = (BooleanMessage stringMessage) -> {
-        System.out.println("server > " + JSON.toJSONString(stringMessage));
-    };
+    private StageRouter stageRouter;
 
-    private void initInit() {
+    public void initInit() {
         try {
             initEndpoint = new InitEndpoint();
             container.connectToServer(initEndpoint, new URI("ws://localhost:8080/blackjack/init"));
@@ -91,10 +101,15 @@ public class ProgramData {
         }
     }
 
-    private void initLobby() {
+    public void initLobby() {
         try {
             lobbyEndpoint = new LobbyEndpoint(token);
-            lobbyEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            lobbyEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    lobbyEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(lobbyEndpoint, new URI("ws://localhost:8080/blackjack/lobby"));
             lobbyEndpoint.onUpdateMessageListener((TableListMessage tableListMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableListMessage));
@@ -104,10 +119,15 @@ public class ProgramData {
         }
     }
 
-    private void initWatchGame() {
+    public void initWatchGame() {
         try {
             watchGameEndpoint = new WatchGameEndpoint(token);
-            watchGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            watchGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    watchGameEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(watchGameEndpoint, new URI("ws://localhost:8080/blackjack/game/watch"));
             watchGameEndpoint.onUpdateMessageListener((TableFullInfoMessage tableFullInfoMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(tableFullInfoMessage));
@@ -123,10 +143,15 @@ public class ProgramData {
         }
     }
 
-    private void initPlayGame() {
+    public void initPlayGame() {
         try {
             playGameEndpoint = new PlayGameEndpoint(token);
-            playGameEndpoint.onTokenCheckerMessageListener(tokenChecker);
+            playGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
+                System.out.println("server > " + JSON.toJSONString(booleanMessage));
+                if (!booleanMessage.isOk()) {
+                    playGameEndpoint.sendTokenMessage();
+                }
+            });
             container.connectToServer(playGameEndpoint, new URI("ws://localhost:8080/blackjack/game/play"));
             playGameEndpoint.onWaitActionMessageListener((WaitMessage waitMessage) -> {
                 System.out.println("server > " + JSON.toJSONString(waitMessage));
@@ -155,5 +180,9 @@ public class ProgramData {
 
     public void setCurrentTable(TableInfo currentTable) {
         this.currentTable = currentTable;
+    }
+
+    public StageRouter getStageRouter() {
+        return stageRouter;
     }
 }
