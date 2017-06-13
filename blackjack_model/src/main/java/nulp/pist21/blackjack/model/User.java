@@ -1,7 +1,5 @@
 package nulp.pist21.blackjack.model;
 
-import nulp.pist21.blackjack.server.actor.utility.ITransactable;
-
 public class User implements Cloneable, ITransactable {
 
     private String name;

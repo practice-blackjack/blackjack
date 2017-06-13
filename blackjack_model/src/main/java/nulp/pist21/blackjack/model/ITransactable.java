@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.server.actor.utility;
+package nulp.pist21.blackjack.model;
 
 public interface ITransactable {
 

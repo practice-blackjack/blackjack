@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.server.actor.utility;
 
-import javax.management.OperationsException;
+import nulp.pist21.blackjack.model.ITransactable;
 
 public class Transaction {
     public static boolean canTake(ITransactable from, int cash){

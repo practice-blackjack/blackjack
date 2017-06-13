@@ -37,6 +37,7 @@ public class TableActor extends AbstractActor {
     private WinManager winManager;
 
     private Sit[] currentPlaySits;
+    private int[] currentPlaySitsIndexes;
 
     private Timer timer;
     private long delay;
@@ -133,20 +134,23 @@ public class TableActor extends AbstractActor {
         if (betManager.isOver()){
             return;
         }
+
+        User currentUser = currentPlaySits[getCurrentIndex()].getUser();
         if (!betManager.next(bet)) {
             return;
         }
-        User currentUser = currentPlaySits[getCurrentIndex()].getUser();
+
         Transaction.take(currentUser, bet);
-        timer.cancel();
         notifyWatchers();
-        notifyCurrentPlayer();
         if (betManager.isOver()){
             playManager.start(currentPlaySits.length);
+            notifyWatchers();
             if (playManager.isOver()){
                 return;
             }
         }
+
+        notifyPlayer(getCurrentIndex());
         timer.schedule(new TimedOutAction(), delay);
     }
 
@@ -154,41 +158,39 @@ public class TableActor extends AbstractActor {
         if (playManager.isOver()){
             return;
         }
+        int index = playManager.getIndex();
         if (!playManager.next(action)){
             return;
         }
-        timer.cancel();
-        notifyWatchers();
-        notifyCurrentPlayer();
 
-        if (!playManager.isOver()){
-            timer.schedule(new TimedOutAction(), delay);
+        if (playManager.isOver()){
+            //todo: tell that round is over
+            if (sitManager.isEmpty()) {
+                return;
+            }
+            double koefs[] = winManager.start(playManager.getHands(), playManager.getHands().length - 1);
+
+            for (int i = 0; i < currentPlaySits.length; i++){
+                Sit sit = currentPlaySits[i];
+                User user = sit.getUser();
+                int bet = betManager.getBanks()[i];
+                double koef = koefs[i];
+                Transaction.giveMoney(user, (int)Math.round(bet * koef));
+            }
+            startRound();
             return;
         }
-
-        double koefs[] = winManager.start(playManager.getHands(), playManager.getHands().length - 1);
-
-        for (int i = 0; i < currentPlaySits.length; i++){
-            Sit sit = currentPlaySits[i];
-            User user = sit.getUser();
-            int bet = betManager.getBanks()[i];
-            double koef = koefs[i];
-            Transaction.giveMoney(user, (int)Math.round(bet * koef));
-        }
-
-        //todo: tell that round is over
-
-        if (!sitManager.isEmpty()){
-            startRound();
-        }
+        notifyWatchers();
+        notifyPlayer(index);
     }
 
     private void startRound(){
         currentPlaySits = sitManager.getPlayingSits();
+        currentPlaySitsIndexes = sitManager.getPlayingSitIndexes();
         betManager.start(currentPlaySits.length);
 
         notifyWatchers();
-        notifyCurrentPlayer();
+        notifyPlayer(0);
         timer.schedule(new TimedOutAction(), delay);
     }
 
@@ -198,10 +200,10 @@ public class TableActor extends AbstractActor {
         });
     }
 
-    private void notifyCurrentPlayer(){
-        Sit currentSit = currentPlaySits[getCurrentIndex()];
-        int sitIndex = Arrays.asList(sitManager.getPlayingSits()).indexOf(currentSit);
-        ActorRef currentPlayer = players[getCurrentIndex()];
+    private void notifyPlayer(int index){
+
+        int sitIndex = currentPlaySitsIndexes[index];
+        ActorRef currentPlayer = players[index];
         if (!betManager.isOver()){
             currentPlayer.tell(new WaitAction(tableInfo, sitIndex, MessageConstant.ACTION_WAIT_BET), getSelf());
         }
@@ -211,16 +213,21 @@ public class TableActor extends AbstractActor {
     }
 
     public TableFullInfo getTableFullInfo() {
-        Card[] dealerHand = playManager.getHands()[playManager.getHands().length - 1].getHand();
+        Card[] dealerHand = new Card[0];
+
+        if (!playManager.isOver()){
+            dealerHand = playManager.getHands()[playManager.getHands().length - 1].getHand();
+        }
 
         Player[] players = new Player[tableInfo.getMaxPlayerCount()];
         for (int i = 0; i < currentPlaySits.length; i++){
-            int index = Arrays.asList(sitManager.getSits()).indexOf(currentPlaySits[i]);
+            int index = currentPlaySitsIndexes[i];
             User user = currentPlaySits[i].getUser();
-            players[index] = new Player();
-            players[index].setName(user.getName());
-            players[index].setCash(user.getCash());
-            players[index].setHand(playManager.getHands()[i].getHand());
+            Card[] playerHand = new Card[0];
+            if (!playManager.isOver()){
+                playerHand = playManager.getHands()[i].getHand();
+            }
+            players[index] = new Player(user.getName(), user.getCash(), playerHand);
         }
 
 
@@ -236,9 +243,10 @@ public class TableActor extends AbstractActor {
             }
             else if (!playManager.isOver()){
                 handlePlayAction(PlayManager.Actions.STAND);
-                if (!playManager.isOver()){
-                    timer.schedule(new TimedOutAction(), delay);
+                if (playManager.isOver()){
+                    return;
                 }
+                timer.schedule(new TimedOutAction(), delay);
             }
         }
     }

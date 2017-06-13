@@ -20,7 +20,8 @@ public class PlayManager {
     public PlayManager(IDeck deck, Dealer dealer) {
         this.deck = deck;
         this.dealer = dealer;
-        index = -1;
+        this.hands = new Hand[0];
+        index = 0;
     }
 
     public void start(int handCount){
@@ -42,6 +43,7 @@ public class PlayManager {
         }
         dealer.giveCard(deck.next());
         dealer.giveCard(deck.next());
+        index = -1;
         goToNextHand();
     }
 

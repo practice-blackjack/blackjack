@@ -135,7 +135,9 @@ public class Main {
         initEndpoint.onLoginListener((TokenMessage tokenMessage) -> {
             System.out.println("server > " + JSON.toJSONString(tokenMessage));
             token = tokenMessage.getToken();
-            initLobby();
+            if (token != -1) {
+                initLobby();
+            }
         });
         User user = new User(name, password);
         initEndpoint.sendLoginMessage(user);
