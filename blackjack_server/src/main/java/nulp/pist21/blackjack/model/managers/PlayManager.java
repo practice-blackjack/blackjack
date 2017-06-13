@@ -24,10 +24,11 @@ public class PlayManager {
     }
 
     public void start(int handCount){
-        this.hands = new Hand[handCount];
+        this.hands = new Hand[handCount + 1];
         for (int i = 0; i < handCount; i++) {
             hands[i] = new Hand();
         }
+        hands[handCount] = dealer;
         dealer.takeCards();
 
         for(Hand hand: hands){
@@ -35,8 +36,8 @@ public class PlayManager {
         }
 
         for(int i = 0; i < 2; i++){
-            for(Hand hand: hands){
-                hand.giveCard(deck.next());
+            for(int j = 0; j < handCount; j++){
+                hands[j].giveCard(deck.next());
             }
         }
         dealer.giveCard(deck.next());
@@ -60,10 +61,11 @@ public class PlayManager {
         }
 
         //dealer step
-        if (index == hands.length){
+        if (index == hands.length - 1){
             while (dealer.doStep(hands) == Actions.HIT){
                 dealer.giveCard(deck.next());
             }
+            index++;
         }
         return true;
     }

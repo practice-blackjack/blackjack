@@ -6,8 +6,7 @@ import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.calculating.Combination;
 import nulp.pist21.blackjack.model.managers.BetManager;
 import nulp.pist21.blackjack.model.managers.PlayManager;
-import nulp.pist21.blackjack.model.managers.PlayerManager;
-import nulp.pist21.blackjack.model.table.Sit;
+import nulp.pist21.blackjack.model.managers.SitManager;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,15 +21,15 @@ public class ModelTest {
                 new UserMock(18, 300),
         };
 
-        PlayerManager playerManager = new PlayerManager(3);
+        SitManager sitManager = new SitManager(3);
 
-        playerManager.getBoxes()[0].activate(users[0]);
-        playerManager.getBoxes()[1].activate(users[1]);
-        playerManager.getBoxes()[2].activate(users[2]);
+        sitManager.getBoxes()[0].activate();
+        sitManager.getBoxes()[1].activate();
+        sitManager.getBoxes()[2].activate();
 
         BetManager bets = new BetManager(100, 300);
         PlayManager play = new PlayManager(new EndlessDeck(), new Dealer());
-        Sit playingBoxes[] = playerManager.getPlayingBoxes();
+        Sit playingBoxes[] = sitManager.getPlayingBoxes();
 
         System.out.println("GameRound started.");
         System.out.println();

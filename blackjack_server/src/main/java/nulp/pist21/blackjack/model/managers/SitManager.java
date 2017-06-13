@@ -1,13 +1,13 @@
 package nulp.pist21.blackjack.model.managers;
 
-import nulp.pist21.blackjack.model.table.Sit;
+import nulp.pist21.blackjack.model.Sit;
 
 import java.util.Arrays;
 
-public class PlayerManager {
+public class SitManager {
     private Sit[] boxes;
 
-    public PlayerManager(int boxes) {
+    public SitManager(int boxes) {
         this.boxes = new Sit[boxes];
         for (int i = 0; i < boxes; i++) {
             this.boxes[i] = new Sit();
