@@ -76,8 +76,10 @@ public class TableActor extends AbstractActor {
                         players[message.place] = sender;
                         users[message.place] = message.user;
                         if (wasEmpty){
-                            timer.schedule(new TimedOutAction(), delay);
+                            game.start();
+                            notifyWatchers();
                             notifyCurrentPlayer();
+                            timer.schedule(new TimedOutAction(), delay);
                         }
                     }
                     sender.tell(new SitTableResponse(result), getSelf());
@@ -98,6 +100,7 @@ public class TableActor extends AbstractActor {
                     if (message.place != place) {
                         return;
                     }
+
                     Action action = null;
                     switch (message.action) {
                         case ACTION_BET:
@@ -110,25 +113,31 @@ public class TableActor extends AbstractActor {
                             action = new GameAction(GameAction.Actions.STAND);
                             break;
                     }
-                    if (!game.isOver() &&
-                            game.getCurrentRound().next(action)){
-                        timer.cancel();
-                        watchers.forEach(w -> {
-                            w.tell(new TableUpdate(getTableFullInfo()), getSelf());
-                        });
-
-                        if (game.isOver()){
-                            if (table.isEmpty()){
-                                timer.cancel();
-                            }
-                        }
-                        else {
-                            notifyCurrentPlayer();
-                            timer.schedule(new TimedOutAction(), delay);
-                        }
-                    }
+                    handleAction(action);
                 })
                 .build();
+    }
+
+    private void handleAction(Action action){
+        if (!game.isOver()){
+            if (game.getCurrentRound().next(action)){
+                timer.cancel();
+                notifyWatchers();
+            }
+        }
+        if (game.isOver()){
+            if (table.isEmpty()){
+                return;
+            }
+        }
+        notifyCurrentPlayer();
+        timer.schedule(new TimedOutAction(), delay);
+    }
+
+    private void notifyWatchers(){
+        watchers.forEach(w -> {
+            w.tell(new TableUpdate(getTableFullInfo()), getSelf());
+        });
     }
 
     private void notifyCurrentPlayer(){
@@ -139,17 +148,20 @@ public class TableActor extends AbstractActor {
         }
         else if (game.getCurrentRound() instanceof GameRound){
             currentPlayer.tell(new WaitAction(tableInfo, playerPlace, MessageConstant.ACTION_WAIT_HIT_OR_STAND), getSelf());
-        }
+        };
     }
+
 
     public TableFullInfo getTableFullInfo() {
         IRound round = game.getCurrentRound();
         int currentUser = game.getCurrentIndex();
         Card[] dealerHand = game.getDealer().getHand();
         Player[] players = new Player[tableInfo.getMaxPlayerCount()];
-        for (int i = 0; i < table.getBoxes().length; i++) {
+        for (int i = 0; i < table.getBoxes().length; i++) { //todo: here is null pointer error
             User user = users[i];
-            players[i] = new Player(user.getName(), user.getCash(), table.getBoxes()[i].getHand());
+            if (user != null){
+                players[i] = new Player(user.getName(), user.getCash(), table.getBoxes()[i].getHand());
+            }
         }
         return new TableFullInfo(dealerHand, players, currentUser);
     }
@@ -162,10 +174,10 @@ public class TableActor extends AbstractActor {
             }
 
             if (game.getCurrentRound() instanceof BetRound){
-                game.getCurrentRound().next(new BetAction(tableInfo.getMin()));
+               handleAction(new BetAction(tableInfo.getMin()));
             }
             else if (game.getCurrentRound() instanceof GameRound){
-                game.getCurrentRound().next(new GameAction(GameAction.Actions.STAND));
+                handleAction(new GameAction(GameAction.Actions.STAND));
             }
         }
     }

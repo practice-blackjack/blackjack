@@ -26,6 +26,7 @@ public class GameWithDealer implements IGame {
         this.betRound = new BetRound(new IBetable[0], 0, 1);
         this.gameRound = new GameRound(new IHand[0], new EndlessDeck(), dealer);
         this.currentRound = betRound;
+        start();
     }
 
     @Override
