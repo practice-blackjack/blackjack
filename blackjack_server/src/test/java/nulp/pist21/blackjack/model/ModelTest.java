@@ -23,13 +23,13 @@ public class ModelTest {
 
         SitManager sitManager = new SitManager(3);
 
-        sitManager.getBoxes()[0].activate();
-        sitManager.getBoxes()[1].activate();
-        sitManager.getBoxes()[2].activate();
+        sitManager.getSits()[0].sit();
+        sitManager.getSits()[1].sit();
+        sitManager.getSits()[2].sit();
 
         BetManager bets = new BetManager(100, 300);
         PlayManager play = new PlayManager(new EndlessDeck(), new Dealer());
-        Sit playingBoxes[] = sitManager.getPlayingBoxes();
+        Sit playingBoxes[] = sitManager.getPlayingSits();
 
         System.out.println("GameRound started.");
         System.out.println();

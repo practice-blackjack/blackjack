@@ -8,7 +8,7 @@ import static nulp.pist21.blackjack.model.calculating.Combination.BLACK_JACK;
 public class WinManager {
     private double koefs[];
 
-    public double[] getKoefs(Hand hands[], int dealerIndex){
+    public double[] start(Hand hands[], int dealerIndex){
         koefs = new double[hands.length];
         Combination dealersCombination = new Combination(hands[dealerIndex]);
         for(int i = 0; i < koefs.length; i++){

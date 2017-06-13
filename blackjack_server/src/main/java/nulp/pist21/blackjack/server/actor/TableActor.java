@@ -4,25 +4,21 @@ import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import nulp.pist21.blackjack.message.MessageConstant;
-import nulp.pist21.blackjack.model.Player;
-import nulp.pist21.blackjack.model.TableFullInfo;
-import nulp.pist21.blackjack.model.TableInfo;
-import nulp.pist21.blackjack.model.User;
-import nulp.pist21.blackjack.model.actions.Action;
-import nulp.pist21.blackjack.model.actions.BetAction;
-import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.*;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.Deck;
-import nulp.pist21.blackjack.model.game.GameWithDealer;
-import nulp.pist21.blackjack.model.game.round.BetRound;
-import nulp.pist21.blackjack.model.game.round.GameRound;
-import nulp.pist21.blackjack.model.game.round.IRound;
-import nulp.pist21.blackjack.model.table.Table;
+import nulp.pist21.blackjack.model.managers.BetManager;
+import nulp.pist21.blackjack.model.managers.PlayManager;
+import nulp.pist21.blackjack.model.managers.SitManager;
+import nulp.pist21.blackjack.model.managers.WinManager;
 import nulp.pist21.blackjack.server.actor.message.*;
+import nulp.pist21.blackjack.server.actor.utility.Transaction;
 
 import java.util.*;
 
 import static nulp.pist21.blackjack.message.MessageConstant.*;
+import static nulp.pist21.blackjack.model.managers.PlayManager.Actions.HIT;
+import static nulp.pist21.blackjack.model.managers.PlayManager.Actions.STAND;
 
 public class TableActor extends AbstractActor {
 
@@ -31,27 +27,30 @@ public class TableActor extends AbstractActor {
     }
 
     private ActorRef[] players;
-    private User[] users;
     private List<ActorRef> watchers;
+
     private TableInfo tableInfo;
-    private Table table;
-    private GameWithDealer game;
+
+    private SitManager sitManager;
+    private BetManager betManager;
+    private PlayManager playManager;
+    private WinManager winManager;
+
+    private Sit[] currentPlaySits;
+
     private Timer timer;
     private long delay;
 
     public TableActor(TableInfo tableInfo) {
         players = new ActorRef[tableInfo.getMaxPlayerCount()];
-        users = new User[tableInfo.getMaxPlayerCount()];
         watchers = new ArrayList<>();
         this.tableInfo = tableInfo;
-        this.table = new Table(tableInfo.getMaxPlayerCount(), tableInfo.getMin(), tableInfo.getMax(), new Deck(2));
-        this.game = new GameWithDealer(table);
+        this.sitManager = new SitManager(tableInfo.getMaxPlayerCount());
+        this.betManager = new BetManager(tableInfo.getMin(), tableInfo.getMax());
+        this.playManager = new PlayManager(new Deck(2), new Dealer());
+        this.winManager = new WinManager();
         this.delay = 30000;
         timer = new Timer();
-    }
-
-    public void gameCycle() {
-
     }
 
     @Override
@@ -69,67 +68,126 @@ public class TableActor extends AbstractActor {
                 })
                 .match(SitTableUserRequest.class, message -> {
                     ActorRef sender = getSender();
-                    boolean result = players[message.place] == null;
-                    if (result) {
-                        boolean wasEmpty = table.isEmpty();
-                        table.getBoxes()[message.place].isActivated(true);
-                        players[message.place] = sender;
-                        users[message.place] = message.user;
-                        if (wasEmpty){
-                            game.start();
-                            notifyWatchers();
-                            notifyCurrentPlayer();
-                            timer.schedule(new TimedOutAction(), delay);
-                        }
+                    boolean wasEmpty = sitManager.isEmpty();
+                    if(!sitManager.getSits()[message.place].sit(message.user)){
+                        sender.tell(new SitTableResponse(false), getSelf());
+                        return;
                     }
-                    sender.tell(new SitTableResponse(result), getSelf());
+                    players[message.place] = sender;
+
+                    if (wasEmpty){
+                        startRound();
+                    }
+
+                    sender.tell(new SitTableResponse(true), getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     ActorRef sender = getSender();
-                    if (sender.equals(players[message.place])) {
-                        table.getBoxes()[message.place].isActivated(false);
-                        players[message.place] = null;
-                    }
+                    sitManager.getSits()[message.place].makeFree();
+
+                    players[message.place] = null;
+
                     sender.tell(new StandTableResponse(true), getSelf());
                 })
                 .match(PlayerAction.class, message -> {
                     if (players[message.place] != getSender()) {
                         return;
                     }
-                    int place = game.getCurrentIndex();
-                    if (message.place != place) {
-                        return;
-                    }
+                    int place = -1;
 
-                    Action action = null;
+
                     switch (message.action) {
                         case ACTION_BET:
-                            action = new BetAction(message.bet);
+                            if (message.place != place) {
+                                return;
+                            }
+                            handleBetAction(message.bet);
                             break;
                         case ACTION_HIT:
-                            action = new GameAction(GameAction.Actions.HIT);
+                            if (message.place != place) {
+                                return;
+                            }
+                            handlePlayAction(HIT);
                             break;
                         case ACTION_STAND:
-                            action = new GameAction(GameAction.Actions.STAND);
-                            break;
+                            if (message.place != place) {
+                                return;
+                            }
+                            handlePlayAction(STAND);
                     }
-                    handleAction(action);
                 })
                 .build();
     }
 
-    private void handleAction(Action action){
-        if (!game.isOver()){
-            if (game.getCurrentRound().next(action)){
-                timer.cancel();
-                notifyWatchers();
-            }
+    private int getCurrentIndex(){
+        if (!betManager.isOver()){
+            return betManager.getIndex();
         }
-        if (game.isOver()){
-            if (table.isEmpty()){
+        if (!playManager.isOver()) {
+            return playManager.getIndex();
+        }
+        return -1;
+    }
+
+    private void handleBetAction(int bet){
+        if (betManager.isOver()){
+            return;
+        }
+        if (!betManager.next(bet)) {
+            return;
+        }
+        User currentUser = currentPlaySits[getCurrentIndex()].getUser();
+        Transaction.take(currentUser, bet);
+        timer.cancel();
+        notifyWatchers();
+        notifyCurrentPlayer();
+        if (betManager.isOver()){
+            playManager.start(currentPlaySits.length);
+            if (playManager.isOver()){
                 return;
             }
         }
+        timer.schedule(new TimedOutAction(), delay);
+    }
+
+    private void handlePlayAction(PlayManager.Actions action) {
+        if (playManager.isOver()){
+            return;
+        }
+        if (!playManager.next(action)){
+            return;
+        }
+        timer.cancel();
+        notifyWatchers();
+        notifyCurrentPlayer();
+
+        if (!playManager.isOver()){
+            timer.schedule(new TimedOutAction(), delay);
+            return;
+        }
+
+        double koefs[] = winManager.start(playManager.getHands(), playManager.getHands().length - 1);
+
+        for (int i = 0; i < currentPlaySits.length; i++){
+            Sit sit = currentPlaySits[i];
+            User user = sit.getUser();
+            int bet = betManager.getBanks()[i];
+            double koef = koefs[i];
+            Transaction.giveMoney(user, (int)Math.round(bet * koef));
+        }
+
+        //todo: tell that round is over
+
+        if (!sitManager.isEmpty()){
+            startRound();
+        }
+    }
+
+    private void startRound(){
+        currentPlaySits = sitManager.getPlayingSits();
+        betManager.start(currentPlaySits.length);
+
+        notifyWatchers();
         notifyCurrentPlayer();
         timer.schedule(new TimedOutAction(), delay);
     }
@@ -141,43 +199,46 @@ public class TableActor extends AbstractActor {
     }
 
     private void notifyCurrentPlayer(){
-        int playerPlace = game.getCurrentIndex();
-        ActorRef currentPlayer = players[playerPlace];
-        if (game.getCurrentRound() instanceof BetRound){
-            currentPlayer.tell(new WaitAction(tableInfo, playerPlace, MessageConstant.ACTION_WAIT_BET), getSelf());
+        Sit currentSit = currentPlaySits[getCurrentIndex()];
+        int sitIndex = Arrays.asList(sitManager.getPlayingSits()).indexOf(currentSit);
+        ActorRef currentPlayer = players[getCurrentIndex()];
+        if (!betManager.isOver()){
+            currentPlayer.tell(new WaitAction(tableInfo, sitIndex, MessageConstant.ACTION_WAIT_BET), getSelf());
         }
-        else if (game.getCurrentRound() instanceof GameRound){
-            currentPlayer.tell(new WaitAction(tableInfo, playerPlace, MessageConstant.ACTION_WAIT_HIT_OR_STAND), getSelf());
+        else if (!playManager.isOver()){
+            currentPlayer.tell(new WaitAction(tableInfo, sitIndex, MessageConstant.ACTION_WAIT_HIT_OR_STAND), getSelf());
         };
     }
 
-
     public TableFullInfo getTableFullInfo() {
-        IRound round = game.getCurrentRound();
-        int currentUser = game.getCurrentIndex();
-        Card[] dealerHand = game.getDealer().getHand();
+        Card[] dealerHand = playManager.getHands()[playManager.getHands().length - 1].getHand();
+
         Player[] players = new Player[tableInfo.getMaxPlayerCount()];
-        for (int i = 0; i < table.getBoxes().length; i++) { //todo: here is null pointer error
-            User user = users[i];
-            if (user != null){
-                players[i] = new Player(user.getName(), user.getCash(), table.getBoxes()[i].getHand());
-            }
+        for (int i = 0; i < currentPlaySits.length; i++){
+            int index = Arrays.asList(sitManager.getSits()).indexOf(currentPlaySits[i]);
+            User user = currentPlaySits[i].getUser();
+            players[index] = new Player();
+            players[index].setName(user.getName());
+            players[index].setCash(user.getCash());
+            players[index].setHand(playManager.getHands()[i].getHand());
         }
-        return new TableFullInfo(dealerHand, players, currentUser);
+
+
+        return new TableFullInfo(dealerHand, players, getCurrentIndex());
     }
 
     private class TimedOutAction extends TimerTask{
         @Override
         public void run() {
-            if (game.isOver()){
-                return;
+            if (!betManager.isOver()){
+               handleBetAction(betManager.getMinBet());
+               timer.schedule(new TimedOutAction(), delay);
             }
-
-            if (game.getCurrentRound() instanceof BetRound){
-               handleAction(new BetAction(tableInfo.getMin()));
-            }
-            else if (game.getCurrentRound() instanceof GameRound){
-                handleAction(new GameAction(GameAction.Actions.STAND));
+            else if (!playManager.isOver()){
+                handlePlayAction(PlayManager.Actions.STAND);
+                if (!playManager.isOver()){
+                    timer.schedule(new TimedOutAction(), delay);
+                }
             }
         }
     }

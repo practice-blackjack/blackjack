@@ -35,7 +35,7 @@ public class Main {
 
     private List<TableInfo> tableList = new ArrayList<>();
 
-    public Main() throws URISyntaxException, IOException, DeploymentException {
+    public Main() {
         container = ContainerProvider.getWebSocketContainer();
         initInit();
     }
@@ -67,7 +67,7 @@ public class Main {
         }
     }
 
-    private void initWatchGame() throws URISyntaxException {
+    private void initWatchGame() {
         try {
             watchGameEndpoint = new WatchGameEndpoint(token);
             watchGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
@@ -91,7 +91,7 @@ public class Main {
         }
     }
 
-    private void initPlayGame() throws URISyntaxException {
+    private void initPlayGame() {
         try {
             playGameEndpoint = new PlayGameEndpoint(token);
             playGameEndpoint.onTokenCheckerMessageListener((BooleanMessage booleanMessage) -> {
@@ -172,24 +172,16 @@ public class Main {
         lobbyEndpoint.onTableListListener((TableListMessage tableListMessage) -> {
             System.out.println("server > " + JSON.toJSONString(tableListMessage));
             tableList = tableListMessage.getTableList();
-            try {
-                initWatchGame();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            initWatchGame();
         });
         lobbyEndpoint.sendTableListMessage();
     }
 
-    private void entryTable(int table) throws URISyntaxException {
+    private void entryTable(int table) {
         lobbyEndpoint.close();
         watchGameEndpoint.onEntryListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
-            try {
-                initPlayGame();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+            initPlayGame();
         });
         TableInfo tableInfo = tableList.get(table);
         if (tableInfo != null) {
@@ -197,7 +189,7 @@ public class Main {
         }
     }
 
-    private void exitTable(int table) throws URISyntaxException {
+    private void exitTable(int table) {
         watchGameEndpoint.onExitListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
             initLobby();
@@ -209,7 +201,7 @@ public class Main {
         }
     }
 
-    private void sitTable(int table, int place) throws URISyntaxException {
+    private void sitTable(int table, int place) {
         playGameEndpoint.onSitListener((BooleanMessage booleanMessage) -> {
             System.out.println("server > " + JSON.toJSONString(booleanMessage));
         });
@@ -230,7 +222,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) throws URISyntaxException, IOException, DeploymentException {
+    public static void main(String[] args) {
         Scanner scn = new Scanner(System.in);
         Main client = new Main();
         while (true) {

@@ -2,28 +2,36 @@ package nulp.pist21.blackjack.model;
 
 public class Sit {
 
-    private boolean occupied;
+    private User user;
     public Sit() {
-        occupied = false;
+        user = null;
     }
 
     public boolean isActivated(){
-        return occupied;
+        return user != null;
     }
 
-    public boolean activate(){
-        if (occupied){
+    public boolean sit(User player){
+        if (this.user != null){
             return false;
         }
-        occupied = true;
+        this.user = player;
         return true;
     }
 
-    public boolean deactivate(){
-        if (occupied == false){
+    public boolean stand(User user){
+        if (this.user != user){
             return false;
         }
-        occupied = false;
+        this.user = null;
         return true;
+    }
+
+    public User getUser(){
+        return user;
+    }
+
+    public void makeFree(){
+        user = null;
     }
 }

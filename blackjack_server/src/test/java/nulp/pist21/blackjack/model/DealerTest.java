@@ -1,4 +1,4 @@
-package nulp.pist21.blackjack.model.game;
+package nulp.pist21.blackjack.model;
 
 import nulp.pist21.blackjack.model.Dealer;
 import nulp.pist21.blackjack.model.Hand;
