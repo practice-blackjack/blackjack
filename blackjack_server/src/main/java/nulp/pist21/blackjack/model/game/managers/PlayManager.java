@@ -1,26 +1,30 @@
-package nulp.pist21.blackjack.model.game.round;
+package nulp.pist21.blackjack.model.game.managers;
 
-import nulp.pist21.blackjack.model.actions.Action;
-import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.IDeck;
-import nulp.pist21.blackjack.model.game.calculating.Combination;
 import nulp.pist21.blackjack.model.game.Dealer;
 import nulp.pist21.blackjack.model.game.IHand;
+import nulp.pist21.blackjack.model.game.calculating.Combination;
 
-public class GameRound implements IRound {
+public class PlayManager {
+
     private IHand[] hands;
     private Dealer dealer;
     private IDeck deck;
     private int index;
 
-    public static final int DEALER_INDEX = Integer.MAX_VALUE;
+    public enum Actions{
+        HIT,
+        STAND
+    }
 
-    public GameRound(IHand hands[], IDeck deck, Dealer dealer) {
-        this.hands = hands;
+    public PlayManager(IDeck deck, Dealer dealer) {
         this.deck = deck;
         this.dealer = dealer;
-
         index = -1;
+    }
+
+    public void start(IHand hands[]){
+        this.hands = hands;
 
         for(IHand playerBox: hands){
             playerBox.takeCards();
@@ -36,17 +40,12 @@ public class GameRound implements IRound {
         goToNextHand();
     }
 
-    @Override
-    public boolean next(Action action){
+    public boolean next(Actions action){
         if (index >= hands.length){
             return false;
         }
-        if (!(action instanceof GameAction)){
-            return false;
-        }
-        GameAction gameAction = (GameAction) action;
 
-        if (gameAction.getAction() == GameAction.Actions.HIT){
+        if (action == Actions.HIT){
             hands[index].giveCard(deck.next());
             if (!(new Combination(hands[index]).canHit())){
                 goToNextHand();
@@ -58,14 +57,13 @@ public class GameRound implements IRound {
 
         //dealer step
         if (index == hands.length){
-            while (dealer.doStep(this, DEALER_INDEX).getAction() == GameAction.Actions.HIT){
+            while (dealer.doStep(hands) == Actions.HIT){
                 dealer.giveCard(deck.next());
             }
         }
         return true;
     }
 
-    @Override
     public void end(){
         for (IHand box: hands){
             box.takeCards();
@@ -73,13 +71,11 @@ public class GameRound implements IRound {
         dealer.takeCards();
     }
 
-    @Override
-    public int getIndex() {
-        return index;
+    public IHand getCurrentHand() {
+        return hands[index];
     }
 
-    @Override
-    public boolean isEnd(){
+    public boolean isOver(){
         return index >= hands.length;
     }
 
@@ -91,11 +87,11 @@ public class GameRound implements IRound {
         }
     }
 
-    public IHand[] getHands() {
-        return hands;
-    }
-
     public Dealer getDealer() {
         return dealer;
+    }
+
+    public IDeck getDeck() {
+        return deck;
     }
 }

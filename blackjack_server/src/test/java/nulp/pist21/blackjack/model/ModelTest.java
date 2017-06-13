@@ -1,15 +1,18 @@
 package nulp.pist21.blackjack.model;
 
 import mock.UserMock;
-import nulp.pist21.blackjack.model.actions.BetAction;
-import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.game.GameWithDealer;
+import nulp.pist21.blackjack.model.game.Dealer;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
+import nulp.pist21.blackjack.model.game.managers.BetManager;
+import nulp.pist21.blackjack.model.game.managers.PlayManager;
 import nulp.pist21.blackjack.model.table.Table;
+import nulp.pist21.blackjack.model.table.TableBox;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 public class ModelTest {
 
@@ -22,33 +25,37 @@ public class ModelTest {
                 new UserMock(18, 300),
         };
 
-        Table table = new Table(3, 100, 300, new EndlessDeck());
+        Table table = new Table(3);
 
-        table.getBoxes()[0].isActivated(true);
-        table.getBoxes()[1].isActivated(true);
-        table.getBoxes()[2].isActivated(true);
+        table.getBoxes()[0].activate(users[0]);
+        table.getBoxes()[1].activate(users[1]);
+        table.getBoxes()[2].activate(users[2]);
 
-        GameWithDealer game = new GameWithDealer(table);
+        BetManager bets = new BetManager(100, 300);
+        PlayManager play = new PlayManager(new EndlessDeck(), new Dealer());
+        TableBox playingBoxes[] = table.getPlayingBoxes();
 
-        game.start();
         System.out.println("GameRound started.");
         System.out.println();
+        bets.start(playingBoxes);
 
         System.out.println("Getting bets.");
         for (int i = 0; i < 3; i++){
-            BetAction action = (BetAction) users[i].doStep(game);
-            System.out.println("Player " + (i + 1) + " bet: " + action.getBet());
-            Assert.assertTrue(game.getCurrentRound().next(action));
+            int bet = users[i].doBet(bets);
+            System.out.println("Player " + (i + 1) + " bet: " + bet);
+            Assert.assertTrue(bets.next(bet));
         }
         System.out.println("Bets taken.");
         System.out.println();
-        game.getCurrentRound();
+
+        play.start(playingBoxes);
 
         System.out.println("Dealers cards: ");
-        for (Card card: game.getDealer().getHand()) {
+
+        for (Card card: play.getDealer().getHand()) {
             System.out.println("   " + card.toString());
         }
-        System.out.println("Points: " + new Combination(game.getDealer()));
+        System.out.println("Points: " + new Combination(play.getDealer()));
         System.out.println();
 
         for (int i = 0; i < 3; i++){
@@ -61,14 +68,14 @@ public class ModelTest {
         }
 
         System.out.println("Game started.");
-        while (!game.isOver()){
-            int userId = game.getCurrentIndex();
-            GameAction action = (GameAction) users[userId].doStep(game);
-            Assert.assertTrue(game.getCurrentRound().next(action));
+        while (!play.isOver()){
+            int userId = Arrays.asList(table.getBoxes()).indexOf(play.getCurrentHand());
+            PlayManager.Actions action = users[userId].doStep(play);
+            Assert.assertTrue(play.next(action));
 
             System.out.println("Players " + (userId + 1) + " turn. ");
 
-            System.out.println("   Action: " + action.getAction());
+            System.out.println("   Action: " + action);
 
             System.out.println("   Cards: ");
             for (Card card: table.getBoxes()[userId].getHand()) {
@@ -81,14 +88,14 @@ public class ModelTest {
         }
 
         System.out.println("Dealers cards: ");
-        for (Card card: game.getDealer().getHand()) {
+        for (Card card: play.getDealer().getHand()) {
             System.out.println("   " + card.toString());
         }
-        System.out.println("Points: " + new Combination(game.getDealer()));
+        System.out.println("Points: " + new Combination(play.getDealer()));
         System.out.println();
 
         for (int i = 0; i < 3; i++){
-            double kof = new Combination(table.getBoxes()[i]).getWin(new Combination(game.getDealer()));
+            double kof = new Combination(table.getBoxes()[i]).getWin(new Combination(play.getDealer()));
             System.out.println("Players " + (i + 1) + " win kof: " + kof);
         }
 

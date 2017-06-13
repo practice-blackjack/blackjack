@@ -1,5 +1,6 @@
 package nulp.pist21.blackjack.model.table;
 
+import mock.UserMock;
 import nulp.pist21.blackjack.model.deck.Card;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,20 +21,46 @@ public class TableBoxTest {
     }
 
     @Test
+    public void should_return_false_if_sit_on_occupied(){
+        TableBox box = new TableBox();
+        UserMock userMock = new UserMock();
+        UserMock userMock2 = new UserMock();
+        box.activate(userMock);
+
+        Assert.assertFalse(box.activate(userMock2));
+        Assert.assertTrue(box.isActivated());
+        Assert.assertEquals(box.getPlayer(), userMock);
+    }
+
+    @Test
+    public void should_return_false_try_stand_other_player(){
+        TableBox box = new TableBox();
+        UserMock userMock = new UserMock();
+        UserMock userMock2 = new UserMock();
+        box.activate(userMock);
+
+        Assert.assertFalse(box.deactivate(userMock2));
+        Assert.assertTrue(box.isActivated());
+        Assert.assertEquals(box.getPlayer(), userMock);
+    }
+
+    @Test
     public void should_set_and_return_activating_status(){
         TableBox box = new TableBox();
-        box.isActivated(true);
+        UserMock userMock = new UserMock();
+        box.activate(userMock);
         Assert.assertTrue(box.isActivated());
-        box.isActivated(false);
+        box.deactivate(userMock);
         Assert.assertFalse(box.isActivated());
     }
 
     @Test
     public void should_clear_hand_on_deactivating(){
         TableBox box = new TableBox();
-        box.isActivated(true);
+        UserMock userMock = new UserMock();
+        box.activate(userMock);
         box.giveCard(new Card(Card.CLUBS, Card.ACE));
-        box.isActivated(false);
+        box.deactivate(userMock);
         Assert.assertEquals(0, box.getHand().length);
     }
 

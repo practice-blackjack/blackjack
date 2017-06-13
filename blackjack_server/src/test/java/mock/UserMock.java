@@ -1,12 +1,11 @@
 package mock;
 
-import nulp.pist21.blackjack.model.actions.Action;
-import nulp.pist21.blackjack.model.actions.BetAction;
-import nulp.pist21.blackjack.model.actions.GameAction;
+import nulp.pist21.blackjack.model.Player;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.IGame;
+import nulp.pist21.blackjack.model.game.managers.BetManager;
+import nulp.pist21.blackjack.model.game.managers.PlayManager;
 
-public class UserMock {
+public class UserMock extends Player {
 
     private int stopOn;
     private int bet;
@@ -20,14 +19,21 @@ public class UserMock {
         this(stopOn, 100);
     }
 
-    public Action doStep(IGame game){
-        if (game.getCurrentBox().getBet() == 0){
-            return new BetAction(bet);
-        }
+    public UserMock() {
+        this(16, 100);
+    }
 
-        if (new Combination(game.getCurrentBox()).getPoints() >= stopOn){
-            return new GameAction(GameAction.Actions.STAND);
+    public int doBet(BetManager bets){
+        if (bets.getCurrentBank().getBet() == 0){
+            return bet;
         }
-        return new GameAction(GameAction.Actions.HIT);
+        return 0;
+    }
+
+    public PlayManager.Actions doStep(PlayManager play){
+        if (new Combination(play.getCurrentHand()).getPoints() >= stopOn){
+            return PlayManager.Actions.STAND;
+        }
+        return PlayManager.Actions.HIT;
     }
 }

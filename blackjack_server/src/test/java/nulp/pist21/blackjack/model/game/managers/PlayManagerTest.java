@@ -1,7 +1,5 @@
-package nulp.pist21.blackjack.model.game.round;
+package nulp.pist21.blackjack.model.game.managers;
 
-import mock.UserMock;
-import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.EndlessDeck;
 import nulp.pist21.blackjack.model.deck.IDeck;
@@ -9,9 +7,9 @@ import nulp.pist21.blackjack.model.game.Dealer;
 import nulp.pist21.blackjack.model.table.TableBox;
 import org.junit.Assert;
 import org.junit.Test;
+import nulp.pist21.blackjack.model.game.managers.PlayManager.Actions;
 
-public class GameRoundTest {
-
+public class PlayManagerTest {
     @Test
     public void should_give_first_cards(){
         TableBox boxes[] = new TableBox[]{
@@ -22,7 +20,8 @@ public class GameRoundTest {
         IDeck deck = new EndlessDeck();
         Dealer dealer = new Dealer();
 
-        GameRound round = new GameRound(boxes, deck, dealer);
+        PlayManager play = new PlayManager(deck, dealer);
+        play.start(boxes);
 
         for(TableBox box: boxes){
             Assert.assertEquals(2, box.getHand().length);
@@ -40,8 +39,9 @@ public class GameRoundTest {
         IDeck deck = new EndlessDeck();
         Dealer dealer = new Dealer();
 
-        IRound round = new GameRound(boxes, deck, dealer);
-        round.end();
+        PlayManager play = new PlayManager(deck, dealer);
+        play.start(boxes);
+        play.end();
         for(TableBox box: boxes){
             Assert.assertEquals(0, box.getHand().length);
         }
@@ -58,9 +58,10 @@ public class GameRoundTest {
         IDeck deck = new EndlessDeck();
         Dealer dealer = new Dealer();
 
-        IRound round = new GameRound(boxes, deck, dealer);
+        PlayManager play = new PlayManager(deck, dealer);
+        play.start(boxes);
 
-        round.end();
+        play.end();
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
@@ -70,9 +71,9 @@ public class GameRoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card._3));
         boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
 
-        round.next(new GameAction(GameAction.Actions.STAND));
+        play.next(Actions.STAND);
 
-        Assert.assertTrue(round.isEnd());
+        Assert.assertTrue(play.isOver());
     }
 
     @Test
@@ -85,9 +86,10 @@ public class GameRoundTest {
         IDeck deck = new EndlessDeck();
         Dealer dealer = new Dealer();
 
-        IRound round = new GameRound(boxes, deck, dealer);
+        PlayManager play = new PlayManager(deck, dealer);
+        play.start(boxes);
 
-        round.end();
+        play.end();
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
@@ -97,9 +99,9 @@ public class GameRoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card._5));
         boxes[2].giveCard(new Card(Card.CLUBS, Card._9));
 
-        round.next(new GameAction(GameAction.Actions.STAND));
+        play.next(Actions.STAND);
 
-        Assert.assertTrue(round.isEnd());
+        Assert.assertTrue(play.isOver());
     }
 
     @Test
@@ -113,9 +115,10 @@ public class GameRoundTest {
         Dealer dealer = new Dealer();
 
 
-        IRound round = new GameRound(boxes, deck, dealer);
+        PlayManager play = new PlayManager(deck, dealer);
+        play.start(boxes);
 
-        round.end();
+        play.end();
 
         boxes[1].giveCard(new Card(Card.CLUBS, Card.ACE));
         boxes[1].giveCard(new Card(Card.CLUBS, Card._10));
@@ -123,33 +126,8 @@ public class GameRoundTest {
         boxes[2].giveCard(new Card(Card.CLUBS, Card.QUEEN));
         boxes[2].giveCard(new Card(Card.CLUBS, Card.ACE));
 
-        round.next(new GameAction(GameAction.Actions.STAND));
+        play.next(Actions.STAND);
 
-        Assert.assertTrue(round.isEnd());
+        Assert.assertTrue(play.isOver());
     }
-
-    @Test
-    public void should_work_game_circle(){
-
-        UserMock users[] = new UserMock[]{
-                new UserMock(14),
-                new UserMock(16),
-                new UserMock(18),
-        };
-
-        TableBox boxes[] = new TableBox[]{
-                new TableBox(),
-                new TableBox(),
-                new TableBox()
-        };
-        IDeck deck = new EndlessDeck();
-        Dealer dealer = new Dealer();
-
-        IRound round = new GameRound(boxes, deck, dealer);
-
-        do{
-            Assert.assertTrue(round.next(new GameAction(GameAction.Actions.HIT)));
-        } while (!round.isEnd());
-    }
-
 }

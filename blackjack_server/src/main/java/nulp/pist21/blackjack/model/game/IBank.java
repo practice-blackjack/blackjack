@@ -1,6 +1,6 @@
 package nulp.pist21.blackjack.model.game;
 
-public interface IBetable {
+public interface IBank {
     int getBet();
     void setBet(int bet);
 }

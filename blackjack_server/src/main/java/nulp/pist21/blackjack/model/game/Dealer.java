@@ -1,10 +1,9 @@
 package nulp.pist21.blackjack.model.game;
 
-import nulp.pist21.blackjack.model.actions.GameAction;
 import nulp.pist21.blackjack.model.deck.Card;
 import nulp.pist21.blackjack.model.deck.TurnableCard;
 import nulp.pist21.blackjack.model.game.calculating.Combination;
-import nulp.pist21.blackjack.model.game.round.IRound;
+import nulp.pist21.blackjack.model.game.managers.PlayManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +38,11 @@ public class Dealer implements IHand {
         return hand.toArray(new Card[hand.size()]);
     }
 
-    public GameAction doStep(IRound round, int index) {
+    public PlayManager.Actions doStep(IHand[] players) {
         hiddenCard.open();
         if (new Combination(this).getPoints() <= 16){
-            return new GameAction(GameAction.Actions.HIT);
+            return PlayManager.Actions.HIT;
         }
-        return new GameAction(GameAction.Actions.STAND);
+        return PlayManager.Actions.STAND;
     }
 }
