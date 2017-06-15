@@ -12,6 +12,7 @@ public class WinManager {
         koefs = new double[hands.length];
         Combination dealersCombination = new Combination(hands[dealerIndex]);
         for(int i = 0; i < koefs.length; i++){
+            koefs[i] = 0;
             if (i == dealerIndex) continue;
             Combination combination = new Combination(hands[i]);
             if (!combination.isALot()){
@@ -25,7 +26,6 @@ public class WinManager {
                     koefs[i] = 1;
                 }
             }
-            koefs[i] = 0;
         }
         return koefs;
     }
