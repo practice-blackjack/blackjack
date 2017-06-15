@@ -92,26 +92,19 @@ public class TableActor extends AbstractActor {
                     if (players[message.place] != getSender()) {
                         return;
                     }
-                    int place = -1;
-
+                    int place = currentPlaySitsIndexes[getCurrentIndex()];
+                    if (message.place != place) {
+                        return;
+                    }
 
                     switch (message.action) {
                         case ACTION_BET:
-                            if (message.place != place) {
-                                return;
-                            }
                             handleBetAction(message.bet);
                             break;
                         case ACTION_HIT:
-                            if (message.place != place) {
-                                return;
-                            }
                             handlePlayAction(HIT);
                             break;
                         case ACTION_STAND:
-                            if (message.place != place) {
-                                return;
-                            }
                             handlePlayAction(STAND);
                     }
                 })
@@ -194,6 +187,10 @@ public class TableActor extends AbstractActor {
 
         currentPlaySitsIndexes = sitManager.getPlayingSitIndexes();
         betManager.start(currentPlaySits.length);
+
+        if (betManager.isOver()){
+            return;
+        }
 
         notifyWatchers();
         notifyPlayer(0);
