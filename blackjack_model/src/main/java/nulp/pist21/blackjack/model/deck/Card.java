@@ -29,12 +29,6 @@ public class Card {
     public final static int UNDEFINED_SUIT = 4;
     public final static int MAX_SUIT = 5;
 
-
-
-
-    //public final static Card HIDDEN_CARD = new Card(UNDEFINED_SUIT, UNDEFINED_VALUE);
-
-
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds", "*"};
     public final static String[] VALUES = new String[] {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "*"};
 
