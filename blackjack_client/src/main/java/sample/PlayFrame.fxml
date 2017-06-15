@@ -14,7 +14,7 @@
    <children>
       <ImageView fitHeight="334.0" fitWidth="427.0" layoutX="86.0" layoutY="24.0" pickOnBounds="true">
          <image>
-            <Image url="@img/sitManager.png" />
+            <Image url="@img/table.png" />
          </image>
       </ImageView>
       <ImageView fitHeight="86.0" fitWidth="78.0" layoutX="261.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true">

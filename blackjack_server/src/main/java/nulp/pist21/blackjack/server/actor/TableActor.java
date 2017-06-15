@@ -76,17 +76,15 @@ public class TableActor extends AbstractActor {
                     }
                     players[message.place] = sender;
 
+
+                    sender.tell(new SitTableResponse(true), getSelf());
                     if (wasEmpty){
                         startRound();
                     }
-
-                    sender.tell(new SitTableResponse(true), getSelf());
                 })
                 .match(StandTableRequest.class, message -> {
                     ActorRef sender = getSender();
                     sitManager.getSits()[message.place].makeFree();
-
-                    players[message.place] = null;
 
                     sender.tell(new StandTableResponse(true), getSelf());
                 })
@@ -139,7 +137,7 @@ public class TableActor extends AbstractActor {
         if (!betManager.next(bet)) {
             return;
         }
-
+        timer.cancel();
         Transaction.take(currentUser, bet);
         notifyWatchers();
         if (betManager.isOver()){
@@ -151,6 +149,8 @@ public class TableActor extends AbstractActor {
         }
 
         notifyPlayer(getCurrentIndex());
+
+        timer = new Timer();
         timer.schedule(new TimedOutAction(), delay);
     }
 
@@ -162,7 +162,7 @@ public class TableActor extends AbstractActor {
         if (!playManager.next(action)){
             return;
         }
-
+        timer.cancel();
         if (playManager.isOver()){
             //todo: tell that round is over
             if (sitManager.isEmpty()) {
@@ -186,11 +186,19 @@ public class TableActor extends AbstractActor {
 
     private void startRound(){
         currentPlaySits = sitManager.getPlayingSits();
+        for (int i = 0; i < sitManager.getSits().length; i++){
+            if (!sitManager.getSits()[i].isActivated()){
+                players[i] = null;
+            }
+        }
+
         currentPlaySitsIndexes = sitManager.getPlayingSitIndexes();
         betManager.start(currentPlaySits.length);
 
         notifyWatchers();
         notifyPlayer(0);
+
+        timer = new Timer();
         timer.schedule(new TimedOutAction(), delay);
     }
 
@@ -239,6 +247,8 @@ public class TableActor extends AbstractActor {
         public void run() {
             if (!betManager.isOver()){
                handleBetAction(betManager.getMinBet());
+
+               timer = new Timer();
                timer.schedule(new TimedOutAction(), delay);
             }
             else if (!playManager.isOver()){
@@ -246,6 +256,8 @@ public class TableActor extends AbstractActor {
                 if (playManager.isOver()){
                     return;
                 }
+
+                timer = new Timer();
                 timer.schedule(new TimedOutAction(), delay);
             }
         }
