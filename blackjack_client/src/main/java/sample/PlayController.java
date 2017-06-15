@@ -2,10 +2,16 @@ package sample;
 import com.alibaba.fastjson.JSON;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import nulp.pist21.blackjack.client.endpoint.PlayGameEndpoint;
 import nulp.pist21.blackjack.client.endpoint.WatchGameEndpoint;
@@ -14,6 +20,8 @@ import nulp.pist21.blackjack.model.Player;
 import nulp.pist21.blackjack.model.TableFullInfo;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.deck.Card;
+import nulp.pist21.blackjack.model.deck.EndlessDeck;
+import nulp.pist21.blackjack.model.deck.IDeck;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -44,6 +52,17 @@ public class PlayController {
     @FXML public Button betThreeButton;
     @FXML public Label betLabel;
     @FXML public TextArea chatTextArea;
+    @FXML public Canvas canvas;
+
+    Point2D[] points = new Point2D[]{
+            new Point2D(290, 80),
+            new Point2D(450, 50),
+            new Point2D(510, 130),
+            new Point2D(380, 200),
+            new Point2D(180, 200),
+            new Point2D(50, 130),
+            new Point2D(100, 50),
+    };
 
     private TableInfo currentTable;
     private int currentPlace;
@@ -71,21 +90,33 @@ public class PlayController {
         watchGameEndpoint.onUpdateMessageListener((TableFullInfoMessage message) -> {
             System.out.println("server > " + JSON.toJSONString(message));
             TableFullInfo update = message.getTableFullInfo();
+            drawTable();
+            drawDiller();
             StringBuilder msg = new StringBuilder();
             msg.append("--- table ---\n");
             msg.append("dealer : ");
+            drawDillerCard(update.getDealerHand());
             for (Card c : update.getDealerHand()) {
                 if (c != null) {
-                    msg.append(c.toString() + " ");
+                    msg.append(c.toString()).append(" ");
                 }
             }
             msg.append("\n");
-            for (Player p : update.getPlayers()) {
+            Player[] players = update.getPlayers();
+            for (int i = 0; i < players.length; i++) {
+                Player p = players[i];
                 if (p != null) {
-                    msg.append("user " + p.getName() + " [" + p.getCash() + "] : ");
+                    if (currentPlace == i) {
+                        drawMainCard(i, p.getHand());
+                        drawMainPlayer(i, p.getName(), p.getCash());
+                    } else {
+                        drawCard(i + 1, p.getHand());
+                        drawPlayer(i, p.getName(), p.getCash());
+                    }
+                    msg.append("user ").append(p.getName()).append(" [").append(p.getCash()).append("] : ");
                     for (Card c : p.getHand()) {
                         if (c != null) {
-                            msg.append(c.toString() + " ");
+                            msg.append(c.toString()).append(" ");
                         }
                     }
                 }
@@ -146,6 +177,97 @@ public class PlayController {
         });
     }
 
+    public void drawTable(){
+        Image imgDeck;
+        Image imgCoints;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        imgDeck = new Image(getClass().getResourceAsStream("img/table.png"));
+        imgCoints = new Image(getClass().getResourceAsStream("img/fishka.png"));
+        gc.drawImage(imgDeck,50, -30, 500, canvas.getHeight());
+        gc.drawImage(imgCoints, 280, canvas.getHeight()/3, 40, 50);
+        gc.setLineWidth(1.5);
+        gc.setFont(Font.font("Calibri", 16));
+        gc.setFill(Color.GREY);
+        gc.setStroke(Color.WHITE);
+        for (int i = 1; i < points.length; i++) {
+            Point2D point = points[i];
+            gc.fillOval(point.getX(), point.getY(), 40, 40);
+            gc.strokeText("" + i , point.getX() + 16, point.getY() + 23);
+        }
+    }
+
+    public void drawDiller(){
+        Image imgDiler;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        imgDiler = new Image(getClass().getResourceAsStream("img/dealer.png"));
+        gc.drawImage(imgDiler, 255, 10, 90, 80);
+    }
+
+    public void drawPlayer(int place, String playerName, int playerCash){
+        Image imgPlayerPhoto;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Point2D point = points[place];
+        gc.setLineWidth(1);
+        gc.setFont(Font.font(13));
+        gc.setFill(Color.LIGHTGREY);
+        gc.setStroke(Color.BLACK);
+        imgPlayerPhoto = new Image(getClass().getResourceAsStream("img/image.jpg"));
+        gc.fillRect(point.getX()-40,point.getY(),120,40);
+        gc.drawImage(imgPlayerPhoto, point.getX() - 50, point.getY(), 40,40);
+        gc.strokeText(playerName, point.getX() -5, point.getY() + 14);
+        gc.strokeLine(point.getX() - 10, point.getY() + 20, point.getX() + 80 , point.getY() + 20);
+        gc.strokeText("$ " + playerCash, point.getX() -5, point.getY() + 35);
+    }
+
+    public void drawMainPlayer(int place, String playerName, int playerCash){
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Point2D point = points[place];
+        gc.setLineWidth(1);
+        gc.setFont(Font.font(14));
+        gc.setFill(Color.GREY);
+        gc.setStroke(Color.WHITE);
+        gc.fillRect(point.getX()-30,point.getY(),100,40);
+        gc.strokeText(playerName, point.getX() -25, point.getY() + 14);
+        gc.strokeLine(point.getX() - 30, point.getY() + 20, point.getX() + 70 , point.getY() + 20);
+        gc.strokeText("$ " + playerCash, point.getX() -25, point.getY() + 35);
+    }
+
+    public void drawCard(int place, Card[] cards){
+        Image imgCard;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Point2D point = points[place];
+        for (int i = 0; i < cards.length; i++) {
+            Card card = cards[i];
+            imgCard = new Image(getClass().getResourceAsStream("img/cards/" + card.getSuit() + card.getValue() + ".jpg"));
+            gc.drawImage(imgCard, point.getX() - 50 + 20 * i, point.getY() - 30, 50, 70);
+        }
+    }
+
+    public void drawMainCard(int place, Card[] cards){
+        Image imgCard;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Point2D point = points[place];
+        for (int i = 0; i < cards.length; i++) {
+            Card card = cards[i];
+            imgCard = new Image(getClass().getResourceAsStream("img/cards/" +card.getSuit() + card.getValue() + ".jpg"));
+            gc.drawImage(imgCard, point.getX() - 30 + 20 * i, point.getY() - 30, 45, 60);
+        }
+    }
+
+    public void drawDillerCard(Card[] cards){
+        Image imgCard;
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        Point2D point = points[0];
+
+        for (int i = 0; i < cards.length; i++) {
+            Card card = cards[i];
+            imgCard = new Image(getClass().getResourceAsStream("img/cards/" + card.getSuit() + card.getValue() + ".jpg"));
+            gc.drawImage(imgCard, point.getX() - 30 + 20 * i, point.getY() + 3, 30, 40);
+        }
+        imgCard = new Image(getClass().getResourceAsStream("img/cards/413.jpg"));
+        gc.drawImage(imgCard, point.getX() - 30 , point.getY() + 3, 20, 40);
+    }
+
     @FXML
     public void toLobbyButtonClick() {
         if (playGameEndpoint != null && playGameEndpoint.isOpen()) {
@@ -172,6 +294,7 @@ public class PlayController {
     public void standUpButtonClick(){
         playGameEndpoint.sendStandMessage(currentTable, currentPlace);
         toState(STATE_WAIT);
+        currentPlace = -1;
     }
 
     @FXML
@@ -214,6 +337,8 @@ public class PlayController {
         betOneButton.setVisible(state == STATE_BET);
         betTwoButton.setVisible(state == STATE_BET);
         betThreeButton.setVisible(state == STATE_BET);
+        drawTable();
+        drawDiller();
     }
 
 }

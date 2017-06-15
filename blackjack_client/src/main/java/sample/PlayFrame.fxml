@@ -5,23 +5,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #252527;" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.PlayController">
    <children>
-      <ImageView fitHeight="334.0" fitWidth="427.0" layoutX="86.0" layoutY="24.0" pickOnBounds="true">
-         <image>
-            <Image url="@img/table.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="86.0" fitWidth="78.0" layoutX="261.0" layoutY="59.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/dealer.png" />
-         </image>
-      </ImageView>
       <Button fx:id="actionStandButton" layoutX="524.0" layoutY="355.0" mnemonicParsing="false" onAction="#actionStandButtonClick" text="Stand">
          <font>
             <Font size="19.0" />
@@ -34,18 +22,13 @@
       </Button>
       <Button layoutY="-1.0" mnemonicParsing="false" onAction="#toLobbyButtonClick" text="Menu" />
       <Button fx:id="standUpButton" layoutX="567.0" mnemonicParsing="false" onAction="#standUpButtonClick" text="Exit" visible="false" />
-      <ImageView fitHeight="42.0" fitWidth="47.0" layoutX="272.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@img/fishka.png" />
-         </image>
-      </ImageView>
-      <Canvas height="200.0" layoutX="119.0" layoutY="41.0" width="200.0" />
       <Button fx:id="sitDownButton" layoutX="447.0" layoutY="355.0" mnemonicParsing="false" onAction="#sitDownButtonClick" prefHeight="42.0" prefWidth="154.0" text="Sit Down">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
       <TextArea fx:id="chatTextArea" editable="false" layoutY="297.0" prefHeight="104.0" prefWidth="303.0" />
+      <Canvas fx:id="canvas" focusTraversable="true" height="342.0" layoutY="-2.0" width="602.0" />
       <Label fx:id="betLabel" layoutX="64.0" layoutY="16.0" textFill="WHITE">
          <font>
             <Font name="System Italic" size="18.0" />
