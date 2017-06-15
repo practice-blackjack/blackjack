@@ -21,7 +21,7 @@
          </font>
       </Button>
       <Button layoutY="-1.0" mnemonicParsing="false" onAction="#toLobbyButtonClick" text="Menu" />
-      <Button fx:id="standUpButton" layoutX="567.0" mnemonicParsing="false" onAction="#standUpButtonClick" text="Exit" visible="false" />
+      <Button fx:id="standUpButton" layoutX="567.0" mnemonicParsing="false" onAction="#standUpButtonClick" text="Stand" visible="false" />
       <Button fx:id="sitDownButton" layoutX="447.0" layoutY="355.0" mnemonicParsing="false" onAction="#sitDownButtonClick" prefHeight="42.0" prefWidth="154.0" text="Sit Down">
          <font>
             <Font size="18.0" />

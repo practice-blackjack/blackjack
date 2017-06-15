@@ -20,13 +20,6 @@ import nulp.pist21.blackjack.model.Player;
 import nulp.pist21.blackjack.model.TableFullInfo;
 import nulp.pist21.blackjack.model.TableInfo;
 import nulp.pist21.blackjack.model.deck.Card;
-import nulp.pist21.blackjack.model.deck.EndlessDeck;
-import nulp.pist21.blackjack.model.deck.IDeck;
-
-import java.text.MessageFormat;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.stream.Stream;
 
 import static nulp.pist21.blackjack.message.MessageConstant.*;
 
@@ -67,6 +60,8 @@ public class PlayController {
     private TableInfo currentTable;
     private int currentPlace;
 
+    private int currentState;
+
     @FXML
     public void initialize(){
         watchGameEndpoint = programData.getWatchGameEndpoint();
@@ -91,11 +86,11 @@ public class PlayController {
             System.out.println("server > " + JSON.toJSONString(message));
             TableFullInfo update = message.getTableFullInfo();
             drawTable();
-            drawDiller();
+            drawDealer();
             StringBuilder msg = new StringBuilder();
             msg.append("--- table ---\n");
             msg.append("dealer : ");
-            drawDillerCard(update.getDealerHand());
+            drawDealerCards(update.getDealerHand());
             for (Card c : update.getDealerHand()) {
                 if (c != null) {
                     msg.append(c.toString()).append(" ");
@@ -107,10 +102,10 @@ public class PlayController {
                 Player p = players[i];
                 if (p != null) {
                     if (currentPlace == i) {
-                        drawMainCard(i, p.getHand());
-                        drawMainPlayer(i, p.getName(), p.getCash());
+                        drawCurrentPlayerCards(i, p.getHand());
+                        drawCurrentPlayer(i, p.getName(), p.getCash());
                     } else {
-                        drawCard(i + 1, p.getHand());
+                        drawPlayerCards(i, p.getHand());
                         drawPlayer(i, p.getName(), p.getCash());
                     }
                     msg.append("user ").append(p.getName()).append(" [").append(p.getCash()).append("] : ");
@@ -142,10 +137,29 @@ public class PlayController {
         stage.setTitle("Black Jack / Table");
         toState(STATE_NULL);
         currentTable = programData.getCurrentTable();
+        canvas.setOnMouseClicked(event -> {
+            if (currentState != STATE_ENTRY) {
+                return;
+            }
+            double x = event.getX();
+            double y = event.getY();
+            for (int i = 1; i < points.length; i++) {
+                Point2D point = points[i];
+                double px = point.getX();
+                double py = point.getY();
+                if (x > px && x < px + 40 && y > py && y < py + 40) {
+                    currentPlace = i - 1;
+                    playGameEndpoint.sendSitMessage(currentTable, currentPlace);
+                    toState(STATE_WAIT);
+                }
+            }
+        });
         watchGameEndpoint.sendEntryMessage(currentTable);
         betOneButton.setText(String.valueOf(currentTable.getMin()));
         betTwoButton.setText(String.valueOf((currentTable.getMin() + currentTable.getMax()) / 2));
         betThreeButton.setText(String.valueOf(currentTable.getMax()));
+        drawTable();
+        drawDealer();
     }
 
     private void initPlayGameEndpoint() {
@@ -178,13 +192,11 @@ public class PlayController {
     }
 
     public void drawTable(){
-        Image imgDeck;
-        Image imgCoints;
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        imgDeck = new Image(getClass().getResourceAsStream("img/table.png"));
-        imgCoints = new Image(getClass().getResourceAsStream("img/fishka.png"));
+        Image imgDeck = new Image(getClass().getResourceAsStream("img/table.png"));
+        Image imgCoins = new Image(getClass().getResourceAsStream("img/fishka.png"));
         gc.drawImage(imgDeck,50, -30, 500, canvas.getHeight());
-        gc.drawImage(imgCoints, 280, canvas.getHeight()/3, 40, 50);
+        gc.drawImage(imgCoins, 280, canvas.getHeight()/3, 40, 50);
         gc.setLineWidth(1.5);
         gc.setFont(Font.font("Calibri", 16));
         gc.setFill(Color.GREY);
@@ -196,22 +208,21 @@ public class PlayController {
         }
     }
 
-    public void drawDiller(){
-        Image imgDiler;
+    public void drawDealer(){
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        imgDiler = new Image(getClass().getResourceAsStream("img/dealer.png"));
-        gc.drawImage(imgDiler, 255, 10, 90, 80);
+        Image imgDealer = new Image(getClass().getResourceAsStream("img/dealer.png"));
+        gc.drawImage(imgDealer, 255, 10, 90, 80);
     }
 
     public void drawPlayer(int place, String playerName, int playerCash){
-        Image imgPlayerPhoto;
+        place++;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
         gc.setLineWidth(1);
         gc.setFont(Font.font(13));
         gc.setFill(Color.LIGHTGREY);
         gc.setStroke(Color.BLACK);
-        imgPlayerPhoto = new Image(getClass().getResourceAsStream("img/image.jpg"));
+        Image imgPlayerPhoto = new Image(getClass().getResourceAsStream("img/image.jpg"));
         gc.fillRect(point.getX()-40,point.getY(),120,40);
         gc.drawImage(imgPlayerPhoto, point.getX() - 50, point.getY(), 40,40);
         gc.strokeText(playerName, point.getX() -5, point.getY() + 14);
@@ -219,7 +230,8 @@ public class PlayController {
         gc.strokeText("$ " + playerCash, point.getX() -5, point.getY() + 35);
     }
 
-    public void drawMainPlayer(int place, String playerName, int playerCash){
+    public void drawCurrentPlayer(int place, String playerName, int playerCash){
+        place++;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
         gc.setLineWidth(1);
@@ -232,7 +244,8 @@ public class PlayController {
         gc.strokeText("$ " + playerCash, point.getX() -25, point.getY() + 35);
     }
 
-    public void drawCard(int place, Card[] cards){
+    public void drawPlayerCards(int place, Card[] cards){
+        place++;
         Image imgCard;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
@@ -243,7 +256,8 @@ public class PlayController {
         }
     }
 
-    public void drawMainCard(int place, Card[] cards){
+    public void drawCurrentPlayerCards(int place, Card[] cards){
+        place++;
         Image imgCard;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
@@ -254,7 +268,7 @@ public class PlayController {
         }
     }
 
-    public void drawDillerCard(Card[] cards){
+    public void drawDealerCards(Card[] cards){
         Image imgCard;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[0];
@@ -329,16 +343,17 @@ public class PlayController {
     }
 
     private void toState(int state) {
-        sitDownButton.setVisible(state == STATE_ENTRY);
-        placeField.setVisible(state == STATE_ENTRY);
+        this.currentState = state;
+//        sitDownButton.setVisible(state == STATE_ENTRY);
+//        placeField.setVisible(state == STATE_ENTRY);
+        sitDownButton.setVisible(false);
+        placeField.setVisible(false);
         standUpButton.setVisible(state != STATE_ENTRY && state != STATE_NULL);
         actionHitButton.setVisible(state == STATE_HIT_OR_STAND);
         actionStandButton.setVisible(state == STATE_HIT_OR_STAND);
         betOneButton.setVisible(state == STATE_BET);
         betTwoButton.setVisible(state == STATE_BET);
         betThreeButton.setVisible(state == STATE_BET);
-        drawTable();
-        drawDiller();
     }
 
 }
