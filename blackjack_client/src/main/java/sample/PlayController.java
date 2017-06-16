@@ -48,13 +48,13 @@ public class PlayController {
     @FXML public Canvas canvas;
 
     Point2D[] points = new Point2D[]{
-            new Point2D(290, 80),
             new Point2D(450, 50),
             new Point2D(510, 130),
             new Point2D(380, 200),
             new Point2D(180, 200),
             new Point2D(50, 130),
             new Point2D(100, 50),
+            new Point2D(290, 80),
     };
 
     private TableInfo currentTable;
@@ -101,11 +101,14 @@ public class PlayController {
             for (int i = 0; i < players.length; i++) {
                 Player p = players[i];
                 if (p != null) {
-                    if (currentPlace == i) {
-                        drawCurrentPlayerCards(i, p.getHand());
+                    Card[] hand = p.getHand();
+                    if (hand == null) {
+
+                    } else if (currentPlace == i) {
+                        drawCurrentPlayerCards(i, hand);
                         drawCurrentPlayer(i, p.getName(), p.getCash());
                     } else {
-                        drawPlayerCards(i, p.getHand());
+                        drawPlayerCards(i, hand);
                         drawPlayer(i, p.getName(), p.getCash());
                     }
                     msg.append("user ").append(p.getName()).append(" [").append(p.getCash()).append("] : ");
@@ -114,8 +117,11 @@ public class PlayController {
                             msg.append(c.toString()).append(" ");
                         }
                     }
+                    msg.append("\n");
                 }
-                msg.append("\n");
+            }
+            if (update.getCurrentUser() == -1) {
+                chatTextArea.appendText("round end\n");
             }
             chatTextArea.appendText(msg.toString() + "\n");
         });
@@ -143,12 +149,12 @@ public class PlayController {
             }
             double x = event.getX();
             double y = event.getY();
-            for (int i = 1; i < points.length; i++) {
+            for (int i = 0; i < points.length - 1; i++) {
                 Point2D point = points[i];
                 double px = point.getX();
                 double py = point.getY();
                 if (x > px && x < px + 40 && y > py && y < py + 40) {
-                    currentPlace = i - 1;
+                    currentPlace = i;
                     playGameEndpoint.sendSitMessage(currentTable, currentPlace);
                     toState(STATE_WAIT);
                 }
@@ -168,6 +174,8 @@ public class PlayController {
             System.out.println("server > " + JSON.toJSONString(message));
             if (message.isOk()) {
                 toState(STATE_WAIT);
+            } else {
+                toState(STATE_ENTRY);
             }
         });
         playGameEndpoint.onStandListener((BooleanMessage message) -> {
@@ -193,6 +201,7 @@ public class PlayController {
 
     public void drawTable(){
         GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         Image imgDeck = new Image(getClass().getResourceAsStream("img/table.png"));
         Image imgCoins = new Image(getClass().getResourceAsStream("img/fishka.png"));
         gc.drawImage(imgDeck,50, -30, 500, canvas.getHeight());
@@ -201,10 +210,10 @@ public class PlayController {
         gc.setFont(Font.font("Calibri", 16));
         gc.setFill(Color.GREY);
         gc.setStroke(Color.WHITE);
-        for (int i = 1; i < points.length; i++) {
+        for (int i = 0; i < points.length - 1; i++) {
             Point2D point = points[i];
             gc.fillOval(point.getX(), point.getY(), 40, 40);
-            gc.strokeText("" + i , point.getX() + 16, point.getY() + 23);
+            gc.strokeText("" + (i + 1) , point.getX() + 16, point.getY() + 23);
         }
     }
 
@@ -215,7 +224,6 @@ public class PlayController {
     }
 
     public void drawPlayer(int place, String playerName, int playerCash){
-        place++;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
         gc.setLineWidth(1);
@@ -231,7 +239,6 @@ public class PlayController {
     }
 
     public void drawCurrentPlayer(int place, String playerName, int playerCash){
-        place++;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
         gc.setLineWidth(1);
@@ -245,41 +252,34 @@ public class PlayController {
     }
 
     public void drawPlayerCards(int place, Card[] cards){
-        place++;
-        Image imgCard;
-        GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
-        for (int i = 0; i < cards.length; i++) {
-            Card card = cards[i];
-            imgCard = new Image(getClass().getResourceAsStream("img/cards/" + card.getSuit() + card.getValue() + ".jpg"));
-            gc.drawImage(imgCard, point.getX() - 50 + 20 * i, point.getY() - 30, 50, 70);
-        }
+        drawCards(cards, point.getX() - 30, point.getY() - 30, 50, 70, 20);
     }
 
     public void drawCurrentPlayerCards(int place, Card[] cards){
-        place++;
-        Image imgCard;
-        GraphicsContext gc = canvas.getGraphicsContext2D();
         Point2D point = points[place];
-        for (int i = 0; i < cards.length; i++) {
-            Card card = cards[i];
-            imgCard = new Image(getClass().getResourceAsStream("img/cards/" +card.getSuit() + card.getValue() + ".jpg"));
-            gc.drawImage(imgCard, point.getX() - 30 + 20 * i, point.getY() - 30, 45, 60);
-        }
+        drawCards(cards, point.getX() - 30, point.getY() - 30, 45, 60, 20);
     }
 
     public void drawDealerCards(Card[] cards){
+        Point2D point = points[points.length - 1];
+        drawCards(cards, point.getX() - 30, point.getY() + 3, 30, 40, 20);
+    }
+
+    public void drawCards(Card[] cards, double x, double y, int w, int h, int step) {
         Image imgCard;
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        Point2D point = points[0];
-
         for (int i = 0; i < cards.length; i++) {
             Card card = cards[i];
-            imgCard = new Image(getClass().getResourceAsStream("img/cards/" + card.getSuit() + card.getValue() + ".jpg"));
-            gc.drawImage(imgCard, point.getX() - 30 + 20 * i, point.getY() + 3, 30, 40);
+            String path;
+            if (card.getValue() == Card.UNDEFINED_VALUE || card.getSuit() == Card.UNDEFINED_SUIT) {
+                path = "img/cards/undefined.jpg";
+            } else {
+                path = "img/cards/" + card.getSuit() + card.getValue() + ".jpg";
+            }
+            imgCard = new Image(getClass().getResourceAsStream(path));
+            gc.drawImage(imgCard, x + (i * step), y, w, h);
         }
-        imgCard = new Image(getClass().getResourceAsStream("img/cards/413.jpg"));
-        gc.drawImage(imgCard, point.getX() - 30 , point.getY() + 3, 20, 40);
     }
 
     @FXML
@@ -331,13 +331,13 @@ public class PlayController {
     }
     @FXML
     public void betTwoButtonClick(){
-        int bet = currentTable.getMax();
+        int bet = (currentTable.getMax() + currentTable.getMin()) / 2;
         playGameEndpoint.sendActionMessage(currentTable, currentPlace, bet);
         toState(STATE_WAIT);
     }
     @FXML
     public void betThreeButtonClick(){
-        int bet = (currentTable.getMax() + currentTable.getMin()) / 2;
+        int bet = currentTable.getMax();
         playGameEndpoint.sendActionMessage(currentTable, currentPlace, bet);
         toState(STATE_WAIT);
     }

@@ -19,7 +19,7 @@ public class Card {
     public final static int QUEEN = 11;
     public final static int KING = 12;
     public final static int UNDEFINED_VALUE = 13;
-    public final static int MAX_VALUE = 14;
+    public final static int MAX_VALUE = 13;
 
 
     public final static int SPADES = 0;
@@ -27,7 +27,7 @@ public class Card {
     public final static int CLUBS = 2;
     public final static int DIAMONDS = 3;
     public final static int UNDEFINED_SUIT = 4;
-    public final static int MAX_SUIT = 5;
+    public final static int MAX_SUIT = 4;
 
     public final static String[] SUITS = new String[] {"spades", "hearts", "clubs", "diamonds", "*"};
     public final static String[] VALUES = new String[] {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "*"};

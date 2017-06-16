@@ -12,7 +12,6 @@ public class TurnableCard extends Card {
 
     public TurnableCard(int card) {
         hidden = new Card(card);
-
         this.suit = Card.UNDEFINED_SUIT;
         this.value = Card.UNDEFINED_VALUE;
     }
