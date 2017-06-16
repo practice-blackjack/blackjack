@@ -80,6 +80,7 @@ public class TableActor extends AbstractActor {
 
 
                     sender.tell(new SitTableResponse(true), getSelf());
+                    updateTableInfo();
                     if (wasEmpty){
                         timer = new Timer();
                         timer.schedule(new StartRoundAction(), startRoundDelay);
@@ -90,6 +91,7 @@ public class TableActor extends AbstractActor {
                     sitManager.getSits()[message.place].makeFree();
 
                     sender.tell(new StandTableResponse(true), getSelf());
+                    updateTableInfo();
                 })
                 .match(PlayerAction.class, message -> {
                     if (players[message.place] != getSender()) {
@@ -112,6 +114,10 @@ public class TableActor extends AbstractActor {
                     }
                 })
                 .build();
+    }
+
+    private void updateTableInfo(){
+        tableInfo.setPlayerCount(sitManager.getPlayingSits().length);
     }
 
     private int getCurrentIndex(){
