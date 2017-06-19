@@ -15,16 +15,19 @@ public class WinManager {
             koefs[i] = 0;
             if (i == dealerIndex) continue;
             Combination combination = new Combination(hands[i]);
-            if (!combination.isALot()){
-                if (combination.getPoints() > dealersCombination.getPoints() || dealersCombination.isALot()){
-                    if (combination.getPoints() == BLACK_JACK){
-                        koefs[i] = 2.2;
-                    }
-                    koefs[i] = 2;
+            if (combination.isALot()){
+                continue;
+            }
+            if (combination.getPoints() > dealersCombination.getPoints() || dealersCombination.isALot()){
+                if (combination.getPoints() == BLACK_JACK){
+                    koefs[i] = 3;
+                    continue;
                 }
-                else if (combination.getPoints() == dealersCombination.getPoints()){
-                    koefs[i] = 1;
-                }
+                koefs[i] = 2;
+                continue;
+            }
+            if (combination.getPoints() == dealersCombination.getPoints()){
+                koefs[i] = 1;
             }
         }
         return koefs;
