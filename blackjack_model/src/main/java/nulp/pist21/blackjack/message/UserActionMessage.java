@@ -14,7 +14,7 @@ public class UserActionMessage extends Message {
     }
 
     public UserActionMessage(String type, TableInfo tableInfo, int place, String action) {
-        this(type, tableInfo, 0, action, 0);
+        this(type, tableInfo, place, action, 0);
     }
 
     public UserActionMessage(String type, TableInfo tableInfo, int place, String action, int bet) {
