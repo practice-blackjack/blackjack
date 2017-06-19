@@ -54,10 +54,11 @@ public class PlayManager {
 
         if (action == Actions.HIT){
             hands[index].giveCard(deck.next());
-            if (!(new Combination(hands[index]).canHit())){
-                goToNextHand();
+            if (new Combination(hands[index]).canHit()){
+                return true;
             }
         }
+        goToNextHand();
         return true;
     }
 
@@ -74,11 +75,12 @@ public class PlayManager {
     }
 
     private void goToNextHand(){
-        index++;
-        while (index < hands.length - 1){
-            if (new Combination(hands[index]).canHit()) break;
+        do {
             index++;
+            if (new Combination(hands[index]).canHit()) break;
         }
+        while (index < hands.length - 1);
+
         //dealer step
         if (index == hands.length - 1){
             while (dealer.doStep(hands) == Actions.HIT){
