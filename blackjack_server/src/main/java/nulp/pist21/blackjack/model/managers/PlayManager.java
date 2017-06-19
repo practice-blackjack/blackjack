@@ -58,17 +58,6 @@ public class PlayManager {
                 goToNextHand();
             }
         }
-        else {
-            goToNextHand();
-        }
-
-        //dealer step
-        if (index == hands.length - 1){
-            while (dealer.doStep(hands) == Actions.HIT){
-                dealer.giveCard(deck.next());
-            }
-            index++;
-        }
         return true;
     }
 
@@ -86,8 +75,15 @@ public class PlayManager {
 
     private void goToNextHand(){
         index++;
-        while (index < hands.length){
+        while (index < hands.length - 1){
             if (new Combination(hands[index]).canHit()) break;
+            index++;
+        }
+        //dealer step
+        if (index == hands.length - 1){
+            while (dealer.doStep(hands) == Actions.HIT){
+                dealer.giveCard(deck.next());
+            }
             index++;
         }
     }
