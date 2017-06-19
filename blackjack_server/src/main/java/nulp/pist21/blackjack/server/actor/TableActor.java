@@ -135,15 +135,17 @@ public class TableActor extends AbstractActor {
         }
         timer.cancel();
         Transaction.take(currentUser, bet);
-        notifyWatchers();
+
         if (betManager.isOver()){
             playManager.start(currentPlaySits.length);
             notifyWatchers();
             if (playManager.isOver()){
+                endRound();
                 return;
             }
         }
 
+        notifyWatchers();
         notifyPlayer();
 
         timer = new Timer();
@@ -159,7 +161,6 @@ public class TableActor extends AbstractActor {
         }
 
         timer.cancel();
-        notifyWatchers();
 
         if (playManager.isOver()){
             endRound();
