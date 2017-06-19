@@ -41,7 +41,7 @@ public class TableActor extends AbstractActor {
 
     private Timer timer;
     private long stepDelay;
-    private long startRoundDelay;
+    private final long nextRoundDelay;
 
     public TableActor(TableInfo tableInfo) {
         players = new ActorRef[tableInfo.getMaxPlayerCount()];
@@ -52,7 +52,7 @@ public class TableActor extends AbstractActor {
         this.playManager = new PlayManager(new Deck(2), new Dealer());
         this.winManager = new WinManager();
         this.stepDelay = 30000;
-        this.startRoundDelay = 5000;
+        this.nextRoundDelay = 5000;
         timer = new Timer();
     }
 
@@ -82,8 +82,7 @@ public class TableActor extends AbstractActor {
                     sender.tell(new SitTableResponse(true), getSelf());
                     updateTableInfo();
                     if (wasEmpty){
-                        timer = new Timer();
-                        timer.schedule(new StartRoundAction(), startRoundDelay);
+                        startRound();
                     }
                 })
                 .match(StandTableRequest.class, message -> {
@@ -180,6 +179,29 @@ public class TableActor extends AbstractActor {
         timer.schedule(new DefaultStepAction(), stepDelay);
     }
 
+    private void startRound(){
+        currentPlaySits = sitManager.getPlayingSits();
+        for (int i = 0; i < sitManager.getSits().length; i++){
+            if (!sitManager.getSits()[i].isActivated()){
+                players[i] = null;
+            }
+        }
+
+        currentPlaySitsIndexes = sitManager.getPlayingSitIndexes();
+        betManager.start(currentPlaySits.length);
+
+        if (betManager.isOver()){
+            endRound();
+            return;
+        }
+
+        notifyWatchers();
+        notifyPlayer();
+
+        timer = new Timer();
+        timer.schedule(new DefaultStepAction(), stepDelay);
+    }
+
     private void endRound(){
         //todo: tell that round is over
         double koefs[] = winManager.start(playManager.getHands(), playManager.getHands().length - 1);
@@ -197,7 +219,7 @@ public class TableActor extends AbstractActor {
             return;
         }
         timer = new Timer();
-        timer.schedule(new StartRoundAction(), startRoundDelay);
+        timer.schedule(new StartRoundAction(), nextRoundDelay);
     }
 
     private void notifyWatchers(){
@@ -261,26 +283,7 @@ public class TableActor extends AbstractActor {
     private class StartRoundAction extends TimerTask{
         @Override
         public void run() {     //todo: thread synchronisation
-            currentPlaySits = sitManager.getPlayingSits();
-            for (int i = 0; i < sitManager.getSits().length; i++){
-                if (!sitManager.getSits()[i].isActivated()){
-                    players[i] = null;
-                }
-            }
-
-            currentPlaySitsIndexes = sitManager.getPlayingSitIndexes();
-            betManager.start(currentPlaySits.length);
-
-            if (betManager.isOver()){
-                endRound();
-                return;
-            }
-
-            notifyWatchers();
-            notifyPlayer();
-
-            timer = new Timer();
-            timer.schedule(new DefaultStepAction(), stepDelay);
+            startRound();
         }
     }
 
