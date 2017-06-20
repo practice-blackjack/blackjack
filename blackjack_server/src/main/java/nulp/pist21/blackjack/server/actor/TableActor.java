@@ -180,6 +180,9 @@ public class TableActor extends AbstractActor {
     }
 
     private void startRound(){
+        for (Hand hand: playManager.getHands()) {
+            hand.takeCards();
+        }
         currentPlaySits = sitManager.getPlayingSits();
         for (int i = 0; i < sitManager.getSits().length; i++){
             if (!sitManager.getSits()[i].isActivated()){
