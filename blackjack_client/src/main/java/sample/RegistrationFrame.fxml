@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="238.0" prefWidth="335.0" style="-fx-background-color: #252527;" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.RegistrationController">
+   <children>
+      <Button layoutX="124.0" layoutY="195.0" mnemonicParsing="false" onAction="#registerButtonClick" style="-fx-background-color: #7E7D82;" text="Registration" textFill="WHITE">
+         <font>
+            <Font name="Arial Bold Italic" size="12.0" />
+         </font>
+      </Button>
+      <PasswordField fx:id="confirmPasswordField" layoutX="117.0" layoutY="125.0" />
+      <PasswordField fx:id="passwordField" layoutX="117.0" layoutY="91.0" />
+      <TextField fx:id="loginField" layoutX="117.0" layoutY="58.0" />
+      <Label layoutX="96.0" layoutY="8.0" text="Registration" textFill="#b2b2b2">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label layoutX="81.0" layoutY="62.0" text="Login" textFill="#f8f8f8" />
+      <Label layoutX="65.0" layoutY="95.0" text="Password" textFill="WHITE" />
+      <Label layoutX="24.0" layoutY="129.0" text="Retype password" textFill="WHITE" />
+      <Label fx:id="infoLabel" layoutX="15.0" layoutY="168.0" prefHeight="17.0" prefWidth="305.0" wrapText="true" />
+      <Button layoutX="2.0" layoutY="1.0" mnemonicParsing="false" onAction="#toSignInButtonClick" text="Sign In" />
+   </children>
+</AnchorPane>
